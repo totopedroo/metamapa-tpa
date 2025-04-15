@@ -1,18 +1,18 @@
 package ar.edu.utn.frba;
 
 import java.util.List;
-
+/*
 
 
 public class Coleccion {
   private List<Hecho> hechos; //verificar nombre
-  private String nombre;
+  private String titulo;
   private String descripcion;
   private String criterioDeDependencia;
 
-public Coleccion(List<Hecho> hechos, String nombre, String descripcion, String criterioDeDependencia){
+public Coleccion(List<Hecho> hechos, String titulo, String descripcion, String criterioDeDependencia){
   this.hechos = hechos;
-  this.nombre = nombre;
+  this.titulo = titulo;
   this.descripcion = descripcion;
   this.criterioDeDependencia = criterioDeDependencia;
 }
@@ -52,3 +52,6 @@ public Coleccion(List<Hecho> hechos, String nombre, String descripcion, String c
 
 
   }
+
+
+*/
