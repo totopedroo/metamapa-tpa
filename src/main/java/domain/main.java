@@ -1,4 +1,4 @@
-package ar.edu.utn.frba; // colecciones branch
+package domain; // colecciones branch
 
 public class main {
 
