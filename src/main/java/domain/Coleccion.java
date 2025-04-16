@@ -11,9 +11,9 @@ import java.text.Normalizer;
 
 public class Coleccion {
     //private List<Hecho> hechos; //verificar nombre
-  private String titulo;
-  private String descripcion;
-  private String criterioDePertenencia;
+  public String titulo;
+  public String descripcion;
+  public String criterioDePertenencia;
 
 public Coleccion( String titulo, String descripcion, String criterioDePertenencia){
 
@@ -46,12 +46,14 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
     this.criterioDePertenencia = criterioDePertenencia;
   }
 
-    public static void leerConFiltro(String archivo, String columna, String criterioDePertenencia) {
+    public  void leerSegunCriterio(String archivo, String columna, String criterioDePertenencia, Coleccion coleccion) {
         try (
                 CSVReader reader = new CSVReaderBuilder(new FileReader(archivo))
                         .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
                         .build() //divide las columnas usando el separador ;, si usaramos otro sed tomaria solo como una columna ya que en el csv se usa ";"
         ) {
+            System.out.println(coleccion.titulo);
+            System.out.println(coleccion.descripcion);
             String[] cabecera = reader.readNext();
             if (cabecera == null) {
                 System.out.println("El archivo está vacío.");
@@ -87,7 +89,7 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
         }
     }
 
-    private static String normalizar(String texto) { //por los datos que utilizo, me encargue de sacar todas las tildes, sin embargo por las dudas agrego el normalizador
+    public  String normalizar(String texto) { //por los datos que utilizo, me encargue de sacar todas las tildes, sin embargo por las dudas agrego el normalizador
         return Normalizer.normalize(texto, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "") // quita tildes y //p... es una clase especial de caracteres Unicode que representa todos los acentos, tildes, etc...
                 .toLowerCase()
@@ -95,10 +97,10 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
     }
 
     public static void main(String[] args) {
-    Coleccion coleccion1 = new Coleccion("Natural", "Todos los desastres naturales de Argentina en el ultimo año", "Natural");
-    coleccion1.leerConFiltro("archivodefinitivo.csv", "Categoria", coleccion1.criterioDePertenencia );
+    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Todos los desastres naturales de Argentina en el ultimo año", "Natural");
+    coleccion1.leerSegunCriterio("archivodefinitivo.csv", "Categoria", coleccion1.criterioDePertenencia, coleccion1 );
     }
-
+    //prueba
 
 
 }
