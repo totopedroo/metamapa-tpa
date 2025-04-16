@@ -1,8 +1,10 @@
 package domain;
 
+import java.util.List;
 import com.opencsv.CSVReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVParserBuilder;
@@ -10,13 +12,13 @@ import java.text.Normalizer;
 
 
 public class Coleccion {
-    //private List<Hecho> hechos; //verificar nombre
+    private List<Hecho> hechos; //verificar nombre
   public String titulo;
   public String descripcion;
   public String criterioDePertenencia;
 
 public Coleccion( String titulo, String descripcion, String criterioDePertenencia){
-
+    this.hechos = new ArrayList<>();
   this.titulo = titulo;
   this.descripcion = descripcion;
   this.criterioDePertenencia = criterioDePertenencia;
@@ -46,14 +48,14 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
     this.criterioDePertenencia = criterioDePertenencia;
   }
 
-    public  void leerSegunCriterio(String archivo, String columna, String criterioDePertenencia, Coleccion coleccion) {
+    public  void leerSegunCriterio(filtroCSV filtro) {//un solo parametro por resolver code smell de parametros largos
         try (
-                CSVReader reader = new CSVReaderBuilder(new FileReader(archivo))
+                CSVReader reader = new CSVReaderBuilder(new FileReader(filtro.archivo))
                         .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
                         .build() //divide las columnas usando el separador ;, si usaramos otro sed tomaria solo como una columna ya que en el csv se usa ";"
         ) {
-            System.out.println(coleccion.titulo);
-            System.out.println(coleccion.descripcion);
+            System.out.println(filtro.coleccion.titulo);
+            System.out.println(filtro.coleccion.descripcion);
             String[] cabecera = reader.readNext();
             if (cabecera == null) {
                 System.out.println("El archivo está vacío.");
@@ -63,14 +65,14 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
             // busco la columna normalizando las tildes y mayusculas
             int indice = -1;
             for (int i = 0; i < cabecera.length; i++) {
-                if (normalizar(cabecera[i]).equalsIgnoreCase(normalizar(columna))) {
+                if (normalizar(cabecera[i]).equalsIgnoreCase(normalizar(filtro.columna))) {
                     indice = i;
                     break;
                 }
             }
 
             if (indice == -1) {
-                System.out.println("No se encontró la columna: " + columna);
+                System.out.println("No se encontró la columna: " + filtro.columna);
                 return;
             }
 
@@ -96,11 +98,15 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
                 .trim(); //removemos los espacios blancos
     }
 
-    public static void main(String[] args) {
-    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Todos los desastres naturales de Argentina en el ultimo año", "Natural");
-    coleccion1.leerSegunCriterio("archivodefinitivo.csv", "Categoria", coleccion1.criterioDePertenencia, coleccion1 );
-    }
+
     //prueba
+    public static void main(String[] args) {
+
+    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Desastres naturales de Argentina en los ultimos años", "Natural");
+    filtroCSV filtro1 = new filtroCSV("Categoria", "Incendio", coleccion1, "archivodefinitivo.csv");
+    coleccion1.leerSegunCriterio(filtro1 );
+    }
+
 
 
 }
