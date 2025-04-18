@@ -1,5 +1,6 @@
 package domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import com.opencsv.CSVReader;
 import java.io.FileReader;
@@ -12,43 +13,43 @@ import java.text.Normalizer;
 
 
 public class Coleccion {
-    private List<Hecho> hechos; //verificar nombre
-  public String titulo;
-  public String descripcion;
-  public String criterioDePertenencia;
+    //private List<Hecho> hechos; //verificar nombre
+    public String titulo;
+    public String descripcion;
+    public String criterioDePertenencia;
 
-public Coleccion( String titulo, String descripcion, String criterioDePertenencia){
-    this.hechos = new ArrayList<>();
-  this.titulo = titulo;
-  this.descripcion = descripcion;
-  this.criterioDePertenencia = criterioDePertenencia;
-}
+    public Coleccion(String titulo, String descripcion, String criterioDePertenencia) {
+        //  this.hechos = new ArrayList<>();
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.criterioDePertenencia = criterioDePertenencia;
+    }
 
-  public String getTitulo() {
-    return titulo;
-  }
+    public String getTitulo() {
+        return titulo;
+    }
 
-  public void setTitulo(String nombre) {
-    this.titulo = titulo;
-  }
+    public void setTitulo(String nombre) {
+        this.titulo = titulo;
+    }
 
-  public String getDescripcion() {
-    return descripcion;
-  }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-  public void setDescripcion(String descripcion) {
-    this.descripcion = descripcion;
-  }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-  public String getcriterioDePertenencia() {
-    return criterioDePertenencia;
-  }
+    public String getcriterioDePertenencia() {
+        return criterioDePertenencia;
+    }
 
-  public void setCriterioDeDependencia(String criterioDeDependencia) {
-    this.criterioDePertenencia = criterioDePertenencia;
-  }
+    public void setCriterioDeDependencia(String criterioDeDependencia) {
+        this.criterioDePertenencia = criterioDePertenencia;
+    }
 
-    public  void leerSegunCriterio(filtroCSV filtro) {//un solo parametro por resolver code smell de parametros largos
+   public  void leerSegunCriterio(filtroCSV filtro) {//un solo parametro por resolver code smell de parametros largos
         try (
                 CSVReader reader = new CSVReaderBuilder(new FileReader(filtro.archivo))
                         .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
@@ -60,8 +61,8 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
             if (cabecera == null) {
                 System.out.println("El archivo está vacío.");
                 return;
-            }//lee la cabecera, en la que estan las columnas
-
+            }
+            //lee la cabecera, en la que estan las columnas
             // busco la columna normalizando las tildes y mayusculas
             int indice = -1;
             for (int i = 0; i < cabecera.length; i++) {
@@ -70,24 +71,24 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
                     break;
                 }
             }
-
             if (indice == -1) {
                 System.out.println("No se encontró la columna: " + filtro.columna);
                 return;
             }
-
             // lee y filtra las columnas con el filtro que le dimos (Stringcolumna y criterioDePertenencia
-            String[] fila;
-            while ((fila = reader.readNext()) != null) {
-                if (fila.length > indice && fila[indice].equalsIgnoreCase(criterioDePertenencia)) {
-                    System.out.println(Arrays.toString(fila));
+            String[] columna;
+            while ((columna = reader.readNext()) != null) {
+                if (columna.length > indice && columna[indice].equalsIgnoreCase(criterioDePertenencia)) {
+                    String[] filaExtendida = Arrays.copyOf(columna, columna.length + 2);
+                    filaExtendida[columna.length] = filtro.origen;
+                    filaExtendida[columna.length + 1] = filtro.fechaCarga;
+
+                    System.out.println(Arrays.toString(filaExtendida));
+                    ;
                 }
             }
-
-
-
         } catch (IOException e) {
-            System.err.println("Error leyendo el archivo: " + e.getMessage());
+            System.err.println("eror no se pudo leer el archivo");
         }
     }
 
@@ -98,16 +99,17 @@ public Coleccion( String titulo, String descripcion, String criterioDePertenenci
                 .trim(); //removemos los espacios blancos
     }
 
-
-    //prueba
-    public static void main(String[] args) {
-
-    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Desastres naturales de Argentina en los ultimos años", "Natural");
-    filtroCSV filtro1 = new filtroCSV("Categoria", "Incendio", coleccion1, "archivodefinitivo.csv");
-    coleccion1.leerSegunCriterio(filtro1 );
-    }
-
-
-
 }
+    //prueba
+   /* public static void main(String[] args) {
+    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Desastres naturales de Argentina en los ultimos años", "Natural");
+    filtroCSV filtroParaColeccion1 = new filtroCSV("Categoria", coleccion1.criterioDePertenencia,coleccion1, "archivodefinitivo.csv", "Manual", LocalDate.now());
+    coleccion1.leerSegunCriterio(filtroParaColeccion1);
+
+
+    }
+*/
+
+
+
 
