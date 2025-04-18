@@ -16,7 +16,7 @@ public class Administrador {
         this.coleccionesCreadas = new ArrayList<>();
     }
 
-    public Coleccion crearColeccion(String titulo, String descripcion, String criterio) {
+    public Coleccion crearColeccion(String titulo, String descripcion, criterioDePertenencia criterio) {
         Coleccion coleccion = new Coleccion(titulo, descripcion, criterio);
         coleccionesCreadas.add(coleccion);
         return coleccion;
