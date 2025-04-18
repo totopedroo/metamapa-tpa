@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Coleccion {
-    //private List<Hecho> hechos; //verificar nombre
+    private List<Hecho> hechos; //verificar nombre
     public String titulo;
     public String descripcion;
-    public  criterioDePertenencia criterioDePertenencia;
+    public  List<criterioDePertenencia> criterioDePertenencia;
 
-    public Coleccion(String titulo, String descripcion, criterioDePertenencia criterioDePertenencia) {
-        //  this.hechos = new ArrayList<>();
+    public Coleccion(String titulo, String descripcion, List<criterioDePertenencia> criterioDePertenencia) {
+         this.hechos = new ArrayList<>();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.criterioDePertenencia = criterioDePertenencia;
@@ -42,7 +42,21 @@ public class Coleccion {
         this.descripcion = descripcion;
     }
 
+    public List<Hecho> getHechos() {
+        return hechos;
+    }
 
+    public void setHechos(List<Hecho> hechos) {
+        this.hechos = hechos;
+    }
+
+    public List<criterioDePertenencia> getCriterioDePertenencia() {
+        return criterioDePertenencia;
+    }
+
+    public void setCriterioDePertenencia(List<criterioDePertenencia> criterioDePertenencia) {
+        this.criterioDePertenencia = criterioDePertenencia;
+    }
 
     public void setCriterioDeDependencia(String criterioDeDependencia) {
         this.criterioDePertenencia = criterioDePertenencia;
@@ -64,7 +78,7 @@ public class Coleccion {
                 }
 
                 boolean cumpleTodos = criterios.stream().allMatch(c -> {
-                    String valorEnFila = filaComoMapa.getOrDefault(normalizar(c.columna), "");
+                    String valorEnFila = filaComoMapa.getOrDefault(normalizar(c.columna), "VACIO");
                     return c.cumple(valorEnFila);
                 });
 
@@ -79,6 +93,11 @@ public class Coleccion {
     }
 
 
+    public void agregarCriterio(criterioDePertenencia criterio) {
+        criterioDePertenencia.add(criterio);
+    }
+
+
     public  String normalizar(String texto) { //por los datos que utilizo, me encargue de sacar todas las tildes, sin embargo por las dudas agrego el normalizador
         return Normalizer.normalize(texto, Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "") // quita tildes y //p... es una clase especial de caracteres Unicode que representa todos los acentos, tildes, etc...
@@ -87,15 +106,6 @@ public class Coleccion {
     }
 
 }
-    //prueba
-   /* public static void main(String[] args) {
-    Coleccion coleccion1 = new Coleccion("Desastres Naturales 2000-2025", "Desastres naturales de Argentina en los ultimos años", "Natural");
-    filtroCSV filtroParaColeccion1 = new filtroCSV("Categoria", coleccion1.criterioDePertenencia,coleccion1, "archivodefinitivo.csv", "Manual", LocalDate.now());
-    coleccion1.leerSegunCriterio(filtroParaColeccion1);
-
-
-    }
-*/
 
 
 
