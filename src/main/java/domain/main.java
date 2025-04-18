@@ -16,7 +16,7 @@ public class main {
   List<criterioDePertenencia> criterios = new ArrayList<>();
        criterioDePertenencia criterio1 = new criterioDePertenencia("", "");
        criterios.add(criterio1);
-       Coleccion coleccion1 = admin.crearColeccion("Coleccion prueba", "esto es una prueba", criterio1);
+       Coleccion coleccion1 = admin.crearColeccion("Coleccion prueba", "esto es una prueba", criterios);
        coleccion1.leerSegunCriterios(criterios, "prueba1.csv");
         System.out.println("Colección creada: " + coleccion1.getTitulo());
 
