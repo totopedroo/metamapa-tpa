@@ -20,7 +20,7 @@ public class Coleccion {
     public  List<criterioDePertenencia> criterioDePertenencia;
 
     public Coleccion(String titulo, String descripcion, List<criterioDePertenencia> criterioDePertenencia) {
-         this.hechos = new ArrayList<>();
+        this.hechos = new ArrayList<>();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.criterioDePertenencia = criterioDePertenencia;
@@ -63,9 +63,9 @@ public class Coleccion {
     }
     public void leerSegunCriterios(List<criterioDePertenencia> criterios, String archivoCSV) {
         try (
-                CSVReader reader = new CSVReaderBuilder(new FileReader(archivoCSV))
-                        .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
-                        .build()
+            CSVReader reader = new CSVReaderBuilder(new FileReader(archivoCSV))
+                .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                .build()
         ) {
             String[] cabecera = reader.readNext();
             if (cabecera == null) return;
@@ -100,13 +100,12 @@ public class Coleccion {
 
     public  String normalizar(String texto) { //por los datos que utilizo, me encargue de sacar todas las tildes, sin embargo por las dudas agrego el normalizador
         return Normalizer.normalize(texto, Normalizer.Form.NFD)
-                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "") // quita tildes y //p... es una clase especial de caracteres Unicode que representa todos los acentos, tildes, etc...
-                .toLowerCase()
-                .trim(); //removemos los espacios blancos
+            .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "") // quita tildes y //p... es una clase especial de caracteres Unicode que representa todos los acentos, tildes, etc...
+            .toLowerCase()
+            .trim(); //removemos los espacios blancos
     }
 
 }
-
 
 
 

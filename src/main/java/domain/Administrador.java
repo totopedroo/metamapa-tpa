@@ -30,9 +30,9 @@ public class Administrador {
 
     public void leerCSV(String rutaArchivo) {
         try (
-                CSVReader reader = new CSVReaderBuilder(new FileReader(rutaArchivo))
-                        .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
-                        .build()
+            CSVReader reader = new CSVReaderBuilder(new FileReader(rutaArchivo))
+                .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                .build()
         ) {
             String[] fila;
             System.out.println("LEYENDO EL ARCHIVO: " + rutaArchivo);
@@ -63,4 +63,3 @@ public class Administrador {
 
 
 }
-
