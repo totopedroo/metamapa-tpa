@@ -31,7 +31,7 @@ public class criterioDePertenencia {
             try {
                 LocalDate fecha = LocalDate.parse(valorEnFila);
                 return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
-                        (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+                    (fecha.isEqual(hasta) || fecha.isBefore(hasta));
             } catch (Exception e) {
                 return false;
             }
@@ -39,4 +39,3 @@ public class criterioDePertenencia {
         return false;
     }
 }
-
