@@ -1,18 +1,20 @@
 package domain;
 
-import mocks.Coleccion;
-import mocks.Fuente;
-import mocks.CriterioDePertenencia;
 import mocks.SolicitudEliminacion;
-
 import java.util.ArrayList;
 import java.util.List;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReaderBuilder;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 public class Administrador {
 
     private String nombre;
     private String email;
-    private List<Coleccion> coleccionesCreadas;
+    public List<Coleccion> coleccionesCreadas;
 
     public Administrador(String nombre, String email) {
         this.nombre = nombre;
@@ -20,15 +22,27 @@ public class Administrador {
         this.coleccionesCreadas = new ArrayList<>();
     }
 
-    public Coleccion crearColeccion(String titulo, String descripcion, Fuente fuente, CriterioDePertenencia criterio) {
-        Coleccion coleccion = new Coleccion(titulo, descripcion, fuente, criterio);
+    public Coleccion crearColeccion(String titulo, String descripcion, List<criterioDePertenencia> criterios) {
+        Coleccion coleccion = new Coleccion(titulo, descripcion, criterios);
         coleccionesCreadas.add(coleccion);
         return coleccion;
     }
 
-    public void importarHechosDesdeCSV(String rutaArchivoCSV, Fuente fuente) {
-        // Se delega la lectura a Fuente (otros compañeros se encargan)
-        fuente.importarHechosDesdeCSV(rutaArchivoCSV);
+    public void leerCSV(String rutaArchivo) {
+        try (
+                CSVReader reader = new CSVReaderBuilder(new FileReader(rutaArchivo))
+                        .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                        .build()
+        ) {
+            String[] fila;
+            System.out.println("LEYENDO EL ARCHIVO: " + rutaArchivo);
+            while ((fila = reader.readNext()) != null) {
+                System.out.println(Arrays.toString(fila));
+            }
+
+        } catch (IOException e) {
+            System.err.println("ERROR ");
+        }
     }
 
     public void aceptarSolicitudEliminacion(SolicitudEliminacion solicitud) {
@@ -46,4 +60,7 @@ public class Administrador {
     public List<Coleccion> getColeccionesCreadas() {
         return coleccionesCreadas;
     }
+
+
 }
+
