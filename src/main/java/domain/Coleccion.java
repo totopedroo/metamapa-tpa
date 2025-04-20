@@ -88,7 +88,7 @@ public class Coleccion {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+             System.err.println("ERROR ");
         }
     }
 
