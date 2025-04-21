@@ -16,7 +16,7 @@ public class Hecho {
     public LocalDate fechaCarga;
     public Origen origen;
     public List<String> etiquetas = new ArrayList();
-    public List <Solicitud> solicitudes= new ArrayList();
+    public List <SolicitudDeEliminacion> solicitudes= new ArrayList();
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
                  Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga,
@@ -32,7 +32,7 @@ public class Hecho {
         this.origen = origen;
     }
 
-    public void agregarSolicitud(Solicitud solicitud) {
+    public void agregarSolicitud(SolicitudDeEliminacion solicitud) {
         solicitudes.add(solicitud);
     }
 }
