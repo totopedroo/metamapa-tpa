@@ -11,6 +11,7 @@ public class main {
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
     //Escenario 1
+    System.out.println("Puebo escenario 1");
     List<CriterioDePertenencia> criterios = new ArrayList<>();
     CriterioDePertenencia criterio1 = new CriterioDePertenencia("", "");
     criterios.add(criterio1);
@@ -19,7 +20,9 @@ public class main {
     System.out.println("Colección creada: " + coleccion1.getTitulo());
 
     //Escenario 1.2
-
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println("Puebo escenario 1.2: Criterios de pertenencia");
     List<CriterioDePertenencia> criterios2 = new ArrayList<>();
     CriterioDePertenencia criterioFecha1 = new CriterioDePertenencia(
         "fecha del hecho",
@@ -42,6 +45,8 @@ public class main {
     coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
     // Esperado: El segundo hecho se excluye, porque no es de esa categoría*/
 
+
+
     System.out.println("APLICO FILTRO POR CATEGORÍA (NO VUELVO A LEER EL ARCHIVO)");
     List<Hecho> filtradosPorCategoria = coleccion2.getHechos().stream()
         .filter(h -> h.getCategoria().equalsIgnoreCase("Caida de aeronave"))
@@ -51,7 +56,10 @@ public class main {
     filtradosPorCategoria.forEach(h -> System.out.println(h.getTitulo()));
 
 
-    //Escenario 1.3
+    //Escenario 1.3 (Filtros de visualizador)
+        System.out.println("...");
+        System.out.println("...");
+       System.out.println("Puebo escenario 1.3");
     System.out.println("AHORA AGREGO FILTROS DE VISITANTE, POR LO QUE NO TENDRÍA QUE DAR NINGUN HECHO");
     CriterioDePertenencia criterioBautista = new CriterioDePertenencia("Categoria", "caída de aeronave");
     CriterioDePertenencia criterioBautista2 = new CriterioDePertenencia("Titulo", "untitulo");
@@ -63,6 +71,10 @@ public class main {
     //Escenario 1.4: Etiquetas
 
     // Buscar el hecho por título dentro de la colección
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println("Pruebo escenario 1.4: Etiquetas");
+
     Hecho hechoOlavarria = null;
     for (Hecho h : coleccion2.getHechos()) {
       System.out.println("TITULO: " + h.getTitulo());
@@ -91,12 +103,19 @@ public class main {
     }
 
     //Escenario 2
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println("Pruebo escenario 2: Importacion de hechos por csv");
     //esto lo podemos hacer de dos formas, o ceando un nuevo metodo en administrador, o usando el metodo de coleccion, pero sin agregar filtros y se crearía una "supercoloeccion"
     admin.leerCSV("archivodefinitivo.csv");
 
 
     //Escenario 3
     // Crear una solicitud de eliminación asociada a este hecho. Quedará en estado pendiente.
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println("Pruebo escenario 3: Solicitudes de eliminacion");
+
     Hecho hechoSanLorenzo = new Hecho(
         "Brote de enfermedad contagiosa causa estragos en San Lorenzo, Santa Fe",
         "Grave brote de enfermedad contagiosa ocurrió en las inmediaciones de San Lorenzo, Santa Fe. El incidente dejó varios heridos y daños materiales. Se ha declarado estado de emergencia en la región para facilitar la asistencia.",
