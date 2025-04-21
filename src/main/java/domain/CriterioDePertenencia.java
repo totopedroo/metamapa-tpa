@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class CriterioDePertenencia {
     public String columna; // nombre de la columna en el CSV
@@ -29,13 +30,19 @@ public class CriterioDePertenencia {
             return valorEnFila.equalsIgnoreCase(valor);
         } else if (tipo.equals("fecha")) {
             try {
-                LocalDate fecha = LocalDate.parse(valorEnFila);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+                LocalDate fecha = LocalDate.parse(valorEnFila, formatter);
                 return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
                     (fecha.isEqual(hasta) || fecha.isBefore(hasta));
             } catch (Exception e) {
+                System.out.println("No se pudo parsear la fecha: " + valorEnFila);
                 return false;
             }
         }
         return false;
+    }
+
+    public String getColumna() {
+        return this.columna;
     }
 }

@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Hecho {
     public String titulo;
     public String descripcion;
@@ -45,5 +48,13 @@ public class Hecho {
 
     public boolean estaEliminado() {
         return eliminado;
+    }
+
+    public void agregarEtiqueta(String etiqueta) {
+        this.etiquetas.add(etiqueta);
+    }
+
+    public List<String> getEtiquetas() {
+        return this.etiquetas;
     }
 }
