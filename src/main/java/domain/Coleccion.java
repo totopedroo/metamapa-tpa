@@ -1,5 +1,9 @@
 package domain;
 
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import com.opencsv.CSVReader;
 import java.io.FileReader;
@@ -65,9 +69,10 @@ public class Coleccion {
     public void setCriterioDeDependencia(String criterioDeDependencia) {
         this.criterioDePertenencia = criterioDePertenencia;
     }
+
     public void leerSegunCriterios(List<CriterioDePertenencia> criterios, String archivoCSV) {
         try (
-            CSVReader reader = new CSVReaderBuilder(new FileReader(archivoCSV))
+            CSVReader reader = new CSVReaderBuilder(new InputStreamReader(new FileInputStream(archivoCSV), "ISO-8859-1"))
                 .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
                 .build()
         ) {
@@ -82,19 +87,35 @@ public class Coleccion {
                 }
 
                 boolean cumpleTodos = criterios.stream().allMatch(c -> {
-                    String valorEnFila = filaComoMapa.getOrDefault(normalizar(c.columna), "VACIO");
+                    String valorEnFila = filaComoMapa.getOrDefault(normalizar(c.getColumna()), "VACIO");
                     return c.cumple(valorEnFila);
                 });
 
                 if (cumpleTodos) {
-                    System.out.println("Fila: " + filaComoMapa);
+                    System.out.println("Fila válida: " + filaComoMapa);
+
+                    // Construir Hecho (adaptalo según tu constructor real)
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+                    Hecho hecho = new Hecho(
+                        filaComoMapa.get("titulo"),
+                        filaComoMapa.get("descripcion"),
+                        filaComoMapa.get("categoria"),
+                        null,
+                        Double.parseDouble(filaComoMapa.get("latitud").replace(",", ".")),
+                        Double.parseDouble(filaComoMapa.get("longitud").replace(",", ".")),
+                        LocalDate.parse(filaComoMapa.get("fecha del hecho"), formatter),
+                        LocalDate.now()
+                    );
+
+                    this.hechos.add(hecho);
                 }
             }
 
         } catch (IOException e) {
-             System.err.println("ERROR ");
+            System.err.println("ERROR al leer el CSV: " + e.getMessage());
         }
     }
+
 
 
     public void agregarCriterio(CriterioDePertenencia criterio) {

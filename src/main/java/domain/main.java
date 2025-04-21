@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class main {
 
@@ -30,16 +31,28 @@ public class main {
     coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
     System.out.println("CREADA LA COLECCION:  " + coleccion2.getTitulo());
 
+    System.out.println("HECHOS EN COLECCIÓN TRAS LECTURA CON CRITERIO DE FECHA:");
+    coleccion2.getHechos().forEach(h -> System.out.println(h.getTitulo())); // Debug
+
 
     CriterioDePertenencia criterioCategoria = new CriterioDePertenencia("Categoria", "Caida de aeronave");
     criterios2.add(criterioCategoria);
-    System.out.println("FILTRO POR FECHA Y CATEGORIA");
+
+    /*System.out.println("FILTRO POR FECHA Y CATEGORIA");
     coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
-    // Esperado: El segundo hecho se excluye, porque no es de esa categoría
+    // Esperado: El segundo hecho se excluye, porque no es de esa categoría*/
+
+    System.out.println("APLICO FILTRO POR CATEGORÍA (NO VUELVO A LEER EL ARCHIVO)");
+    List<Hecho> filtradosPorCategoria = coleccion2.getHechos().stream()
+        .filter(h -> h.getCategoria().equalsIgnoreCase("Caida de aeronave"))
+        .collect(Collectors.toList());
+
+    System.out.println("HECHOS QUE CUMPLEN CATEGORÍA:");
+    filtradosPorCategoria.forEach(h -> System.out.println(h.getTitulo()));
 
 
     //Escenario 1.3
-    System.out.println("AHORA AGREGO FILTROS DE VISITNANTE, POR LO QUE NO TENDRÍA QUE DAR NINGUN HECHO");
+    System.out.println("AHORA AGREGO FILTROS DE VISITANTE, POR LO QUE NO TENDRÍA QUE DAR NINGUN HECHO");
     CriterioDePertenencia criterioBautista = new CriterioDePertenencia("Categoria", "caída de aeronave");
     CriterioDePertenencia criterioBautista2 = new CriterioDePertenencia("Titulo", "untitulo");
     Visualizador bautista = new Visualizador("Bautista");
@@ -47,9 +60,35 @@ public class main {
     bautista.agregarFiltro(coleccion2, criterioBautista2);
     coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
 
-    //Escenario 1.4
+    //Escenario 1.4: Etiquetas
 
+    // Buscar el hecho por título dentro de la colección
+    Hecho hechoOlavarria = null;
+    for (Hecho h : coleccion2.getHechos()) {
+      System.out.println("TITULO: " + h.getTitulo());
+      if (h.getTitulo().equalsIgnoreCase("Caída de aeronave impacta en Olavarría")) {
+        hechoOlavarria = h;
+        break;
+      }
+    }
 
+    if (hechoOlavarria != null) {
+      // Etiquetar
+      hechoOlavarria.agregarEtiqueta("Olavarría");
+      hechoOlavarria.agregarEtiqueta("Grave");
+
+      // Mostrar etiquetas
+      System.out.println("Etiquetas del hecho: " + hechoOlavarria.getEtiquetas());
+
+      // Validación
+      if (hechoOlavarria.getEtiquetas().contains("Olavarría") && hechoOlavarria.getEtiquetas().contains("Grave")) {
+        System.out.println("El hecho tiene ambas etiquetas correctamente asociadas: OK");
+      } else {
+        System.out.println("ERROR: Las etiquetas no se asignaron correctamente.");
+      }
+    } else {
+      System.out.println("No se encontró el hecho con título 'Caída de aeronave impacta en Olavarría'");
+    }
 
     //Escenario 2
     //esto lo podemos hacer de dos formas, o ceando un nuevo metodo en administrador, o usando el metodo de coleccion, pero sin agregar filtros y se crearía una "supercoloeccion"

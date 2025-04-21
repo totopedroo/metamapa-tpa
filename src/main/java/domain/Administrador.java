@@ -36,7 +36,7 @@ public class Administrador {
             String[] fila;
             System.out.println("LEYENDO EL ARCHIVO: " + rutaArchivo);
             while ((fila = reader.readNext()) != null) {
-                System.out.println(Arrays.toString(fila));
+                //System.out.println(Arrays.toString(fila));
             }
 
         } catch (IOException e) {
