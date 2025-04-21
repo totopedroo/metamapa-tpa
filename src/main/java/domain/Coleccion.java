@@ -1,12 +1,10 @@
 package domain;
 
-import java.time.LocalDate;
 import java.util.List;
 import com.opencsv.CSVReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVParserBuilder;
 import java.text.Normalizer;
@@ -17,9 +15,9 @@ public class Coleccion {
     private List<Hecho> hechos; //verificar nombre
     public String titulo;
     public String descripcion;
-    public  List<criterioDePertenencia> criterioDePertenencia;
+    public  List<CriterioDePertenencia> criterioDePertenencia;
 
-    public Coleccion(String titulo, String descripcion, List<criterioDePertenencia> criterioDePertenencia) {
+    public Coleccion(String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
         this.hechos = new ArrayList<>();
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -46,22 +44,28 @@ public class Coleccion {
         return hechos;
     }
 
+    public List<Hecho> getHechosVisibles() {
+        return hechos.stream()
+            .filter(h -> !h.eliminado)
+            .toList();
+    }
+
     public void setHechos(List<Hecho> hechos) {
         this.hechos = hechos;
     }
 
-    public List<criterioDePertenencia> getCriterioDePertenencia() {
+    public List<CriterioDePertenencia> getCriterioDePertenencia() {
         return criterioDePertenencia;
     }
 
-    public void setCriterioDePertenencia(List<criterioDePertenencia> criterioDePertenencia) {
+    public void setCriterioDePertenencia(List<CriterioDePertenencia> criterioDePertenencia) {
         this.criterioDePertenencia = criterioDePertenencia;
     }
 
     public void setCriterioDeDependencia(String criterioDeDependencia) {
         this.criterioDePertenencia = criterioDePertenencia;
     }
-    public void leerSegunCriterios(List<criterioDePertenencia> criterios, String archivoCSV) {
+    public void leerSegunCriterios(List<CriterioDePertenencia> criterios, String archivoCSV) {
         try (
             CSVReader reader = new CSVReaderBuilder(new FileReader(archivoCSV))
                 .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
@@ -93,7 +97,7 @@ public class Coleccion {
     }
 
 
-    public void agregarCriterio(criterioDePertenencia criterio) {
+    public void agregarCriterio(CriterioDePertenencia criterio) {
         criterioDePertenencia.add(criterio);
     }
 
@@ -104,6 +108,17 @@ public class Coleccion {
             .toLowerCase()
             .trim(); //removemos los espacios blancos
     }
+
+    public void agregarHecho(Hecho hecho) {
+        if (hecho.estaEliminado()) {
+            System.out.println("No se puede agregar el hecho '" + hecho.titulo + "' porque fue eliminado.");
+            return;
+        }
+
+        this.hechos.add(hecho);
+        System.out.println("Hecho agregado a la colección: " + hecho.titulo);
+    }
+
 
 }
 
