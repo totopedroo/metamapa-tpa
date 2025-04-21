@@ -1,6 +1,5 @@
 package domain;
 
-import mocks.SolicitudEliminacion;
 import java.util.ArrayList;
 import java.util.List;
 import com.opencsv.CSVReader;
@@ -22,7 +21,7 @@ public class Administrador {
         this.coleccionesCreadas = new ArrayList<>();
     }
 
-    public Coleccion crearColeccion(String titulo, String descripcion, List<criterioDePertenencia> criterios) {
+    public Coleccion crearColeccion(String titulo, String descripcion, List<CriterioDePertenencia> criterios) {
         Coleccion coleccion = new Coleccion(titulo, descripcion, criterios);
         coleccionesCreadas.add(coleccion);
         return coleccion;
@@ -45,12 +44,13 @@ public class Administrador {
         }
     }
 
-    public void aceptarSolicitudEliminacion(SolicitudEliminacion solicitud) {
-        solicitud.aceptar();
+    public void aceptarSolicitudDeEliminacion(Hecho hecho, SolicitudDeEliminacion solicitud) {
+        solicitud.aceptarSolicitud();
+        hecho.verificarEliminacion();
     }
 
-    public void rechazarSolicitudEliminacion(SolicitudEliminacion solicitud) {
-        solicitud.rechazar();
+    public void rechazarSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) {
+        solicitud.rechazarSolicitud();
     }
 
     public String getNombre() {

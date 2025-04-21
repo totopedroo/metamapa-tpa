@@ -14,13 +14,12 @@ public class Hecho {
     public Double longitud;
     public LocalDate fechaAcontecimiento;
     public LocalDate fechaCarga;
-    public Origen origen;
     public List<String> etiquetas = new ArrayList();
     public List <SolicitudDeEliminacion> solicitudes= new ArrayList();
+    public boolean eliminado = false;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga,
-                 Origen origen) {
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -29,10 +28,22 @@ public class Hecho {
         this.longitud = longitud;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
-        this.origen = origen;
     }
 
     public void agregarSolicitud(SolicitudDeEliminacion solicitud) {
         solicitudes.add(solicitud);
+    }
+
+    public void verificarEliminacion() {
+        boolean tieneAceptada = solicitudes.stream().anyMatch(s -> s.estado.equals("Aceptado"));
+        this.eliminado = tieneAceptada;
+    }
+
+    public void marcarComoEliminado() {
+        this.eliminado = true;
+    }
+
+    public boolean estaEliminado() {
+        return eliminado;
     }
 }

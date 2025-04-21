@@ -2,7 +2,7 @@ package domain;
 
 import java.time.LocalDate;
 
-public class criterioDePertenencia {
+public class CriterioDePertenencia {
     public String columna; // nombre de la columna en el CSV
     public String tipo;    // "texto" o "fecha"
     public String valor;   // para tipo texto
@@ -10,14 +10,14 @@ public class criterioDePertenencia {
     public LocalDate hasta;
 
     // Criterio por texto
-    public criterioDePertenencia(String columna, String valor) {
+    public CriterioDePertenencia(String columna, String valor) {
         this.columna = columna;
         this.tipo = "texto";
         this.valor = valor;
     }
 
     // Criterio por rango de fecha
-    public criterioDePertenencia(String columna, LocalDate desde, LocalDate hasta) {
+    public CriterioDePertenencia(String columna, LocalDate desde, LocalDate hasta) {
         this.columna = columna;
         this.tipo = "fecha";
         this.desde = desde;

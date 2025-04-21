@@ -1,9 +1,5 @@
 package domain;
 
-import mocks.CriterioDePertenencia;
-
-import java.time.LocalDate;
-
 public class Visualizador {
     public String nombre;
 
@@ -13,7 +9,7 @@ public class Visualizador {
     }
 
 
-    public void agregarFiltro(Coleccion coleccion, criterioDePertenencia criterio) {
+    public void agregarFiltro(Coleccion coleccion, CriterioDePertenencia criterio) {
         coleccion.agregarCriterio(criterio);
     }
 }
