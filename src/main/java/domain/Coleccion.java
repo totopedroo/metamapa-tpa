@@ -50,7 +50,7 @@ public class Coleccion {
 
     public List<Hecho> getHechosVisibles() {
         return hechos.stream()
-            .filter(h -> !h.eliminado)
+            .filter(h -> !h.estaEliminado())
             .toList();
     }
 
@@ -132,12 +132,12 @@ public class Coleccion {
 
     public void agregarHecho(Hecho hecho) {
         if (hecho.estaEliminado()) {
-            System.out.println("No se puede agregar el hecho '" + hecho.titulo + "' porque fue eliminado.");
+            System.out.println("No se puede agregar el hecho '" + hecho.getTitulo() + "' porque fue eliminado.");
             return;
         }
 
         this.hechos.add(hecho);
-        System.out.println("Hecho agregado a la colección: " + hecho.titulo);
+        System.out.println("Hecho agregado a la colección: " + hecho.getTitulo());
     }
 
 

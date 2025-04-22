@@ -42,6 +42,21 @@ public class CriterioDePertenencia {
         return false;
     }
 
+    public boolean cumple(Hecho hecho) {
+        if (tipo.equals("texto")) {
+            if (columna.equalsIgnoreCase("titulo")) {
+                return hecho.getTitulo().toLowerCase().contains(valor.toLowerCase());
+            } else if (columna.equalsIgnoreCase("categoria")) {
+                return hecho.getCategoria().toLowerCase().contains(valor.toLowerCase());
+            }
+        } else if (tipo.equals("fecha")) {
+            LocalDate fecha = hecho.getFechaAcontecimiento();
+            return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
+                (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+        }
+        return false;
+    }
+
     public String getColumna() {
         return this.columna;
     }
