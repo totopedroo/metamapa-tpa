@@ -57,16 +57,26 @@ public class main {
 
 
     //Escenario 1.3 (Filtros de visualizador)
-        System.out.println("...");
-        System.out.println("...");
-       System.out.println("Puebo escenario 1.3");
-    System.out.println("AHORA AGREGO FILTROS DE VISITANTE, POR LO QUE NO TENDRÍA QUE DAR NINGUN HECHO");
-    CriterioDePertenencia criterioBautista = new CriterioDePertenencia("Categoria", "caída de aeronave");
-    CriterioDePertenencia criterioBautista2 = new CriterioDePertenencia("Titulo", "untitulo");
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println("Puebo escenario 1.3");
+
+    System.out.println("\n========== TODOS LOS HECHOS DE LA COLECCION 'HECHOS 2001-2010' VISTOS POR VISUALIZADOR 'fausto' ==========");
+    Visualizador visitante = new Visualizador("Fausto");
+    visitante.visualizarHechosFiltrados(coleccion2);
+
+
+    System.out.println("\n========== FILTRO CON VISUALIZADOR 'fausto' EN COLECCION 'HECHOS 2001-2010' (titulo contiene palabra 'Incidente') ==========");
+    visitante.agregarFiltro(new CriterioDePertenencia("Titulo", "incidente"));
+    visitante.visualizarHechosFiltrados(coleccion2);
+
+    System.out.println("\n========== FILTRO POR CATEGORIA CON VISUALIZADOR 'bauti': Caida de aeronave ==========");
+    CriterioDePertenencia criterioBautista = new CriterioDePertenencia("Categoria", "Caida de aeronave");
     Visualizador bautista = new Visualizador("Bautista");
-    bautista.agregarFiltro(coleccion2, criterioBautista);
-    bautista.agregarFiltro(coleccion2, criterioBautista2);
-    coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
+
+    bautista.agregarFiltro(criterioBautista);
+
+    bautista.visualizarHechosFiltrados(coleccion2);
 
     //Escenario 1.4: Etiquetas
 
