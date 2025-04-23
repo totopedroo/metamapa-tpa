@@ -6,6 +6,17 @@ public class Contribuyente {
     public Integer edad;
 
     public Contribuyente(String nombre, String apellido, Integer edad) {
+        this.nombre = nombre;this.apellido = apellido;this.edad = edad;
+    }
+
+
+    public Contribuyente(String nombre, String apellido) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
+
+
+    public Contribuyente(String nombre) {
         this.nombre = nombre;
     }
 
