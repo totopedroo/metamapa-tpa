@@ -11,12 +11,9 @@ public class main {
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
     //Escenario 1
-    System.out.println("Puebo escenario 1");
     List<CriterioDePertenencia> criterios = new ArrayList<>();
-    CriterioDePertenencia criterio1 = new CriterioDePertenencia("", "");
-    criterios.add(criterio1);
     Coleccion coleccion1 = admin.crearColeccion("Coleccion prueba", "esto es una prueba", criterios);
-    coleccion1.leerSegunCriterios(criterios, "prueba1.csv");
+    admin.leerCSV("prueba1.csv");
     System.out.println("Colección creada: " + coleccion1.getTitulo());
 
     //Escenario 1.2
@@ -41,9 +38,9 @@ public class main {
     CriterioDePertenencia criterioCategoria = new CriterioDePertenencia("Categoria", "Caida de aeronave");
     criterios2.add(criterioCategoria);
 
-    /*System.out.println("FILTRO POR FECHA Y CATEGORIA");
+    System.out.println("FILTRO POR FECHA Y CATEGORIA");
     coleccion2.leerSegunCriterios(criterios2, "prueba1.csv");
-    // Esperado: El segundo hecho se excluye, porque no es de esa categoría*/
+    // Esperado: El segundo hecho se excluye, porque no es de esa categoría
 
 
 
@@ -70,12 +67,13 @@ public class main {
     visitante.agregarFiltro(new CriterioDePertenencia("Titulo", "incidente"));
     visitante.visualizarHechosFiltrados(coleccion2);
 
-    System.out.println("\n========== FILTRO POR CATEGORIA CON VISUALIZADOR 'bauti': Caida de aeronave ==========");
+    System.out.println("\n========== FILTRO POR CATEGORIA CON VISUALIZADOR 'bauti': Caida de aeronave y Titulo untitulo: ==========");
     CriterioDePertenencia criterioBautista = new CriterioDePertenencia("Categoria", "Caida de aeronave");
+    CriterioDePertenencia criterioBautista2 = new CriterioDePertenencia("Titulo", "untitulo");
     Visualizador bautista = new Visualizador("Bautista");
 
     bautista.agregarFiltro(criterioBautista);
-
+    bautista.agregarFiltro(criterioBautista2);
     bautista.visualizarHechosFiltrados(coleccion2);
 
     //Escenario 1.4: Etiquetas
