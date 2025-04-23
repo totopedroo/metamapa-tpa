@@ -1,0 +1,23 @@
+En esta primera etapa del desarrollo de MetaMapa, decidimos organizar el proyecto bajo una estructura orientada a objetos,
+dividiendo las clases en un paquete domain para encapsular la lógica de negocio principal.
+Durante el proceso inicial utilizamos un paquete mocks para facilitar el desarrollo aislado de componentes,
+pero una vez integradas las clases reales, dicho paquete fue eliminado.
+
+Las clases fueron asignadas a cada integrante del grupo de acuerdo con los requerimientos funcionales del sistema.
+Por ejemplo, la clase Administrador incluye los métodos para aceptar o rechazar solicitudes de eliminación, tal como lo exigen los requerimientos 5 y 6,
+mientras que la clase Coleccion centraliza la lógica de agrupación de hechos y aplicación de criterios de pertenencia (requerimiento 1).
+Decidimos modelar los criterios de filtrado como una clase aparte (CriterioDePertenencia) para facilitar la extensibilidad y mantener la cohesión de responsabilidades.
+
+Para la importación de hechos desde un archivo CSV (requerimiento 2), optamos por utilizar la librería OpenCSV.
+Tuvimos que realizar una pequeña adaptación al lector (CSVReader) para manejar correctamente caracteres especiales como tildes, estableciendo la codificación ISO-8859-1.
+La lógica de lectura e incorporación de hechos se implementó directamente en el método leerSegunCriterios(...) de la clase Coleccion,
+donde se construyen objetos Hecho a partir del contenido del archivo si cumplen con los filtros especificados.
+
+En cuanto al manejo de justificaciones en las solicitudes de eliminación,
+se incorporó una validación que lanza una excepción si la justificación no supera los 500 caracteres,
+garantizando el cumplimiento de las reglas del dominio.
+Actualmente los estados de las solicitudes se representan mediante cadenas de texto ("Pendiente", "Aceptado", "Rechazado"),
+aunque planeamos migrar a un enum para mejorar la robustez del código.
+
+Finalmente, se implementó una clase Visualizador que permite aplicar filtros personalizados sobre una colección (requerimientos 3 y 4),
+respetando la idea de ofrecer distintas vistas del conjunto de hechos según el tipo de usuario.
