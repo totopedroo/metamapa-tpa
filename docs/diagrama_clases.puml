@@ -1,2 +1,84 @@
 @startuml
+
+class Administrador {
+- nombre : String
+- email : String
+
++ crearColeccion(String titulo, String descripcion, List<CriterioDePertenencia> criterios) : Coleccion
++ leerCSV(String rutaArchivo) : Void
++ aceptarSolicitudDeEliminacion(Hecho hecho, SolicitudDeEliminacion solicitud) : Void
++ rechazarSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) : Void
+
+}
+
+
+class Coleccion {
+- hechos : List<Hecho>
++ titulo : String
++ descripcion : String
++ criterioDePertenencia : List<CriterioDePertenencia>
+
++leerSegunCriterios(List<CriterioDePertenencia> criterios, String archivoCSV) : Void
++ agregarCriterio (criterioDePertenencia criterio) : Void
++ normalizar (String texto) : String
++ agregarHecho(Hecho hecho) : Void
+
+
+}
+
+class Contribuyente {
+ + nombre : String
+ + apellido : String
+ + edad : Int
+
+ +crearSolicitudEliminacion(Hecho hecho, String justificacion) : Void
+
+}
+
+class CriterioDePertenencia {
++ columna : String
++ tipo : String
++ valor : String
++desde : LocalDate
++ hasta : LocalDate
+
++ cumple(String valorEnFila) : Boolean
+}
+
+class Hecho{
++ titulo : String
++ descripcion : String
++ categoria : String
++ contenidoMultimedia : Optional<ContenidoMultimedia>
++latitud : Double
++ longitud : Double
++ fechaAcontecimiento : LocalDate
++ fechaCarga : LocalDate
++ etiquetas : List<String>
++ solicitudes : List <SolicitudDeEliminacion>
++ eliminado : boolean
+
++ verificarEliminacion() : Void
++marcarComoEliminado() : Void
++ estaEliminado() : Boolean
++ agregarEtiqueta(String etiqueta) : Void
+
+}
+
+class SolicitudDeEliminacion {
++ justificacion : String
++ estado : String
+
++ aceptarSolicitud() : Void
++ rechazarSolicitud() : Void
+}
+
+class Visualizador {
++ nombre : String
+
++agregarFiltro(Coleccion coleccion, CriterioDePertenencia criterio) : Void
+}
+
 @enduml
+//+ - # publico privado protegido
+
