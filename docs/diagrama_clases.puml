@@ -87,11 +87,10 @@ class SolicitudDeEliminacion {
 
 class Visualizador {
 + nombre : String
+- filtrosPersonales : List<CriterioDePertenencia>
 + agregarFiltro(CriterioDePertenencia criterio) : void
 + visualizarHechos(Coleccion coleccion) : void
 + visualizarHechosFiltrados(Coleccion coleccion) : void
-
-
 }
 
 @enduml
