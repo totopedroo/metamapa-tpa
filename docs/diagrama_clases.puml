@@ -1,23 +1,21 @@
 @startuml
 
-Administrador ..>"*" CriterioDePertenencia
-Administrador -->"*" Coleccion
+Administrador ..> "*" CriterioDePertenencia
+Administrador --> "*" Coleccion
 Administrador ..> Hecho
 Administrador ..> SolicitudDeEliminacion
 
-Hecho -->"*"SolicitudDeEliminacion
+Hecho --> "*" SolicitudDeEliminacion
 Coleccion -->"*" Hecho
 Coleccion -->"*" CriterioDePertenencia
 Contribuyente ..> Hecho
 Visualizador ..> Coleccion
 Visualizador ..>"*" CriterioDePertenencia
 
-
 class Administrador {
 - nombre : String
 - email : String
 + coleccionesCreadas : List<Coleccion>
-
 
 + crearColeccion(String titulo, String descripcion, List<CriterioDePertenencia> criterios) : Coleccion
 + leerCSV(String rutaArchivo) : Void
@@ -34,7 +32,7 @@ class Coleccion {
 + criterioDePertenencia : List<CriterioDePertenencia>
 
 +leerSegunCriterios(List<CriterioDePertenencia> criterios, String archivoCSV) : Void
-+ agregarCriterio (criterioDePertenencia criterio) : Void
++ agregarCriterio(CriterioDePertenencia criterio) : void
 + normalizar (String texto) : String
 + agregarHecho(Hecho hecho) : Void
 
@@ -90,14 +88,11 @@ class SolicitudDeEliminacion {
 
 class Visualizador {
 + nombre : String
--filtrosPersonales : List<criterioDePertenencia>
-+agregarFiltro(Coleccion coleccion, CriterioDePertenencia criterio) : Void
-+visualizarHechos(Coleccion coleccion) : Void
-+ visualizarHechosFiltrados(Coleccion coleccion)
-
-
+- filtrosPersonales : List<CriterioDePertenencia>
++ agregarFiltro(CriterioDePertenencia criterio) : void
++ visualizarHechos(Coleccion coleccion) : void
++ visualizarHechosFiltrados(Coleccion coleccion) : void
 }
 
 @enduml
 //+ - # publico privado protegido
-
