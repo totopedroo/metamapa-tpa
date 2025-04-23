@@ -1,7 +1,7 @@
 @startuml
 
 Administrador ..>"*" CriterioDePertenencia
-Administrador ..> Coleccion
+Administrador -->* Coleccion
 Administrador ..> Hecho
 Administrador ..> SolicitudDeEliminacion
 
@@ -10,11 +10,14 @@ Coleccion -->"*" Hecho
 Coleccion -->"*" CriterioDePertenencia
 Contribuyente ..> Hecho
 Visualizador ..> Coleccion
-Visualizador ..> CriterioDePertenencia
+Visualizador ..>"*" CriterioDePertenencia
+
 
 class Administrador {
 - nombre : String
 - email : String
++ coleccionesCreadas : List<Coleccion>
+
 
 + crearColeccion(String titulo, String descripcion, List<CriterioDePertenencia> criterios) : Coleccion
 + leerCSV(String rutaArchivo) : Void
@@ -87,8 +90,12 @@ class SolicitudDeEliminacion {
 
 class Visualizador {
 + nombre : String
-
+-filtrosPersonales : List<criterioDePertenencia>
 +agregarFiltro(Coleccion coleccion, CriterioDePertenencia criterio) : Void
++visualizarHechos(Coleccion coleccion) : Void
++ visualizarHechosFiltrados(Coleccion coleccion)
+
+
 }
 
 @enduml
