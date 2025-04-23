@@ -94,7 +94,7 @@ public class Coleccion {
                 if (cumpleTodos) {
                     System.out.println("Fila válida: " + filaComoMapa);
 
-                    // Construir Hecho
+                    
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
                     Hecho hecho = new Hecho(
                         filaComoMapa.get("titulo"),
