@@ -57,12 +57,11 @@ public class main {
     System.out.println("...");
     System.out.println("Puebo escenario 1.3");
 
-    System.out.println("\n========== TODOS LOS HECHOS DE LA COLECCION 'HECHOS 2001-2010' VISTOS POR VISUALIZADOR 'fausto' ==========");
+    System.out.println("\n========== (visualizador navega todos los hechos disponibles) TODOS LOS HECHOS DE LA COLECCION 'HECHOS 2001-2010' VISTOS POR VISUALIZADOR 'fausto' ==========");
     Visualizador visitante = new Visualizador("Fausto");
-    visitante.visualizarHechosFiltrados(coleccion2);
+    visitante.visualizarHechos(coleccion2);
 
-
-    System.out.println("\n========== FILTRO CON VISUALIZADOR 'fausto' EN COLECCION 'HECHOS 2001-2010' (titulo contiene palabra 'Incidente') ==========");
+    System.out.println("\n========== (visualizador aplica filtros) FILTRO CON VISUALIZADOR 'fausto' EN COLECCION 'HECHOS 2001-2010' (titulo contiene palabra 'Incidente') ==========");
     visitante.agregarFiltro(new CriterioDePertenencia("Titulo", "incidente"));
     visitante.visualizarHechosFiltrados(coleccion2);
 
