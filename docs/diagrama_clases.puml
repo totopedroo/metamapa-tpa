@@ -1,5 +1,17 @@
 @startuml
 
+Administrador ..>"*" CriterioDePertenencia
+Administrador ..> Coleccion
+Administrador ..> Hecho
+Administrador ..> SolicitudDeEliminacion
+
+Hecho -->"*"SolicitudDeEliminacion
+Coleccion -->"*" Hecho
+Coleccion -->"*" CriterioDePertenencia
+Contribuyente ..> Hecho
+Visualizador ..> Coleccion
+Visualizador ..> CriterioDePertenencia
+
 class Administrador {
 - nombre : String
 - email : String
