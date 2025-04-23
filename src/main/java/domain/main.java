@@ -11,11 +11,10 @@ public class main {
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
     //Escenario 1
-    List<CriterioDePertenencia> criterios = new ArrayList<>();
+  List<CriterioDePertenencia> criterios = new ArrayList<>();
     Coleccion coleccion1 = admin.crearColeccion("Coleccion prueba", "esto es una prueba", criterios);
-    admin.leerCSV("prueba1.csv");
+  coleccion1.leerSegunCriterios(criterios,"prueba1.csv");
     System.out.println("Colección creada: " + coleccion1.getTitulo());
-
     //Escenario 1.2
     System.out.println("...");
     System.out.println("...");
