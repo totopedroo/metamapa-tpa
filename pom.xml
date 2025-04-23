@@ -150,11 +150,12 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>Main</mainClass>
+              <mainClass>domain.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 </project>
