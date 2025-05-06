@@ -20,9 +20,4 @@ public class Contribuyente {
         this.nombre = nombre;
     }
 
-    public void CrearSolicitudEliminacion(Hecho hecho, String justificacion){
-        SolicitudDeEliminacion solicitud = new SolicitudDeEliminacion(justificacion);
-        hecho.agregarSolicitud(solicitud);
-    }
-
 }
