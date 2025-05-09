@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 public class main {
 
   public static void main(String[] args) {
+    Importador importador = new Importador();
+    importador.importarFromCSV("prueba1.csv");
+    importador.visualizarHechos();
+    /*
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
     //Escenario 1
@@ -107,13 +111,13 @@ public class main {
     } else {
       System.out.println("No se encontró el hecho con título 'Caída de aeronave impacta en Olavarría'");
     }
-
+    Importador importador = new Importador();
     //Escenario 2
     System.out.println("...");
     System.out.println("...");
     System.out.println("Pruebo escenario 2: Importacion de hechos por csv");
     //esto lo podemos hacer de dos formas, o ceando un nuevo metodo en administrador, o usando el metodo de coleccion, pero sin agregar filtros y se crearía una "supercoloeccion"
-    admin.leerCSV("archivodefinitivo.csv");
+     importador.leerCSV("archivodefinitivo.csv");
 
 
     //Escenario 3
@@ -161,14 +165,14 @@ public class main {
     System.out.println("Segunda solicitud creada. Estado: " + solicitud2.estado); // Pendiente
 
     // Aceptar la segunda solicitud (después de 2 horas)
-    admin.aceptarSolicitudDeEliminacion(hechoSanLorenzo, solicitud2);
+    //admin.aceptarSolicitudDeEliminacion(hechoSanLorenzo, solicitud2);
 
     //Esta vez el hecho no debería poder agregarse a una colección, puesto que este fue eliminado.
     coleccion3.agregarHecho(hechoSanLorenzo); // Esperado: "No se puede agregar el hecho '...' porque fue eliminado."
 
     //Verificar que la solicitud haya quedado en estado aceptada.
     System.out.println("Segunda solicitud aceptada. Estado actual: " + solicitud2.estado); // Aceptado
-
+  */
   }
 }
 
