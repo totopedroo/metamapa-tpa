@@ -15,15 +15,13 @@ public class SolicitudDeEliminacion {
             throw new RuntimeException("La justificacion no cumple con la cantidad minima de caracteres");
     }
 
-    public void cambiarEstado(EstadoDeSolicitud nuevoEstado) {
-        this.estado = nuevoEstado;
-    }
+
 
     public void aceptarSolicitud() {
-        cambiarEstado(EstadoDeSolicitud.ACEPTADA);
+        estado = EstadoDeSolicitud.ACEPTADA;
     }
 
     public void rechazarSolicitud() {
-        cambiarEstado(EstadoDeSolicitud.RECHAZADA);
+        estado =EstadoDeSolicitud.RECHAZADA;
     }
 }
