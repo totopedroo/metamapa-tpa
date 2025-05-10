@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Visualizador {
     public String nombre;
-    private List<CriterioDePertenencia> filtrosPersonales = new ArrayList<>();
+    public List<CriterioDePertenencia> filtrosPersonales = new ArrayList<>();
 
     public Visualizador(String nombre) {
         this.nombre = nombre;

@@ -121,22 +121,4 @@ public class Importador {
     }
     */
 
-    /*public void leerCSV(String rutaArchivo) {
-        try (
-                CSVReader reader = new CSVReaderBuilder(new FileReader(rutaArchivo))
-                        .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
-                        .build()
-        ) {
-            String[] fila;
-            System.out.println("LEYENDO EL ARCHIVO: " + rutaArchivo);
-            while ((fila = reader.readNext()) != null) {
-               // System.out.println(Arrays.toString(fila));
-            }
-
-        } catch (IOException e) {
-            System.err.println("ERROR ");
-        }
-    }
-
-     */
 }

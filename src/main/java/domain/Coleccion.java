@@ -52,85 +52,11 @@ public class Coleccion {
         return hechos.stream()
             .filter(h -> !h.estaEliminado())
             .toList();
-    }
-
-    public void setHechos(List<Hecho> hechos) {
-        this.hechos = hechos;
-    }
-
-    public List<CriterioDePertenencia> getCriterioDePertenencia() {
-        return criterioDePertenencia;
-    }
-
-    public void setCriterioDePertenencia(List<CriterioDePertenencia> criterioDePertenencia) {
-        this.criterioDePertenencia = criterioDePertenencia;
-    }
-
-    public void setCriterioDeDependencia(String criterioDeDependencia) {
-        this.criterioDePertenencia = criterioDePertenencia;
-    }
-
-    public void leerSegunCriterios(List<CriterioDePertenencia> criterios, String archivoCSV) {
-        try (
-            CSVReader reader = new CSVReaderBuilder(new InputStreamReader(new FileInputStream(archivoCSV), "ISO-8859-1"))
-                .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
-                .build()
-        ) {
-            String[] cabecera = reader.readNext();
-            if (cabecera == null) return;
-
-            String[] fila;
-            while ((fila = reader.readNext()) != null) {
-                Map<String, String> filaComoMapa = new HashMap<>();
-                for (int i = 0; i < cabecera.length && i < fila.length; i++) {
-                    filaComoMapa.put(normalizar(cabecera[i]), fila[i]);
-                }
-
-                boolean cumpleTodos = criterios.stream().allMatch(c -> {
-                    String valorEnFila = filaComoMapa.getOrDefault(normalizar(c.getColumna()), "VACIO");
-                    return c.cumple(valorEnFila);
-                });
-
-                if (cumpleTodos) {
-                    System.out.println("Fila válida: " + filaComoMapa);
-
-                    
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-                    Hecho hecho = new Hecho(
-                        filaComoMapa.get("titulo"),
-                        filaComoMapa.get("descripcion"),
-                        filaComoMapa.get("categoria"),
-                        null,
-                        Double.parseDouble(filaComoMapa.get("latitud").replace(",", ".")),
-                        Double.parseDouble(filaComoMapa.get("longitud").replace(",", ".")),
-                        LocalDate.parse(filaComoMapa.get("fecha del hecho"), formatter),
-                        LocalDate.now()
-                    );
-
-                    this.hechos.add(hecho);
-                }
-            }
-
-        } catch (IOException e) {
-            System.err.println("ERROR al leer el CSV: " + e.getMessage());
-        }
-    }
+    } //REVISAR CON GETHECHOSFILTRADOS, SE PUEDE BORRAR UNA
 
 
 
-    public void agregarCriterio(CriterioDePertenencia criterio) {
-        criterioDePertenencia.add(criterio);
-    }
-
-
-    public  String normalizar(String texto) { //por los datos que utilizo, me encargue de sacar todas las tildes, sin embargo por las dudas agrego el normalizador
-        return Normalizer.normalize(texto, Normalizer.Form.NFD)
-            .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "") // quita tildes y //p... es una clase especial de caracteres Unicode que representa todos los acentos, tildes, etc...
-            .toLowerCase()
-            .trim(); //removemos los espacios blancos
-    }
-
-    public void agregarHecho(Hecho hecho) {
+    public void setHecho(Hecho hecho) {
         if (hecho.estaEliminado()) {
             System.out.println("No se puede agregar el hecho '" + hecho.getTitulo() + "' porque fue eliminado.");
             return;
@@ -141,7 +67,30 @@ public class Coleccion {
     }
 
 
+    public List<CriterioDePertenencia> getCriterioDePertenencia() {
+        return criterioDePertenencia;
+    }
+
+    public void setCriterioDePertenencia(List<CriterioDePertenencia> criterioDePertenencia) {
+        this.criterioDePertenencia = criterioDePertenencia;
+    }
+
+    public void getHechosFiltrados(Coleccion coleccion, Visualizador visualizador) {
+        System.out.println("Hechos visibles para " + visualizador.nombre + " en colección '" + coleccion.getTitulo() + "':");
+        for (Hecho hecho : coleccion.getHechos()) {
+            boolean cumple = visualizador.filtrosPersonales.stream().allMatch(c -> c.cumple(hecho));
+            if (cumple) {
+                System.out.println("-> " + hecho.getTitulo());
+            }
+        }
+    }
+
+
+public void setCriterioDePertenencia(CriterioDePertenencia criterio) {
+        criterioDePertenencia.add(criterio);
+    }
+
+
+
+
 }
-
-
-
