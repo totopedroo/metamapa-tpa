@@ -11,10 +11,16 @@ public class HechosRepository implements IHechosRepository {
     public HechosRepository() {
         this.hechos= new ArrayList<>();}
 
+    @Override
+    public Hecho findById(long id) {
+        return this.hechos.stream().
+                filter(g ->g.getIdHecho().equals(id)).findFirst().
+                orElse(null);
+    }
 
     @Override
     public List<Hecho> findAll() {
-        return List.of();
+        return hechos;
     }
 
     @Override

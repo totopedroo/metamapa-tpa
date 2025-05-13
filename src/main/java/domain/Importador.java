@@ -50,9 +50,8 @@ public class Importador {
                             Double.parseDouble(filaComoMapa.get("latitud").replace(",", ".")),
                             Double.parseDouble(filaComoMapa.get("longitud").replace(",", ".")),
                             LocalDate.parse(filaComoMapa.get("fecha del hecho"), formatter),
-                            LocalDate.now()
+                            LocalDate.now(),this.hechos.size()
                     );
-
                    this.hechos.add(hecho);
 
             }
@@ -70,7 +69,7 @@ public class Importador {
     public void visualizarHechos(){//Coleccion coleccion) {
         System.out.println("TODOS los hechos disponibles en la colección '" +  "' para prueba "  + ":");
         for (Hecho hecho : this.getHechos()) {
-            System.out.println("-> " + hecho.getCategoria());
+            System.out.println("-> " + hecho.getIdHecho());
         }
     }
     /*
