@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Hecho {
+    private Long idHecho;
     private String titulo;
     private String descripcion;
     private String categoria;
@@ -22,7 +23,7 @@ public class Hecho {
     private boolean eliminado = false;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga) {
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -31,6 +32,7 @@ public class Hecho {
         this.longitud = longitud;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
+        this.idHecho = idHecho;
     }
 
     public void agregarSolicitud(SolicitudDeEliminacion solicitud) {
@@ -54,19 +56,6 @@ public class Hecho {
         this.etiquetas.add(etiqueta);
     }
 
-    public List<String> getEtiquetas() {
-        return this.etiquetas;
-    }
 
-    public String getTitulo() {
-        return this.titulo;
-    }
 
-    public String getCategoria() {
-        return this.categoria;
-    }
-
-    public LocalDate getFechaAcontecimiento() {
-        return this.fechaAcontecimiento;
-    }
 }
