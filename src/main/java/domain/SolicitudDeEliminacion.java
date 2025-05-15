@@ -1,27 +1,31 @@
 package domain;
 
 
+import Enums.EstadoDeSolicitud;
+
 public class SolicitudDeEliminacion {
     public String justificacion;
-    public String estado;
+    public EstadoDeSolicitud estado;
+    public long idSolicitud;
+    public long idHechoAsociado;
 
-    public SolicitudDeEliminacion(String justificacion) {
+    public SolicitudDeEliminacion(String justificacion, long idSolicitud, long idHechoAsociado) {
         if (justificacion.length() > 500) {
             this.justificacion = justificacion;
-            this.estado = "Pendiente";
+            this.estado = EstadoDeSolicitud.PENDIENTE;
         } else
             throw new RuntimeException("La justificacion no cumple con la cantidad minima de caracteres");
+        this.idSolicitud = idSolicitud;
+        this.idHechoAsociado = idHechoAsociado;
     }
 
-    public void cambiarEstado(String nuevoEstado) {
-        this.estado = nuevoEstado;
-    }
+
 
     public void aceptarSolicitud() {
-        cambiarEstado("Aceptado");
+        estado = EstadoDeSolicitud.ACEPTADA;
     }
 
     public void rechazarSolicitud() {
-        cambiarEstado("Rechazado");
+        estado =EstadoDeSolicitud.RECHAZADA;
     }
 }
