@@ -1,7 +1,7 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
 
-import Enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
 
 public class SolicitudDeEliminacion {
     public String justificacion;

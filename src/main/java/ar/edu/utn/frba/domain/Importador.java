@@ -1,4 +1,4 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -6,7 +6,6 @@ import com.opencsv.CSVReaderBuilder;
 import lombok.Getter;
 
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Normalizer;

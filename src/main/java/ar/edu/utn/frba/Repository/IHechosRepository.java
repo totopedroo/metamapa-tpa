@@ -1,6 +1,6 @@
-package Repository;
+package ar.edu.utn.frba.Repository;
 
-import domain.Hecho;
+import ar.edu.utn.frba.domain.Hecho;
 
 import java.util.List;
 
