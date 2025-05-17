@@ -1,14 +1,8 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReaderBuilder;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
 public class Administrador {
 
     private String nombre;

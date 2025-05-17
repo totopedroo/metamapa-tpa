@@ -1,19 +1,7 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.opencsv.CSVReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVParserBuilder;
-import java.text.Normalizer;
-import java.util.Map;
-import java.util.HashMap;
 
 public class Coleccion {
     private List<Hecho> hechos; //verificar nombre

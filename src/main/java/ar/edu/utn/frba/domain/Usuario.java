@@ -1,6 +1,6 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
-import Enums.Rol;
+import ar.edu.utn.frba.Enums.Rol;
 
 public class Usuario {
     public String nombre;

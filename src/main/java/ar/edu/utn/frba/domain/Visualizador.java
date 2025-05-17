@@ -1,4 +1,4 @@
-package domain;
+package ar.edu.utn.frba.domain;
 
 import java.util.ArrayList;
 import java.util.List;

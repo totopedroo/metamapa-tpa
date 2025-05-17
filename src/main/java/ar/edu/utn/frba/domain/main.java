@@ -1,9 +1,4 @@
-package domain;
-
-import java.util.ArrayList;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+package ar.edu.utn.frba.domain;
 
 public class main {
 

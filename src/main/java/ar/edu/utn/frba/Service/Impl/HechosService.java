@@ -1,14 +1,16 @@
-package Service.Impl;
+package ar.edu.utn.frba.Service.Impl;
 
-import Dtos.HechosOutputDto;
-import Repository.IHechosRepository;
-import Repository.Implementacion.HechosRepository;
-import Service.IHechosService;
-import domain.Hecho;
-
+import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Repository.IHechosRepository;
+import ar.edu.utn.frba.Service.IHechosService;
+import ar.edu.utn.frba.domain.Hecho;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Service
 public class HechosService implements IHechosService {
+@Autowired
     private IHechosRepository hechosRepository;
     @Override
     public List<HechosOutputDto> buscarTodos() {
