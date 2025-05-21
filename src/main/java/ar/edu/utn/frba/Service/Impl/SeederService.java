@@ -16,8 +16,8 @@ import java.util.List;
 public class SeederService implements ISeederService {
     @Autowired
     private IHechosRepository hechosRepository;
-    @Value("${app.base-url}")
-    private String baseurl;
+    //@Value("${app.base-url}")
+    //private String baseurl;
 
     public void inicializar() {
         Importador importador = new Importador();

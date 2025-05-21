@@ -10,10 +10,12 @@ import java.util.List;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
-    @Autowired
-    private List<Hecho> hechos;
+
+    public List<Hecho> hechos;
+
     public HechosRepository() {
-        this.hechos= new ArrayList<>();}
+        this.hechos = new ArrayList<>();
+    }
 
     @Override
     public Hecho findById(long id) {
