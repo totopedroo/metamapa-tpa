@@ -20,6 +20,9 @@ public class SolicitudService implements ISolicitudService {
     @Autowired
     private ISolicitudRepository solicitudRepository;
 
+    @Autowired
+    private DetectorDeSpam detectorDeSpam;
+
     @SuppressWarnings("checkstyle:Indentation")
     @Override
     public SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto) {
@@ -33,6 +36,19 @@ public class SolicitudService implements ISolicitudService {
         }
 
         try {
+            if (detectorDeSpam.esSpam(inputDto.getJustificacion())) {
+                SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
+                solicitudSpam.rechazarSolicitud();
+                solicitudRepository.guardarSolicitud(solicitudSpam);
+
+                SolicitudOutputDto dto = new SolicitudOutputDto();
+                dto.setId(solicitudSpam.getIdSolicitud());
+                dto.setEstado(solicitudSpam.getEstado());
+                dto.setJustificacion(solicitudSpam.getJustificacion());
+
+                return dto;
+            }
+
             SolicitudEliminacion solicitud = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
             hecho.agregarSolicitud(solicitud);
 
