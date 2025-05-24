@@ -4,11 +4,9 @@ import ar.edu.utn.frba.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Service.IHechosService;
 import ar.edu.utn.frba.Service.ISeederService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 @RestController
 @RequestMapping
@@ -19,10 +17,11 @@ public class HechosController {
     private IHechosService hechosService;
     @Autowired
     private ISeederService seederService;
-    @GetMapping
+    @GetMapping("/hechos")
     List<HechosOutputDto> buscarTodosLosHechos(){
             return hechosService.buscarTodos();
     }
+
     @GetMapping("/inicializar")
     public Boolean inicializar() {
         this.seederService.inicializar();
