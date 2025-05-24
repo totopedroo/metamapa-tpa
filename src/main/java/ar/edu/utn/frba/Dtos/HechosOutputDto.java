@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.Dtos;
 
 import ar.edu.utn.frba.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.domain.SolicitudDeEliminacion;
+import ar.edu.utn.frba.domain.SolicitudEliminacion;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,5 +20,5 @@ public class HechosOutputDto {
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
     private List<String> etiquetas = new ArrayList();
-    private List <SolicitudDeEliminacion> solicitudes= new ArrayList();
+    private List <SolicitudEliminacion> solicitudes= new ArrayList();
 }
