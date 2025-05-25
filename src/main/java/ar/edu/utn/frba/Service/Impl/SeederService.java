@@ -20,12 +20,12 @@ public class SeederService implements ISeederService {
     //private String baseurl;
 
     public void inicializar() {
-        Importador importador = new Importador();
+        /*Importador importador = new Importador();
         importador.importarFromCSV("prueba1.csv");
         List<Hecho> hechos = new ArrayList<Hecho>();
         hechos = importador.getHechos();
 
-        hechos.stream().forEach(h->hechosRepository.guardarHecho(h));
+        hechos.stream().forEach(h->hechosRepository.guardarHecho(h));*/
 
     }
 
