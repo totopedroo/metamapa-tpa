@@ -40,20 +40,18 @@ public class ImportadorAPI implements Importador {
 
     HttpEntity<String> entity = new HttpEntity<>(headers);
 
-    ResponseEntity<Map> response = restTemplate.exchange(
+    ResponseEntity<ApiDesastresResponse> response = restTemplate.exchange(
         URL_API,
         HttpMethod.GET,
         entity,
-        Map.class
+        ApiDesastresResponse.class
     );
 
     if (response.getStatusCode().is2xxSuccessful()) {
-      Map<String, Object> responseBody = response.getBody();
-
-      List<Map<String, Object>> data = (List<Map<String, Object>>) responseBody.get("data");
-
-      return data.stream()
-          .map(this::mapearAHechoDesdeMap)
+      List<DesastreDto> desastres = response.getBody().getData();
+      //desastres.forEach(dto -> System.out.println("DTO recibido: " + dto));
+      return desastres.stream()
+          .map(this::mapearAHecho)
           .collect(Collectors.toList());
     }
 
@@ -61,32 +59,19 @@ public class ImportadorAPI implements Importador {
 
   }
 
-  private Hecho mapearAHechoDesdeMap(Map<String, Object> map) {
+  private Hecho mapearAHecho(DesastreDto dto) {
     return new Hecho(
-        (String) map.get("titulo"),
-        (String) map.get("descripcion"),
-        (String) map.get("categoria"),
+        dto.getTitulo(),
+        dto.getDescripcion(),
+        dto.getCategoria(),
         null,
-        Double.parseDouble(map.get("latitud").toString()),
-        Double.parseDouble(map.get("longitud").toString()),
-        parsearFechaSegura(map.get("fecha")),
+        dto.getLatitud(),
+        dto.getLongitud(),
+        dto.getFecha(),
         LocalDate.now(),
-        Long.parseLong(map.get("id").toString())
+        dto.getId()
     );
   }
-
-  private static final DateTimeFormatter FORMATO_FECHA_API = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-  private LocalDate parsearFechaSegura(Object fechaCruda) {
-    if (fechaCruda == null) return null;
-    try {
-      return LocalDate.parse(fechaCruda.toString(), FORMATO_FECHA_API);
-    } catch (Exception e) {
-      System.err.println("Fecha inválida: " + fechaCruda);
-      return null;
-    }
-  }
-
 
 }
 
