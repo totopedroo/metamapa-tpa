@@ -1,10 +1,12 @@
 package ar.edu.utn.frba.domain;
+
 import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -18,8 +20,8 @@ public class Hecho {
     private Double longitud;
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
-    private List<String> etiquetas = new ArrayList();
-    private List <SolicitudEliminacion> solicitudes= new ArrayList();
+    private List<String> etiquetas = new ArrayList<>();
+    private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     private boolean eliminado = false;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
@@ -56,6 +58,75 @@ public class Hecho {
         this.etiquetas.add(etiqueta);
     }
 
+    public String getTitulo() {
+        return titulo;
+    }
 
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public ContenidoMultimedia getContenidoMultimedia() {
+        return contenidoMultimedia.orElse(null);
+    }
+
+    public void setContenidoMultimedia(ContenidoMultimedia contenidoMultimedia) {
+        this.contenidoMultimedia = Optional.ofNullable(contenidoMultimedia);
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public LocalDate getFechaAcontecimiento() {
+        return fechaAcontecimiento;
+    }
+
+    public void setFechaAcontecimiento(LocalDate fechaAcontecimiento) {
+        this.fechaAcontecimiento = fechaAcontecimiento;
+    }
+
+    public LocalDate getFechaCarga() {
+        return fechaCarga;
+    }
+
+    public void setFechaCarga(LocalDate fechaCarga) {
+        this.fechaCarga = fechaCarga;
+    }
+
+    public Long getIdHecho() {
+        return idHecho;
+    }
+
+    public void setIdHecho(Long idHecho) {
+        this.idHecho = idHecho;
+    }
 }
