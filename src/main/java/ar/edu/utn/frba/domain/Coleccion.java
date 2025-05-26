@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Coleccion {
+    private static long contadorIds = 1;
+
+    private final long id;
     private List<Hecho> hechos; //verificar nombre
     public String titulo;
     public String descripcion;
@@ -11,10 +14,13 @@ public class Coleccion {
 
     public Coleccion(String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
         this.hechos = new ArrayList<>();
+        this.id = contadorIds++;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.criterioDePertenencia = criterioDePertenencia;
     }
+
+    public long getId() { return id; }
 
     public String getTitulo() {
         return titulo;
