@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Service;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
+import ar.edu.utn.frba.Service.Impl.ColeccionService;
 import ar.edu.utn.frba.domain.Fuente;
 import ar.edu.utn.frba.domain.Hecho;
 import ar.edu.utn.frba.domain.ImportadorAPI;
@@ -8,25 +9,22 @@ import ar.edu.utn.frba.domain.ImportadorCSV;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@SpringBootApplication
-@EnableScheduling
 @Service
 public class ServicioAgregador {
 
   private final List<Fuente> fuentes;
-  private final ServicioColecciones servicioColecciones;
+  @Autowired
+  private ColeccionService coleccionService;
 
-  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, ServicioColecciones servicioColecciones) {
+  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI) {
     this.fuentes = List.of(
         new Fuente("src/main/resources/prueba.csv", importadorCSV, TipoFuente.LOCAL),
         new Fuente("", importadorAPI, TipoFuente.PROXY)
     );
-    this.servicioColecciones = servicioColecciones;
   }
 
   public List<Hecho> agregarHechosDesdeTodasLasFuentes() {
@@ -37,20 +35,19 @@ public class ServicioAgregador {
     return hechos;
   }
 
-  // Refresca solo desde fuentes no proxy (cada hora)
-  @Scheduled(fixedRate = 3600000) // 1 hora = 3600000 ms
-  public void refrescarColeccionesCadaHora() {
-    System.out.println("Ejecutando refresco de colecciones...");
+  @Scheduled(fixedRate = 3600000) // cada 1 hora (en milisegundos)
+  public void refrescarHechosPeriodicamente() {
+    System.out.println("⏱️ Iniciando refresco automático de colecciones...");
 
     List<Hecho> nuevosHechos = new ArrayList<>();
     for (Fuente fuente : fuentes) {
-      if (!fuente.esFuenteProxy()) {
+      if (fuente.getTipo() != TipoFuente.PROXY) {
         nuevosHechos.addAll(fuente.obtenerHechos());
       }
     }
 
-    servicioColecciones.actualizarHechos(nuevosHechos);
+    coleccionService.actualizarHechos(nuevosHechos);
 
-    System.out.println("Refresco de colecciones completado.");
+    System.out.println("✅ Refresco automático finalizado.");
   }
 }

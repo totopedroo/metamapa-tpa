@@ -1,8 +1,11 @@
 package ar.edu.utn.frba.domain;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class Fuente {
   private String path;
   private Importador importador;
@@ -20,8 +23,5 @@ public class Fuente {
     return importador.importar(this);
   }
 
-  public String getPath() {
-    return path;
-  }
 }
 
