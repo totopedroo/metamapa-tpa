@@ -20,4 +20,10 @@ public class ServicioAgregadorController {
     public ResponseEntity<List<Hecho>> obtenerHechos() {
         return ResponseEntity.ok(servicioAgregador.agregarHechosDesdeTodasLasFuentes());
     }
+
+    @GetMapping("/sincronizar")
+    public String sincronizarHechos() {
+        servicioAgregador.sincronizarConRepositorio();
+        return "Hechos sincronizados con el repositorio en memoria.";
+    }
 }
