@@ -15,15 +15,6 @@ public class Administrador {
         this.coleccionesCreadas = new ArrayList<>();
     }
 
-    /*public void aceptarSolicitudDeEliminacion(Hecho hecho, SolicitudDeEliminacion solicitud) {
-        solicitud.aceptarSolicitud();
-        hecho.verificarEliminacion();
-    }
-
-    public void rechazarSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) {
-        solicitud.rechazarSolicitud();
-    }
-*/
     public String getNombre() {
         return nombre;
     }
