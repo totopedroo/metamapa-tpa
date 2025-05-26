@@ -66,4 +66,24 @@ public class SolicitudService implements ISolicitudService {
             throw e;
         }
     }
+
+    @Override
+    public void aceptarSolicitud(long idSolicitud) {
+        // Buscar la solicitud en memoria
+        SolicitudEliminacion solicitud = solicitudRepository.findAll().stream()
+                .filter(s -> s.getIdSolicitud() == idSolicitud)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No se encontró la solicitud con ID: " + idSolicitud));
+
+        // Cambiar estado
+        solicitud.aceptarSolicitud();
+
+        // Buscar el hecho asociado
+        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
+
+        if (hecho != null) {
+            hecho.verificarEliminacion();
+        }
+    }
+
 }
