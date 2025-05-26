@@ -20,4 +20,11 @@ public class ServicioAgregadorController {
     public ResponseEntity<List<Hecho>> obtenerHechos() {
         return ResponseEntity.ok(servicioAgregador.agregarHechosDesdeTodasLasFuentes());
     }
+
+    @GetMapping("/refrescar") // Para probar que anda el refresco automatico de colecciones.
+    public ResponseEntity<String> refrescarManual() {
+        servicioAgregador.refrescarHechosPeriodicamente();
+        return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
+    }
+
 }
