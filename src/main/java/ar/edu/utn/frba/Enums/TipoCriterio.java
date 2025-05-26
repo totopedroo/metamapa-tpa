@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Enums;
 
-public enum tipoCriterio{
+public enum TipoCriterio{
     TEXTO,
     FECHA
 }
