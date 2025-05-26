@@ -3,9 +3,9 @@ package ar.edu.utn.frba.domain;
 public class main {
 
   public static void main(String[] args) {
-    Importador importador = new Importador();
-    importador.importarFromCSV("prueba1.csv");
-    importador.visualizarHechos();
+    //Importador importador = new Importador();
+    //importador.importarFromCSV("prueba1.csv");
+    //importador.visualizarHechos();
     /*
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
