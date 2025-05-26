@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Service;
 
+import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.domain.Fuente;
 import ar.edu.utn.frba.domain.Hecho;
 import ar.edu.utn.frba.domain.ImportadorAPI;
@@ -22,8 +23,8 @@ public class ServicioAgregador {
 
   public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, ServicioColecciones servicioColecciones) {
     this.fuentes = List.of(
-        new Fuente("src/main/resources/prueba.csv", importadorCSV, false),
-        new Fuente("", importadorAPI, true)
+        new Fuente("src/main/resources/prueba.csv", importadorCSV, TipoFuente.LOCAL),
+        new Fuente("", importadorAPI, TipoFuente.PROXY)
     );
     this.servicioColecciones = servicioColecciones;
   }
