@@ -1,45 +1,27 @@
 package ar.edu.utn.frba.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.ArrayList;
 
-public class Coleccion {
-    private static long contadorIds = 1;
 
-    private final long id;
+@Getter
+@Setter
+public class Coleccion {
+    public String id;
     private List<Hecho> hechos; //verificar nombre
     public String titulo;
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
 
-    public Coleccion(String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
+    public Coleccion(String id, String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
         this.hechos = new ArrayList<>();
-        this.id = contadorIds++;
+        this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.criterioDePertenencia = criterioDePertenencia;
-    }
-
-    public long getId() { return id; }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String nombre) {
-        this.titulo = titulo;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public List<Hecho> getHechos() {
-        return hechos;
     }
 
     public List<Hecho> getHechosVisibles() {
@@ -47,8 +29,6 @@ public class Coleccion {
             .filter(h -> !h.estaEliminado())
             .toList();
     } //REVISAR CON GETHECHOSFILTRADOS, SE PUEDE BORRAR UNA
-
-
 
     public void setHecho(Hecho hecho) {
         if (hecho.estaEliminado()) {
@@ -58,11 +38,6 @@ public class Coleccion {
 
         this.hechos.add(hecho);
         System.out.println("Hecho agregado a la colección: " + hecho.getTitulo());
-    }
-
-
-    public List<CriterioDePertenencia> getCriterioDePertenencia() {
-        return criterioDePertenencia;
     }
 
     public void setCriterioDePertenencia(List<CriterioDePertenencia> criterioDePertenencia) {
@@ -79,12 +54,7 @@ public class Coleccion {
         }
     }
 
-
-public void setCriterioDePertenencia(CriterioDePertenencia criterio) {
+    public void setCriterioDePertenencia(CriterioDePertenencia criterio) {
         criterioDePertenencia.add(criterio);
     }
-
-
-
-
 }

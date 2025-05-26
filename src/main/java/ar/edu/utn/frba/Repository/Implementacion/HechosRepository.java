@@ -1,7 +1,10 @@
 package ar.edu.utn.frba.Repository.Implementacion;
 
 import ar.edu.utn.frba.Repository.IHechosRepository;
+import ar.edu.utn.frba.domain.Coleccion;
+import ar.edu.utn.frba.domain.Fuente;
 import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.domain.ImportadorAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +13,9 @@ import java.util.List;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
-
+    public List<Hecho> hechosApi;
+    public Fuente fuente;
+    public ImportadorAPI importador;
     public List<Hecho> hechos;
 
     public HechosRepository() {
@@ -24,19 +29,27 @@ public class HechosRepository implements IHechosRepository {
                 orElse(null);
     }
 
+
     @Override
     public List<Hecho> findAll() {
+      /*  hechosApi = importador.importar(fuente);
+        saveList(hechosApi);*/ //PRUEBA
         System.out.println("hechos: "+ hechos);
         return hechos;
     }
 
     @Override
-    public void guardarHecho(Hecho hecho) {
+    public void save(Hecho hecho) {
         hechos.add(hecho);
     }
 
+
+    public void saveList(List<Hecho> listaHechos) {
+        hechos.addAll(listaHechos);
+    }
+
     @Override
-    public void borrarHecho(Hecho hecho) {
+    public void delete(Hecho hecho) {
         hechos.remove(hecho);
     }
 }

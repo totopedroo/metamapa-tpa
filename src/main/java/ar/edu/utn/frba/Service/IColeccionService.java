@@ -1,0 +1,19 @@
+package ar.edu.utn.frba.Service;
+
+
+
+
+import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
+import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.domain.Coleccion;
+
+import java.util.List;
+
+public interface IColeccionService {
+
+    public List<ColeccionOutputDto> buscarTodos();
+
+    public List<HechosOutputDto> obtenerHechosPorColeccion(String idColeccion);
+
+    public Coleccion setColeccionApi();
+}

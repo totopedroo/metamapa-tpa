@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.Dtos;
 
 import ar.edu.utn.frba.domain.ContenidoMultimedia;
+
+import ar.edu.utn.frba.domain.Hecho;
 import ar.edu.utn.frba.domain.SolicitudEliminacion;
 import lombok.Data;
 
@@ -21,4 +23,16 @@ public class HechosOutputDto {
     private LocalDate fechaCarga;
     private List<String> etiquetas = new ArrayList();
     private List <SolicitudEliminacion> solicitudes= new ArrayList();
+
+    public static HechosOutputDto fromModel(Hecho hecho) {
+        HechosOutputDto dto = new HechosOutputDto();
+        dto.idHecho = hecho.getIdHecho();
+        dto.titulo = hecho.getTitulo();
+        dto.descripcion = hecho.getDescripcion();
+        dto.categoria = hecho.getCategoria();
+        dto.latitud = hecho.getLatitud();
+        dto.longitud = hecho.getLongitud();
+
+        return dto;
+    }
 }
