@@ -19,6 +19,7 @@ public class HechosRepository implements IHechosRepository {
 
     @Override
     public Hecho findById(long id) {
+        System.out.println("hechos: "+ hechos);
         return this.hechos.stream().
                 filter(g -> g.getIdHecho() == id).findFirst().
                 orElse(null);

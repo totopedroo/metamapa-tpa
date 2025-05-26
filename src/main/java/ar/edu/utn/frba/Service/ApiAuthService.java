@@ -21,13 +21,12 @@ public class ApiAuthService {
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
     ResponseEntity<Map> response = restTemplate.postForEntity(LOGIN_URL, request, Map.class);
-    System.out.println("BODY COMPLETO: " + response.getBody());
 
     if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
       Map<String, Object> responseBody = response.getBody();
       Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
       String token = (String) data.get("access_token");
-      System.out.println("TOKEN OBTENIDO: " + token);
+      //System.out.println("TOKEN OBTENIDO: " + token);
       return token;
     }
 
