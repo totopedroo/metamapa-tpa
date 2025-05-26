@@ -19,7 +19,7 @@ public class Hecho {
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
     private List<String> etiquetas = new ArrayList();
-    private List <SolicitudDeEliminacion> solicitudes= new ArrayList();
+    private List <SolicitudEliminacion> solicitudes= new ArrayList();
     private boolean eliminado = false;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
@@ -35,12 +35,12 @@ public class Hecho {
         this.idHecho = idHecho;
     }
 
-    public void agregarSolicitud(SolicitudDeEliminacion solicitud) {
+    public void agregarSolicitud(SolicitudEliminacion solicitud) {
         solicitudes.add(solicitud);
     }
 
     public void verificarEliminacion() {
-        boolean tieneAceptada = solicitudes.stream().anyMatch(s -> s.estado.equals("Aceptado"));
+        boolean tieneAceptada = solicitudes.stream().anyMatch(s -> s.getEstado().equals("Aceptado"));
         this.eliminado = tieneAceptada;
     }
 
