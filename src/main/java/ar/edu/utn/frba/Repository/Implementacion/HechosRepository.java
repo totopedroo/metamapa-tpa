@@ -5,7 +5,9 @@ import ar.edu.utn.frba.domain.Hecho;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class HechosRepository implements IHechosRepository {
     private final List<Hecho> hechos = new ArrayList<>();
 
