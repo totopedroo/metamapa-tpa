@@ -115,7 +115,7 @@ class FuenteDinamicaImplTest {
             LocalDate.now(),
             1L
         );
-        hechosRepository.guardarHecho(hechoExistente);
+        hechosRepository.save(hechoExistente);
 
         // Act
         boolean resultado = fuenteDinamica.editarHecho(
@@ -148,7 +148,7 @@ class FuenteDinamicaImplTest {
             LocalDate.now(),
             1L
         );
-        hechosRepository.guardarHecho(hechoExistente);
+        hechosRepository.save(hechoExistente);
 
         // Act
         boolean resultado = fuenteDinamica.editarHecho(
@@ -179,7 +179,7 @@ class FuenteDinamicaImplTest {
             LocalDate.now().minusDays(10),
             1L
         );
-        hechosRepository.guardarHecho(hechoExistente);
+        hechosRepository.save(hechoExistente);
 
         // Act
         boolean resultado = fuenteDinamica.editarHecho(
