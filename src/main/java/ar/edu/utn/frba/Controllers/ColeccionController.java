@@ -27,21 +27,21 @@ public class ColeccionController {
 
     @GetMapping("/colecciones")
     public List<ColeccionOutputDto> getColecciones() {
-
-        return coleccionService.buscarTodos();
-
+         return coleccionService.buscarTodos();
     }
 
     @GetMapping("/{id}/hechos")
     public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable String id) {
-
         return coleccionService.obtenerHechosPorColeccion(id);
     }
 
-
-    @GetMapping("/createPrueba")
-    public Coleccion crearColeccionPrueba() {
+    @GetMapping("/createColeccionAPI")
+    public Coleccion crearColeccionPruebaAPI() {
         return coleccionService.setColeccionApi();
     }
 
+    @GetMapping("/createColeccionCSV")
+    public Coleccion crearColeccionPruebaCSV() {
+        return coleccionService.setColeccionCsv();
+    }
 }
