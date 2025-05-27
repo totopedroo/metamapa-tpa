@@ -26,8 +26,8 @@ public class ServicioAgregador {
   public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, IHechosRepository hechosRepository) {
       this.hechosRepository = hechosRepository;
       this.fuentes = List.of(
-        new Fuente("src/main/resources/prueba.csv", importadorCSV, TipoFuente.LOCAL),
-        new Fuente("", importadorAPI, TipoFuente.PROXY)
+        new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", importadorCSV, TipoFuente.LOCAL),
+        new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", importadorAPI, TipoFuente.PROXY)
     );
   }
 
@@ -46,7 +46,7 @@ public class ServicioAgregador {
       hechosRepository.save(hecho);
     }
   }
-
+/*
   @Scheduled (fixedRate = 3600000) // cada 1 hora (en milisegundos)
   public void refrescarHechosPeriodicamente() {
     System.out.println("⏱️ Iniciando refresco automático de colecciones...");
@@ -61,5 +61,5 @@ public class ServicioAgregador {
     coleccionService.actualizarHechos(nuevosHechos);
 
     System.out.println("✅ Refresco automático finalizado.");
-  }
+  }*/
 }

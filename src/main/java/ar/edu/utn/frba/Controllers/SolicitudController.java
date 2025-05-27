@@ -28,7 +28,8 @@ public class SolicitudController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new SolicitudOutputDto("No se encontró el hecho con ID: " + dto.getIdHecho()));
         }
     }
 

@@ -78,7 +78,7 @@ public class ColeccionService implements IColeccionService {
 
  public Coleccion setColeccionCsv() {
      List<Hecho> hechosImportadosCSV;
-     Fuente fuente = new Fuente("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/prueba1.csv", this.importadorCSV, TipoFuente.LOCAL);
+     Fuente fuente = new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", this.importadorCSV, TipoFuente.LOCAL);
      hechosImportadosCSV = this.importadorCSV.importar(fuente);
      Coleccion coleccionCSV = new Coleccion(
              UUID.randomUUID().toString(),
