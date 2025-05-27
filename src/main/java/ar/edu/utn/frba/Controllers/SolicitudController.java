@@ -5,13 +5,11 @@ import ar.edu.utn.frba.Dtos.SolicitudInputDto;
 import ar.edu.utn.frba.Service.ISolicitudService;
 import ar.edu.utn.frba.Service.ISeederService;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 @RestController
@@ -33,4 +31,21 @@ public class SolicitudController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> actualizarEstadoSolicitud(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String nuevoEstado = body.get("estado");
+
+        try {
+            if ("ACEPTADA".equalsIgnoreCase(nuevoEstado)) {
+                solicitudService.aceptarSolicitud(id);
+                return ResponseEntity.ok("✅ Solicitud aceptada");
+            } else {
+                return ResponseEntity.badRequest().body("Estado no válido");
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }
