@@ -1,11 +1,12 @@
 package ar.edu.utn.frba.domain;
 
+import ar.edu.utn.frba.Enums.TipoFuente;
+
 public class main {
 
   public static void main(String[] args) {
-    //Importador importador = new Importador();
-    //importador.importarFromCSV("prueba1.csv");
-    //importador.visualizarHechos();
+   ImportadorCSV importadorCSV = new ImportadorCSV();
+   importadorCSV.importar(new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv",importadorCSV, TipoFuente.LOCAL));
     /*
     Administrador admin = new Administrador("Juan", "juan@metamapa.org");
 
