@@ -10,32 +10,35 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class HechosRepository implements IHechosRepository {
+
     public List<Hecho> hechosApi;
     public Fuente fuente;
     public ImportadorAPI importador;
     public List<Hecho> hechos;
 
-    public HechosRepository() {
-        this.hechos = new ArrayList<>();
-    }
 
+
+ /*   @Override
+    public List<Hecho> findAll() {
+        return new ArrayList<>(hechos);
+    }
+*/
     @Override
     public Hecho findById(long id) {
-        System.out.println("hechos: "+ hechos);
+        System.out.println("hechos: " + hechos);
         return this.hechos.stream().
                 filter(g -> g.getIdHecho() == id).findFirst().
                 orElse(null);
     }
 
-
     @Override
+
     public List<Hecho> findAll() {
-      /*  hechosApi = importador.importar(fuente);
-        saveList(hechosApi);*/ //PRUEBA
-        System.out.println("hechos: "+ hechos);
+        System.out.println("hechos: " + hechos);
         return hechos;
     }
 

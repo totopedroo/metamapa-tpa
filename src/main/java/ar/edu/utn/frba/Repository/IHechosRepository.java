@@ -9,5 +9,5 @@ public interface IHechosRepository {
     public void save(Hecho hecho);
     public void delete(Hecho hecho);
     public Hecho findById(long id);
-
+    public void saveList(List<Hecho> listaHechos);
 }

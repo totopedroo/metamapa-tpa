@@ -3,56 +3,37 @@ package ar.edu.utn.frba.Service.Impl;
 import ar.edu.utn.frba.Dtos.HechosInputDto;
 import ar.edu.utn.frba.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IHechosService;
+import ar.edu.utn.frba.Service.IFuenteDinamicaService;
 import ar.edu.utn.frba.domain.Contribuyente;
+import ar.edu.utn.frba.domain.FuenteDinamica;
 import ar.edu.utn.frba.domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
-public class HechosService implements IHechosService {
+public class FuenteDinamicaService implements IFuenteDinamicaService {
+
+    @Autowired
+    private FuenteDinamica fuenteDinamica;
 
     @Autowired
     private IHechosRepository hechosRepository;
 
     @Override
-    public List<HechosOutputDto> buscarTodos() {
-        List<Hecho> hechos = hechosRepository.findAll();
-        return hechos.stream()
-                .map(hecho -> new HechosOutputDto(
-                        hecho.getIdHecho(),
-                        hecho.getTitulo(),
-                        hecho.getDescripcion(),
-                        hecho.getCategoria(),
-                        hecho.getContenidoMultimedia(),
-                        hecho.getLatitud(),
-                        hecho.getLongitud(),
-                        hecho.getFechaAcontecimiento(),
-                        hecho.getFechaCarga(),
-                        hecho.getEtiquetas(),
-                        hecho.getSolicitudes()
-                ))
-                .collect(Collectors.toList());
-    }
-
     public HechosOutputDto crearHecho(Contribuyente contribuyente, HechosInputDto inputDto) {
-        Hecho hecho = new Hecho(
+        Hecho hecho = fuenteDinamica.crearHecho(
+                contribuyente,
                 inputDto.getTitulo(),
                 inputDto.getDescripcion(),
                 inputDto.getCategoria(),
                 inputDto.getContenidoMultimedia().orElse(null),
                 inputDto.getLatitud(),
                 inputDto.getLongitud(),
-                inputDto.getFechaAcontecimiento(),
-                LocalDate.now(),
-                System.currentTimeMillis()
+                inputDto.getFechaAcontecimiento()
         );
-
-        hechosRepository.save(hecho);
 
         return new HechosOutputDto(
                 hecho.getIdHecho(),
@@ -69,9 +50,23 @@ public class HechosService implements IHechosService {
         );
     }
 
-    public HechosOutputDto obtenerHecho(Long id) {
-        Hecho hecho = hechosRepository.findById(id);
+    @Override
+    public HechosOutputDto editarHecho(Contribuyente contribuyente, Long idHecho, HechosInputDto inputDto) {
+        Hecho hecho = hechosRepository.findById(idHecho);
         if (hecho == null) {
+            return null;
+        }
+
+        boolean editado = fuenteDinamica.editarHecho(
+                contribuyente,
+                hecho,
+                inputDto.getTitulo(),
+                inputDto.getDescripcion(),
+                inputDto.getCategoria(),
+                inputDto.getContenidoMultimedia().orElse(null)
+        );
+
+        if (!editado) {
             return null;
         }
 
@@ -89,4 +84,4 @@ public class HechosService implements IHechosService {
                 hecho.getSolicitudes()
         );
     }
-}
+} 
