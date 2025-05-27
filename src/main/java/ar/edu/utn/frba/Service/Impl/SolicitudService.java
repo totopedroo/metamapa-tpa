@@ -2,6 +2,7 @@ package ar.edu.utn.frba.Service.Impl;
 
 import ar.edu.utn.frba.Dtos.SolicitudInputDto;
 import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.Repository.IHechosRepository;
 import ar.edu.utn.frba.Repository.ISolicitudRepository;
 import ar.edu.utn.frba.Service.ISolicitudService;
@@ -68,35 +69,39 @@ public class SolicitudService implements ISolicitudService {
 
     @Override
     public void aceptarSolicitud(long idSolicitud) {
-        // Buscar la solicitud en memoria
         SolicitudEliminacion solicitud = solicitudRepository.findAll().stream()
                 .filter(s -> s.getIdSolicitud() == idSolicitud)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No se encontró la solicitud con ID: " + idSolicitud));
 
-        // Cambiar estado
+        if (solicitud.getEstado() != EstadoDeSolicitud.PENDIENTE) {
+            throw new RuntimeException("No se puede aceptar una solicitud que no está en estado PENDIENTE.");
+        }
+
         solicitud.aceptarSolicitud();
 
-        // Buscar el hecho asociado
         Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
-
         if (hecho != null) {
             hecho.verificarEliminacion();
         }
     }
 
+    @Override
     public void rechazarSolicitud(long idSolicitud) {
         SolicitudEliminacion solicitud = solicitudRepository.findAll().stream()
                 .filter(s -> s.getIdSolicitud() == idSolicitud)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No se encontró la solicitud con ID: " + idSolicitud));
 
+        if (solicitud.getEstado() != EstadoDeSolicitud.PENDIENTE) {
+            throw new RuntimeException("No se puede rechazar una solicitud que no está en estado PENDIENTE.");
+        }
+
         solicitud.rechazarSolicitud();
 
-        // Actualizamos el estado del hecho también, si corresponde
         Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
         if (hecho != null) {
-            hecho.verificarEliminacion(); // si hay alguna solicitud aceptada, seguirá marcado como eliminado
+            hecho.verificarEliminacion();
         }
     }
 
