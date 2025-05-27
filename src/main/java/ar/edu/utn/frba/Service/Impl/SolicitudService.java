@@ -74,8 +74,10 @@ public class SolicitudService implements ISolicitudService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No se encontró la solicitud con ID: " + idSolicitud));
 
-        if (solicitud.getEstado() != EstadoDeSolicitud.PENDIENTE) {
-            throw new RuntimeException("No se puede aceptar una solicitud que no está en estado PENDIENTE.");
+        if (solicitud.getEstado() == EstadoDeSolicitud.ACEPTADA) {
+            throw new RuntimeException("No se puede aceptar una solicitud que ya fue ACEPTADA.");
+        } else if (solicitud.getEstado() == EstadoDeSolicitud.RECHAZADA) {
+            throw new RuntimeException("No se puede aceptar una solicitud que ya fue RECHAZADA.");
         }
 
         solicitud.aceptarSolicitud();
