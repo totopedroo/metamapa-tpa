@@ -20,13 +20,16 @@ public class HechosRepository implements IHechosRepository {
     public ImportadorAPI importador;
     public List<Hecho> hechos;
 
-
-
- /*   @Override
-    public List<Hecho> findAll() {
-        return new ArrayList<>(hechos);
+    public HechosRepository() {
+      this.hechos = new ArrayList<>();
     }
-*/
+
+    /*   @Override
+        public List<Hecho> findAll() {
+            return new ArrayList<>(hechos);
+        }
+    */
+
     @Override
     public Hecho findById(long id) {
         System.out.println("hechos: " + hechos);
