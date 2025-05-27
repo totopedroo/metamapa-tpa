@@ -10,5 +10,7 @@ public interface IColeccionRepository {
     public void save(Coleccion coleccion);
     public void delete(Coleccion coleccion);
     public Coleccion findById(String id);
-    Coleccion create(ColeccionInputDto coleccionInputDto); // Updated signature
+    Coleccion create(ColeccionInputDto coleccionInputDto); 
+
 }
+

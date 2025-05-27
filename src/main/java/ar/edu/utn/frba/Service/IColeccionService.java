@@ -16,4 +16,6 @@ public interface IColeccionService {
     public List<HechosOutputDto> obtenerHechosPorColeccion(String idColeccion);
 
     public Coleccion setColeccionApi();
+    public Coleccion setColeccionCsv();
+    public void actualizarHechos(List<Hecho> nuevosHechos);
 }
