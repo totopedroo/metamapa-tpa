@@ -12,7 +12,7 @@ public class HechosInputDto {
     private String titulo;
     private String descripcion;
     private String categoria;
-    private Optional<ContenidoMultimedia> contenidoMultimedia;
+    private Optional<ContenidoMultimedia> contenidoMultimedia = Optional.empty();
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
