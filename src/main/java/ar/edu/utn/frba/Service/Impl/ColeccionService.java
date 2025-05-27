@@ -2,15 +2,14 @@ package ar.edu.utn.frba.Service.Impl;
 
 import java.util.List;
 import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Service.IColeccionService;
 import ar.edu.utn.frba.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ar.edu.utn.frba.Dtos.HechosOutputDto; // Assuming HechosOutputDto.fromModel exists and is correct
+import ar.edu.utn.frba.Dtos.HechosOutputDto;
 
-import java.util.ArrayList; // For initializing criteria list if null
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,7 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> hechosImportados;
 
-        Fuente fuente = new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", this.importadorAPI, TipoFuente.PROXY);
+        Fuente fuente = new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", this.importadorAPI);
         hechosImportados = this.importadorAPI.importar(fuente);
         Coleccion coleccion = new Coleccion(
                 UUID.randomUUID().toString(),
@@ -75,6 +74,22 @@ public class ColeccionService implements IColeccionService {
         return coleccion;
     }
 
+
+ public Coleccion setColeccionCsv() {
+     List<Hecho> hechosImportadosCSV;
+     Fuente fuente = new Fuente("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/prueba1.csv", this.importadorCSV);
+     hechosImportadosCSV = this.importadorCSV.importar(fuente);
+     Coleccion coleccionCSV = new Coleccion(
+             UUID.randomUUID().toString(),
+             "COLECCION CSV",
+             "Colección creada a partir de datos de CSV",
+             new ArrayList<>()
+     );
+        coleccionCSV.setHechos(hechosImportadosCSV);
+        coleccionRepository.save(coleccionCSV);
+        return coleccionCSV;
+    }
+
     public void actualizarHechos(List<Hecho> nuevosHechos) {
         for (Coleccion coleccion : coleccionRepository.findAll()) {
             for (Hecho hecho : nuevosHechos) {
@@ -91,15 +106,5 @@ public class ColeccionService implements IColeccionService {
             coleccionRepository.save(coleccion);
         }
     }
-}
 
- /*   public Coleccion setColeccionCsv() {
-        Importador
-        importador.("prueba1.csv");
-        Coleccion coleccionPrueba = new Coleccion("1", "Coleccionde prueba estatica", "Coleccion para pruebas, es de tipo estatica, se lee de un archivo csv", null);
-        List<Hecho> hechos = new ArrayList<Hecho>();
-        hechos = importador.getHechos();
-        coleccionPrueba.setHechos(hechos);
-        save(coleccionPrueba);
-    }
-}*/
+}
