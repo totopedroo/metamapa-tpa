@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class ImportadorCSV implements Importador {
 
   private static final String CSV_DELIMITER = ";";
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy");
-  private static final int EXPECTED_COLUMNS = 8;
+  private static final int EXPECTED_COLUMNS = 7;
   private final SecureRandom secureRandom = new SecureRandom();
   @Override
   public List<Hecho> importar(Fuente fuente) {
@@ -34,7 +35,7 @@ public class ImportadorCSV implements Importador {
 
     Path filePath = Paths.get(filePathString);
 
-    try (BufferedReader br = Files.newBufferedReader(filePath)) {
+    try (BufferedReader br = Files.newBufferedReader(filePath, StandardCharsets.ISO_8859_1)) {
       String line;
       boolean isHeader = true;
       int lineNumber = 0;
