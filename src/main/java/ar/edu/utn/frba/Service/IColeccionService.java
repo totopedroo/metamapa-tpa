@@ -6,6 +6,7 @@ package ar.edu.utn.frba.Service;
 import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.domain.Coleccion;
+import ar.edu.utn.frba.domain.Hecho;
 
 import java.util.List;
 
