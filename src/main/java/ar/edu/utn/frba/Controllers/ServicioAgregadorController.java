@@ -27,10 +27,10 @@ public class ServicioAgregadorController {
         return "Hechos sincronizados con el repositorio en memoria.";
     }
 
-    @GetMapping("/refrescar") // Para probar que anda el refresco automatico de colecciones.
+   /* @GetMapping("/refrescar") // Para probar que anda el refresco automatico de colecciones.
     public ResponseEntity<String> refrescarManual() {
         servicioAgregador.refrescarHechosPeriodicamente();
         return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
-    }
+    }*/
 
 }
