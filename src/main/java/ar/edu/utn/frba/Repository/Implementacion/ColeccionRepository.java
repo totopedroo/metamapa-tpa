@@ -58,18 +58,6 @@ public class ColeccionRepository implements IColeccionRepository {
                 orElse(null);
     }
 
-    /* public void setColeccionEstatica(){
-        Importador importador = new Importador();
-        importador.importarFromCSV("prueba1.csv");
-        Coleccion coleccionPrueba = new Coleccion("1", "Coleccionde prueba estatica", "Coleccion para pruebas, es de tipo estatica, se lee de un archivo csv", null);
-        List<Hecho> hechos = new ArrayList<Hecho>();
-        hechos = importador.getHechos();
-        coleccionPrueba.setHechos(hechos);
-        save(coleccionPrueba);
-    }//para pruebas
-*/
-
-
     @Override
     public List<Coleccion> findAll() {
         //setColeccionEstatica(); //para pruebas
