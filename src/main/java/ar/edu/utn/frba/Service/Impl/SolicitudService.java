@@ -85,4 +85,19 @@ public class SolicitudService implements ISolicitudService {
         }
     }
 
+    public void rechazarSolicitud(long idSolicitud) {
+        SolicitudEliminacion solicitud = solicitudRepository.findAll().stream()
+                .filter(s -> s.getIdSolicitud() == idSolicitud)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No se encontró la solicitud con ID: " + idSolicitud));
+
+        solicitud.rechazarSolicitud();
+
+        // Actualizamos el estado del hecho también, si corresponde
+        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
+        if (hecho != null) {
+            hecho.verificarEliminacion(); // si hay alguna solicitud aceptada, seguirá marcado como eliminado
+        }
+    }
+
 }
