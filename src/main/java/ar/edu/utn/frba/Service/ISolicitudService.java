@@ -5,5 +5,7 @@ import ar.edu.utn.frba.Dtos.SolicitudInputDto;
 
 public interface ISolicitudService {
     SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto);
+    void aceptarSolicitud(long idSolicitud);
+
 }
 
