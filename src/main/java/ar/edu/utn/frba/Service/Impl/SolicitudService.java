@@ -26,14 +26,13 @@ public class SolicitudService implements ISolicitudService {
     @SuppressWarnings("checkstyle:Indentation")
     @Override
     public SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto) {
-        System.out.println("Buscando hecho con ID: " + inputDto.getIdHecho());
         Hecho hecho = hechosRepository.findById(inputDto.getIdHecho());
-        System.out.println("Hecho encontrado: " + hecho.getTitulo());
-        System.out.println("Longitud justificación: " + inputDto.getJustificacion().length());
-
         if (hecho == null) {
             throw new RuntimeException("No se encontró el hecho con ID: " + inputDto.getIdHecho());
         }
+
+        System.out.println("Hecho encontrado: " + hecho.getTitulo());
+        System.out.println("Longitud justificación: " + inputDto.getJustificacion().length());
 
         try {
             if (detectorDeSpam.esSpam(inputDto.getJustificacion())) {
