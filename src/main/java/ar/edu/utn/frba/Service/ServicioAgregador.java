@@ -27,7 +27,7 @@ public class ServicioAgregador {
       this.hechosRepository = hechosRepository;
       this.fuentes = List.of(
         new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", importadorCSV, TipoFuente.LOCAL),
-        new Fuente("Generate request in HTTP Client", importadorAPI, TipoFuente.PROXY)
+        new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", importadorAPI, TipoFuente.PROXY)
     );
   }
 
