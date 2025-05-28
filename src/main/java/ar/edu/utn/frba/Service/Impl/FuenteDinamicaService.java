@@ -35,6 +35,8 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 inputDto.getFechaAcontecimiento()
         );
 
+        hecho.setContribuyente(inputDto.getContribuyente());
+
         return new HechosOutputDto(
                 hecho.getIdHecho(),
                 hecho.getTitulo(),
