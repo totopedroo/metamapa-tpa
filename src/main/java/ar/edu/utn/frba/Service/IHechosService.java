@@ -12,7 +12,7 @@ import java.util.List;
 public interface IHechosService
 {
 
-    public HechosOutputDto crearHecho(Contribuyente contribuyente, HechosInputDto inputDto);
+    public HechosOutputDto crearHecho(HechosInputDto inputDto);
 
     HechosOutputDto convertirDto(Hecho hechos);
 

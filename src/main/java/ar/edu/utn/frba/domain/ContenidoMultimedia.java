@@ -1,4 +1,5 @@
 package ar.edu.utn.frba.domain;
 
 public class ContenidoMultimedia {
+    public String url;
 }
