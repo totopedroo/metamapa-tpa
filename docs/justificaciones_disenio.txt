@@ -1,23 +1,60 @@
-En esta primera etapa del desarrollo de MetaMapa, decidimos organizar el proyecto bajo una estructura orientada a objetos,
-dividiendo las clases en un paquete domain para encapsular la lógica de negocio principal.
-Durante el proceso inicial utilizamos un paquete mocks para facilitar el desarrollo aislado de componentes,
-pero una vez integradas las clases reales, dicho paquete fue eliminado.
+    En esta segunda etapa del desarrollo de MetaMapa, el equipo realizó una revisión crítica del diseño inicial
+a partir del feedback recibido y avanzó hacia una estructura más modular, robusta y alineada con principios
+de diseño sólidos. Se mantuvo una organización basada en una arquitectura por capas, donde cada paquete cumple 
+un rol específico: domain para el núcleo del negocio, service para orquestar casos de uso, repository para el 
+acceso a datos, dtos para la transferencia de información entre capas, y controllers para exponer interfaces REST.
+Esta organización sienta las bases para una evolución futura hacia una arquitectura hexagonal, 
+pero sin sobre-diseñar desde el inicio.
 
-Las clases fueron asignadas a cada integrante del grupo de acuerdo con los requerimientos funcionales del sistema.
-Por ejemplo, la clase Administrador incluye los métodos para aceptar o rechazar solicitudes de eliminación, tal como lo exigen los requerimientos 5 y 6,
-mientras que la clase Coleccion centraliza la lógica de agrupación de hechos y aplicación de criterios de pertenencia (requerimiento 1).
-Decidimos modelar los criterios de filtrado como una clase aparte (CriterioDePertenencia) para facilitar la extensibilidad y mantener la cohesión de responsabilidades.
+    Una de las principales mejoras fue la separación de responsabilidades. En la Entrega 1,
+la clase Administrador presentaba una sobrecarga de funciones, incluyendo tareas como leer CSVs, 
+aceptar solicitudes y crear colecciones. Estas responsabilidades fueron distribuidas adecuadamente.
+La lectura de archivos fue delegada a una clase especializada ImportadorCSV, con lo cual se fortalece el principio de responsabilidad única (SRP)
+y se permite una futura extensión a otros formatos como JSON o XM sin modificar las clases existentes.
+Por otro lado, se desacopló la lógica de evaluación de criterios de pertenencia mediante la creación de una estructura polimórfica:
+ahora los criterios implementan una interfaz común y se encapsulan en la clase CriterioDePertenencia,
+permitiendo que las colecciones los apliquen sin conocer su tipo exacto, lo que nos acerca a un uso del patrón Strategy.
 
-Para la importación de hechos desde un archivo CSV (requerimiento 2), optamos por utilizar la librería OpenCSV.
-Tuvimos que realizar una pequeña adaptación al lector (CSVReader) para manejar correctamente caracteres especiales como tildes, estableciendo la codificación ISO-8859-1.
-La lógica de lectura e incorporación de hechos se implementó directamente en el método leerSegunCriterios(...) de la clase Coleccion,
-donde se construyen objetos Hecho a partir del contenido del archivo si cumplen con los filtros especificados.
+    También se clarificó conceptualmente la diferencia entre los criterios estáticos de pertenencia, 
+que determinan qué hechos forman parte de una colección, y los filtros dinámicos, aplicados en tiempo 
+de ejecución por los usuarios a través del Visualizador. Este último fue refactorizado para retornar 
+listas reutilizables con los hechos filtrados, en lugar de imprimir por consola, aumentando su 
+testabilidad y separación de preocupaciones. Además, se movió al objeto Coleccion la responsabilidad de exponer
+los hechos visibles, mediante el método getHechosVisibles(), asegurando que cada clase tenga a su cargo
+lo que le corresponde naturalmente.
 
-En cuanto al manejo de justificaciones en las solicitudes de eliminación,
-se incorporó una validación que lanza una excepción si la justificación no supera los 500 caracteres,
-garantizando el cumplimiento de las reglas del dominio.
-Actualmente los estados de las solicitudes se representan mediante cadenas de texto ("Pendiente", "Aceptado", "Rechazado"),
-aunque planeamos migrar a un enum para mejorar la robustez del código.
+    Otro cambio importante fue el reemplazo de strings por enums en la representación de estados de las solicitudes 
+de eliminación, migrando a EstadoDeSolicitud. Esta modificación reduce los errores tipográficos y mejora
+la robustez del sistema. La lógica para aceptar o rechazar solicitudes también se encapsuló dentro 
+de la propia clase SolicitudDeEliminacion, lo que permite mantener el control de estado centralizado y más claro.
+Además, se introdujo una validación para rechazar automáticamente las solicitudes de eliminación con contenido considerado spam,
+haciendo uso de un detector simple y configurable.
 
-Finalmente, se implementó una clase Visualizador que permite aplicar filtros personalizados sobre una colección (requerimientos 3 y 4),
-respetando la idea de ofrecer distintas vistas del conjunto de hechos según el tipo de usuario.
+    En cuanto al diseño del sistema de fuentes, se estructuró una jerarquía basada en una interfaz Fuente,
+con implementaciones concretas como FuenteDinamica, ImportadorCSV e ImportadorAPI. 
+    Esta decisión permite tratar las fuentes de forma uniforme, favoreciendo el principio de abierto/cerrado (OCP) 
+y preparando el terreno para una futura expansión. El servicio de agregación, por su parte,
+combina hechos de todas las fuentes y los distribuye según sus criterios,
+operando como una fachada (patrón Facade) entre la lógica interna y los servicios externos,
+y se refresca periódicamente mediante un scheduler simple, con la intención de evolucionar
+hacia un uso del patrón Observer.
+
+    A nivel de arquitectura, seguimos una estructura multicapa coherente que facilita la modularidad,
+el testeo y el mantenimiento. Cada capa se comunica mediante DTOs, lo que actúa como un adapter ligero y permite 
+desacoplar el modelo del dominio de la lógica de presentación o persistencia.
+
+    Entre los patrones de diseño utilizados o proyectados se destacan: Strategy en los criterios y tipos de fuente,
+State en los estados de las solicitudes, Facade en el servicio de agregación, Adapter a través de los DTOs,
+y Observer como proyección para el refresco automático. También se comenzó a diseñar un patrón Factory 
+para la creación de hechos desde distintas fuentes, aunque aún no se formalizó completamente.
+
+    Como decisión consciente, aún no se avanzó con una capa persistente real ni con controladores REST completos,
+dado que el foco de esta etapa fue el dominio y la lógica de agregación. Tampoco se implementó
+un manejo exhaustivo de errores o validaciones formales por cadenas de responsabilidad,
+pero estos aspectos ya fueron identificados como proximos para las siguientes entregas.
+
+    En conclusión, esta segunda entrega muestra una evolución clara y concreta desde una solución
+funcional inicial hacia una arquitectura modular, extensible y sustentada en buenas prácticas.
+Nos enfocamos en la claridad del modelo de dominio, la correcta distribución de responsabilidades y la 
+preparación para una evolución , evitando al mismo tiempo caer en el sobrepensamiento o sobreuso de recursor y demas. 
+
