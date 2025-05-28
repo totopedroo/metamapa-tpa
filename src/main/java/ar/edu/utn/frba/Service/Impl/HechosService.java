@@ -57,7 +57,7 @@ public class HechosService implements IHechosService {
 
     }
 
-    public HechosOutputDto crearHecho(Contribuyente contribuyente, HechosInputDto inputDto) {
+    public HechosOutputDto crearHecho(HechosInputDto inputDto) {
         Hecho hecho = new Hecho(
                 inputDto.getTitulo(),
                 inputDto.getDescripcion(),
