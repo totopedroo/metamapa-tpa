@@ -54,4 +54,21 @@ public class ServicioAgregadorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
         }
     }
-}
+
+    @PatchMapping("/editar/{hechoId}")
+    public ResponseEntity<HechosOutputDto> editarHecho(@RequestBody HechosOutputDto hechosOutputDto,@PathVariable Long hechoId)
+        {
+            try {
+
+                HechosOutputDto editedHecho = fuenteDinamicaService.editarHecho(hechosOutputDto.getIdHecho(), hechosOutputDto );
+                return new ResponseEntity<>(editedHecho, HttpStatus.CREATED);
+            } catch (IllegalArgumentException e) {
+
+                return ResponseEntity.badRequest().body(new HechosOutputDto(null, "Error al crear el hecho: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
+            } catch (Exception e) {
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
+            }
+        }
+        }
+
