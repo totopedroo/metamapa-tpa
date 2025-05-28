@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Dtos;
 
 import ar.edu.utn.frba.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.domain.Contribuyente;
 import ar.edu.utn.frba.domain.SolicitudEliminacion;
 import lombok.Data;
 import ar.edu.utn.frba.domain.Hecho;
@@ -21,7 +22,7 @@ public class HechosOutputDto {
     private LocalDate fechaCarga;
     private List<String> etiquetas;
     private List<SolicitudEliminacion> solicitudes;
-
+    private Contribuyente contribuyente;
     public HechosOutputDto() {
     }
 
@@ -33,13 +34,14 @@ public class HechosOutputDto {
         dto.categoria = hecho.getCategoria();
         dto.latitud = hecho.getLatitud();
         dto.longitud = hecho.getLongitud();
+        dto.contribuyente = hecho.getContribuyente();
         return dto;
     }
 
     public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria,
                            ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud,
                            LocalDate fechaAcontecimiento, LocalDate fechaCarga,
-                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes) {
+                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
         this.idHecho = idHecho;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -51,6 +53,8 @@ public class HechosOutputDto {
         this.fechaCarga = fechaCarga;
         this.etiquetas = etiquetas;
         this.solicitudes = solicitudes;
+        this.contribuyente = contribuyente;
+
     }
 
 
