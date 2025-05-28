@@ -3,7 +3,6 @@ package ar.edu.utn.frba.domain;
 import ar.edu.utn.frba.Repository.IHechosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -11,9 +10,9 @@ import java.time.temporal.ChronoUnit;
 public class FuenteDinamicaImpl implements FuenteDinamica {
 
     @Autowired
-    public IHechosRepository hechosRepository;
+    public  IHechosRepository hechosRepository;
 
-    @Override
+
     public Hecho crearHecho(
             Contribuyente contribuyente,
             String titulo,
@@ -24,7 +23,7 @@ public class FuenteDinamicaImpl implements FuenteDinamica {
             Double longitud,
             LocalDate fechaAcontecimiento
     ) {
-        // validamos cosas básicasss
+        // validamos cosas básicass
         if (titulo == null || titulo.trim().isEmpty()) {
             throw new IllegalArgumentException("El título no puede estar vacío");
         }
