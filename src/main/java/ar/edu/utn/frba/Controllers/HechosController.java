@@ -7,6 +7,8 @@ import ar.edu.utn.frba.Repository.Implementacion.HechosRepository;
 import ar.edu.utn.frba.Service.IHechosService;
 import ar.edu.utn.frba.Service.ISeederService;
 import ar.edu.utn.frba.domain.Contribuyente;
+import ar.edu.utn.frba.domain.FuenteDinamica;
+import ar.edu.utn.frba.domain.FuenteDinamicaImpl;
 import ar.edu.utn.frba.domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +43,5 @@ public class HechosController {
         return "Prueba exitosa";
     }
 
-    @GetMapping("/add")
-    public HechosOutputDto crearHecho() {
-        return hechosService.crearHecho(new Contribuyente("matias"), new HechosInputDto());
-    }
 }
 

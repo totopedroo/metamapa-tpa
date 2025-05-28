@@ -60,10 +60,10 @@ public class ServicioAgregador {
 
     coleccionService.actualizarHechos(nuevosHechos);
 
-<<<<<<< HEAD
+
     System.out.println("Refresco automático finalizado.");
-=======
+
     System.out.println("✅ Refresco automático finalizado.");
->>>>>>> f28f7f618b28bf86b49c15d85529c94e8e7075d7
+
   }
 }

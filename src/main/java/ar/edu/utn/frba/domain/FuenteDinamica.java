@@ -5,26 +5,30 @@ import java.time.LocalDate;
 public interface FuenteDinamica {
     /**
      * Crea un nuevo hecho en la fuente dinámica
-     * @param contribuyente El contribuyente que crea el hecho (puede ser anónimo)
-     * @param titulo Título 
-     * @param descripcion Descripción
-     * @param categoria Categoría 
+     *
+     * @param contribuyente       El contribuyente que crea el hecho (puede ser anónimo)
+     * @param titulo              Título
+     * @param descripcion         Descripción
+     * @param categoria           Categoría
      * @param contenidoMultimedia Contenido multimedia esto lo dejo opcional
-     * @param latitud Latitud 
-     * @param longitud Longitud 
-     * @param fechaAcontecimiento Fecha 
+     * @param latitud             Latitud
+     * @param longitud            Longitud
+     * @param fechaAcontecimiento Fecha
      * @return El hecho creado
      */
-    Hecho crearHecho(
-        Contribuyente contribuyente,
-        String titulo,
-        String descripcion,
-        String categoria,
-        ContenidoMultimedia contenidoMultimedia,
-        Double latitud,
-        Double longitud,
-        LocalDate fechaAcontecimiento
+
+
+    public Hecho crearHecho(
+            Contribuyente contribuyente,
+            String titulo,
+            String descripcion,
+            String categoria,
+            ContenidoMultimedia contenidoMultimedia,
+            Double latitud,
+            Double longitud,
+            LocalDate fechaAcontecimiento
     );
+
 
     /**
      * Edita un hecho existente si el contribuyente está registrado y no pasó más de una semana

@@ -1,8 +1,14 @@
 package ar.edu.utn.frba.Controllers;
 
+import ar.edu.utn.frba.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Service.Impl.FuenteDinamicaService;
 import ar.edu.utn.frba.Service.ServicioAgregador;
+import ar.edu.utn.frba.domain.Contribuyente;
+import ar.edu.utn.frba.domain.FuenteDinamicaImpl;
 import ar.edu.utn.frba.domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +18,9 @@ import java.util.List;
 @RequestMapping("/agregador")
 @CrossOrigin("http://localhost:8080")
 public class ServicioAgregadorController {
+
+    @Autowired
+    private FuenteDinamicaService fuenteDinamicaService;
 
     @Autowired
     private ServicioAgregador servicioAgregador;
@@ -33,4 +42,14 @@ public class ServicioAgregadorController {
         return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
     }*/
 
+    @PostMapping("/crear")
+    public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
+        Contribuyente contribuyente = new Contribuyente("Juan", "Perez", 30);
+        try {
+            HechosOutputDto createdHecho = fuenteDinamicaService.crearHecho(contribuyente, hechoInputDto);
+            return new ResponseEntity<>(createdHecho, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
