@@ -44,6 +44,15 @@ public class HechosRepository implements IHechosRepository {
         return hechos;
     }
 
+    public Hecho create(Hecho hecho) {
+        if (hecho == null) {
+            throw new IllegalArgumentException("El hecho no puede ser nulo.");
+        }
+        this.hechos.add(hecho);
+        System.out.println("Hecho creado y agregado a la lista: " + hecho.getTitulo());
+        return hecho;
+    }
+
     @Override
     public void save(Hecho hecho) {
         hechos.add(hecho);

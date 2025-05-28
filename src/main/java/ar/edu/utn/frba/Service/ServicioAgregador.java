@@ -46,7 +46,7 @@ public class ServicioAgregador {
       hechosRepository.save(hecho);
     }
   }
-/*
+
   @Scheduled (fixedRate = 3600000) // cada 1 hora (en milisegundos)
   public void refrescarHechosPeriodicamente() {
     System.out.println("⏱️ Iniciando refresco automático de colecciones...");
@@ -60,6 +60,6 @@ public class ServicioAgregador {
 
     coleccionService.actualizarHechos(nuevosHechos);
 
-    System.out.println("✅ Refresco automático finalizado.");
-  }*/
+    System.out.println("Refresco automático finalizado.");
+  }
 }
