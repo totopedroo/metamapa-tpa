@@ -4,14 +4,11 @@ import ar.edu.utn.frba.Dtos.HechosInputDto;
 import ar.edu.utn.frba.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Service.Impl.FuenteDinamicaService;
 import ar.edu.utn.frba.Service.ServicioAgregador;
-import ar.edu.utn.frba.domain.Contribuyente;
-import ar.edu.utn.frba.domain.FuenteDinamicaImpl;
 import ar.edu.utn.frba.domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -44,12 +41,17 @@ public class ServicioAgregadorController {
 
     @PostMapping("/crear")
     public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
-        Contribuyente contribuyente = new Contribuyente("Juan", "Perez", 30);
+
         try {
-            HechosOutputDto createdHecho = fuenteDinamicaService.crearHecho(contribuyente, hechoInputDto);
+
+            HechosOutputDto createdHecho = fuenteDinamicaService.crearHecho(hechoInputDto);
             return new ResponseEntity<>(createdHecho, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+
+            return ResponseEntity.badRequest().body(new HechosOutputDto(null, "Error al crear el hecho: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
         }
     }
 }
