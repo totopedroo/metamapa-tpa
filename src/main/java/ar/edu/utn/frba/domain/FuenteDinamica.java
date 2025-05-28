@@ -30,16 +30,6 @@ public interface FuenteDinamica {
     );
 
 
-    /**
-     * Edita un hecho existente si el contribuyente está registrado y no pasó más de una semana
-     * @param contribuyente El contribuyente que quiere editar el hecho
-     * @param hecho El hecho a editar
-     * @param nuevoTitulo Nuevo título
-     * @param nuevaDescripcion Nueva descripción
-     * @param nuevaCategoria Nueva categoría
-     * @param nuevoContenidoMultimedia Nuevo contenido multimedia
-     * @return true si se pudo editar, false si no
-     */
     boolean editarHecho(
         Contribuyente contribuyente,
         Hecho hecho,

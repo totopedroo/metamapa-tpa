@@ -50,7 +50,7 @@ public class FuenteDinamicaImpl implements FuenteDinamica {
                 longitud,
                 fechaAcontecimiento,
                 LocalDate.now(),
-                System.currentTimeMillis() // ID temporal medio q en una base de datos real esto sería manejado por la BD
+                System.currentTimeMillis()// ID temporal medio q en una base de datos real esto sería manejado por la BD
         );
 
         // Guardamos el hecho
