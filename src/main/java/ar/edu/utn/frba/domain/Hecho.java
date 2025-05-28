@@ -22,6 +22,7 @@ public class Hecho {
     private LocalDate fechaCarga;
     private List<String> etiquetas = new ArrayList<>();
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
+    private Contribuyente contribuyente;
     private boolean eliminado = false;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,

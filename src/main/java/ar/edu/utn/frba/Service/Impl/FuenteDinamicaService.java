@@ -23,9 +23,9 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     private IHechosRepository hechosRepository;
 
     @Override
-    public HechosOutputDto crearHecho(Contribuyente contribuyente, HechosInputDto inputDto) {
+    public HechosOutputDto crearHecho( HechosInputDto inputDto) {
         Hecho hecho = fuenteDinamica.crearHecho(
-                contribuyente,
+                inputDto.getContribuyente(),
                 inputDto.getTitulo(),
                 inputDto.getDescripcion(),
                 inputDto.getCategoria(),
@@ -46,19 +46,20 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getFechaAcontecimiento(),
                 hecho.getFechaCarga(),
                 hecho.getEtiquetas(),
-                hecho.getSolicitudes()
+                hecho.getSolicitudes(),
+                hecho.getContribuyente()
         );
     }
 
     @Override
-    public HechosOutputDto editarHecho(Contribuyente contribuyente, Long idHecho, HechosInputDto inputDto) {
+    public HechosOutputDto editarHecho( Long idHecho, HechosInputDto inputDto) {
         Hecho hecho = hechosRepository.findById(idHecho);
         if (hecho == null) {
             return null;
         }
 
         boolean editado = fuenteDinamica.editarHecho(
-                contribuyente,
+                inputDto.getContribuyente(),
                 hecho,
                 inputDto.getTitulo(),
                 inputDto.getDescripcion(),
@@ -81,7 +82,8 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getFechaAcontecimiento(),
                 hecho.getFechaCarga(),
                 hecho.getEtiquetas(),
-                hecho.getSolicitudes()
+                hecho.getSolicitudes(),
+                hecho.getContribuyente()
         );
     }
 } 
