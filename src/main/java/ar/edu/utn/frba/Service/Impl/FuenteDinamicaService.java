@@ -52,19 +52,19 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     }
 
     @Override
-    public HechosOutputDto editarHecho( Long idHecho, HechosInputDto inputDto) {
+    public HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto) {
         Hecho hecho = hechosRepository.findById(idHecho);
         if (hecho == null) {
             return null;
         }
 
         boolean editado = fuenteDinamica.editarHecho(
-                inputDto.getContribuyente(),
+                outputDto.getContribuyente(),
                 hecho,
-                inputDto.getTitulo(),
-                inputDto.getDescripcion(),
-                inputDto.getCategoria(),
-                inputDto.getContenidoMultimedia().orElse(null)
+                outputDto.getTitulo(),
+                outputDto.getDescripcion(),
+                outputDto.getCategoria(),
+                outputDto.getContenidoMultimedia().orElse(null)
         );
 
         if (!editado) {

@@ -20,5 +20,5 @@ public interface IFuenteDinamicaService {
      * @param inputDto Los nuevos datos del hecho
      * @return El hecho editado o null si no se pudo editar
      */
-    HechosOutputDto editarHecho( Long idHecho, HechosInputDto inputDto);
+    HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto);
 } 
