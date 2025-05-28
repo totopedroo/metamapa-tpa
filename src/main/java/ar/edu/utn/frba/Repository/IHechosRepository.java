@@ -10,4 +10,5 @@ public interface IHechosRepository {
     public void delete(Hecho hecho);
     public Hecho findById(long id);
     public void saveList(List<Hecho> listaHechos);
+    public Hecho create(Hecho hecho);
 }

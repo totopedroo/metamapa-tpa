@@ -4,6 +4,7 @@ import java.util.List;
 import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Repository.IColeccionRepository;
+import ar.edu.utn.frba.Repository.IHechosRepository;
 import ar.edu.utn.frba.Service.IColeccionService;
 import ar.edu.utn.frba.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ColeccionService implements IColeccionService {
 
     @Autowired
     private ImportadorCSV importadorCSV;
+
+    @Autowired
+    private IHechosRepository hechosRepository;
 
     @Override
     public List<ColeccionOutputDto> buscarTodos() {
@@ -106,6 +110,23 @@ public class ColeccionService implements IColeccionService {
             }
             coleccionRepository.save(coleccion);
         }
+    }
+
+    @Override
+    public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId); //
+        if (coleccion == null) {
+            throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
+        }
+        Hecho hecho = hechosRepository.findById(hechoId); // Assumes hechosRepository.findById exists and works
+        if (hecho == null) {
+            throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
+        }
+        if (hecho.estaEliminado()) { //
+            throw new IllegalArgumentException("El hecho '" + hecho.getTitulo() + "' está marcado como eliminado y no puede ser agregado.");
+        }
+        coleccion.setHecho(hecho); //
+        return coleccionOutputDto(coleccion); // Convert to DTO for the response
     }
 
 }
