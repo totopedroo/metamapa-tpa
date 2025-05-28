@@ -70,5 +70,6 @@ public class ServicioAgregadorController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
             }
         }
-        }
+    }
+
 
