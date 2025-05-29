@@ -1,20 +1,25 @@
 package ar.edu.utn.frba.domain;
 
-import lombok.Data; // ¡Importa esta anotación!
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
+import java.time.Period;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Data // ¡Añade esta anotación!
+@Data
 public class Contribuyente {
     public String nombre;
     public String apellido;
-    public Integer edad;
 
-   // Puedes mantener tus constructores existentes; @Data generará el constructor sin argumentos necesario
-    public Contribuyente(String nombre, String apellido, Integer edad) {
-        this.nombre = nombre;this.apellido = apellido;this.edad = edad;
+    @JsonProperty("fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+
+    public Contribuyente(String nombre, String apellido, LocalDate fechaNacimiento) {
+        this.nombre = nombre;this.apellido = apellido;this.fechaNacimiento = fechaNacimiento;
     }
 
     public Contribuyente(String nombre, String apellido) {
@@ -27,4 +32,10 @@ public class Contribuyente {
     }
 
     public Contribuyente() {}
+
+    @JsonIgnore
+    public int getEdad() {
+        if (fechaNacimiento == null) return 0;
+        return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+    }
 }

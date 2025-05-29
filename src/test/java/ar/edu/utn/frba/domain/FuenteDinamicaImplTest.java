@@ -23,7 +23,7 @@ class FuenteDinamicaImplTest {
         fuenteDinamica.hechosRepository = hechosRepository;
         
         // Crear contribuyentes para las pruebas
-        contribuyenteRegistrado = new Contribuyente("Juan", "Perez", 25);
+        contribuyenteRegistrado = new Contribuyente("Juan", "Perez", LocalDate.of(2000, 4, 14));
         contribuyenteAnonimo = null;
     }
 
