@@ -36,9 +36,12 @@ public class ServicioAgregador {
     for (Fuente fuente : fuentes) {
       hechos.addAll(fuente.obtenerHechos());
     }
+    for (Hecho hecho : hechos) {
+      hechosRepository.save(hecho);
+    }
     return hechos;
   }
-
+/*
   public void sincronizarConRepositorio() {
     List<Hecho> hechos = agregarHechosDesdeTodasLasFuentes();
     //System.out.println("HECHOS OBTENIDOS DE FUENTES: " + hechos);
@@ -46,7 +49,7 @@ public class ServicioAgregador {
       hechosRepository.save(hecho);
     }
   }
-
+*/
   @Scheduled (fixedRate = 3600000) // cada 1 hora (en milisegundos)
   public void refrescarHechosPeriodicamente() {
     System.out.println("⏱️ Iniciando refresco automático de colecciones...");

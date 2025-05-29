@@ -14,4 +14,8 @@ public class DetectorDeSpam implements IDetectorDeSpam {
         String lower = texto.toLowerCase();
         return PALABRAS_SPAM.stream().anyMatch(lower::contains);
     }
+
+    public boolean justificacionRepetida(String justificacion, String justificacionAntigua ){
+        return justificacion.equals(justificacionAntigua);
+    }
 }
