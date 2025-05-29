@@ -60,6 +60,7 @@ public class ImportadorCSV implements Importador {
         }
 
         long idHecho;
+
         do {
           idHecho = secureRandom.nextLong();
         } while (idHecho <= 0);

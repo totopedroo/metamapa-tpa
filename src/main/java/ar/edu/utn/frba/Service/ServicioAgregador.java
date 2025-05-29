@@ -9,6 +9,8 @@ import ar.edu.utn.frba.domain.ImportadorAPI;
 import ar.edu.utn.frba.domain.ImportadorCSV;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ public class ServicioAgregador {
     );
   }
 
+  @PostConstruct
   public List<Hecho> agregarHechosDesdeTodasLasFuentes() {
     List<Hecho> hechos = new ArrayList<>();
     for (Fuente fuente : fuentes) {
