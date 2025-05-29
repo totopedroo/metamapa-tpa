@@ -5,6 +5,7 @@ import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.Repository.IHechosRepository;
 import ar.edu.utn.frba.Repository.ISolicitudRepository;
+import ar.edu.utn.frba.Service.IDetectorDeSpam;
 import ar.edu.utn.frba.Service.ISolicitudService;
 import ar.edu.utn.frba.domain.Hecho;
 import ar.edu.utn.frba.domain.SolicitudEliminacion;
@@ -22,7 +23,7 @@ public class SolicitudService implements ISolicitudService {
     private ISolicitudRepository solicitudRepository;
 
     @Autowired
-    private DetectorDeSpam detectorDeSpam;
+    private IDetectorDeSpam detectorDeSpam;
 
     @SuppressWarnings("checkstyle:Indentation")
     @Override
@@ -35,8 +36,14 @@ public class SolicitudService implements ISolicitudService {
         System.out.println("Hecho encontrado: " + hecho.getTitulo());
         System.out.println("Longitud justificación: " + inputDto.getJustificacion().length());
 
+        boolean justificacionSpam = false;
+        if(hecho.getSolicitudes().size() > 0){
+            justificacionSpam = hecho.getSolicitudes().stream().anyMatch
+                    (solicitud -> detectorDeSpam.justificacionRepetida(solicitud.getJustificacion(), inputDto.getJustificacion()));
+
+        };
         try {
-            if (detectorDeSpam.esSpam(inputDto.getJustificacion())) {
+            if (detectorDeSpam.esSpam(inputDto.getJustificacion()) || justificacionSpam) {
                 SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
                 solicitudSpam.rechazarSolicitud();
                 solicitudRepository.guardarSolicitud(solicitudSpam);
