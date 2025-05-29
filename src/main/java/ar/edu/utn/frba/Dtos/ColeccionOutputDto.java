@@ -21,7 +21,7 @@ public class ColeccionOutputDto {
 
     public static ColeccionOutputDto fromModel(Coleccion coleccion) {
         ColeccionOutputDto dto = new ColeccionOutputDto();
-        dto.id = coleccion.getId(); // Asegurate que getId() existe
+        dto.id = coleccion.getId();
         dto.hechos = new ArrayList<Hecho>();
         dto.titulo = coleccion.getTitulo();
         dto.descripcion = coleccion.getDescripcion();

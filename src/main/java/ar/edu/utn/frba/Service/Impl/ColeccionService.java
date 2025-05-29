@@ -39,7 +39,7 @@ public class ColeccionService implements IColeccionService {
     public ColeccionOutputDto coleccionOutputDto(Coleccion coleccion) {
         var dto = new ColeccionOutputDto();
         dto.setId(coleccion.getId());
-        dto.setHechos(coleccion.getHechos()); // Assumes getHechos() returns the desired list
+        dto.setHechos(coleccion.getHechos());
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
         dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
