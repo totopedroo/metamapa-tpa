@@ -1,0 +1,34 @@
+@startuml
+
+
+
+Importador -->"+" Hecho
+
+
+
+
+class Importador{
++importar() : List<Hecho>
+}
+
+class Hecho{
++ titulo : String
++ descripcion : String
++ categoria : String
++ contenidoMultimedia : Optional<ContenidoMultimedia>
++latitud : Double
++ longitud : Double
++ fechaAcontecimiento : LocalDate
+
+
+
+
+
+}
+
+
+@enduml
+//+ - # publico privado protegido+ verificarEliminacion() : Void
+                                 +marcarComoEliminado() : Void
+                                 + estaEliminado() : Boolean
+                                 + agregarEtiqueta(String etiqueta) : Void

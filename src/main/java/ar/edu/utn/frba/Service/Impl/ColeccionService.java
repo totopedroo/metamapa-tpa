@@ -3,6 +3,7 @@ package ar.edu.utn.frba.Service.Impl;
 import java.util.List;
 import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Enums.TipoFuente;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Repository.IHechosRepository;
 import ar.edu.utn.frba.Service.IColeccionService;
@@ -22,7 +23,7 @@ public class ColeccionService implements IColeccionService {
     private IColeccionRepository coleccionRepository;
 
     @Autowired
-    private ImportadorAPI importadorAPI;
+    private main.ImportadorAPI importadorAPI;
 
     @Autowired
     private ImportadorCSV importadorCSV;
@@ -80,7 +81,7 @@ public class ColeccionService implements IColeccionService {
     }
 
 
- public Coleccion setColeccionCsv() {
+ /*public Coleccion setColeccionCsv() {
      List<Hecho> hechosImportadosCSV;
      Fuente fuente = new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", this.importadorCSV, TipoFuente.LOCAL);
      hechosImportadosCSV = this.importadorCSV.importar(fuente);
@@ -94,7 +95,7 @@ public class ColeccionService implements IColeccionService {
         coleccionRepository.save(coleccionCSV);
         return coleccionCSV;
     }
-
+*/
     public void actualizarHechos(List<Hecho> nuevosHechos) {
         for (Coleccion coleccion : coleccionRepository.findAll()) {
             for (Hecho hecho : nuevosHechos) {

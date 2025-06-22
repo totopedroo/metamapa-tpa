@@ -1,10 +1,8 @@
-package ar.edu.utn.frba.domain;
+package ar.edu.utn.frba.Fuente_Estatica.Domain;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
@@ -15,19 +13,24 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 import java.util.Optional;
+
+import ar.edu.utn.frba.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.domain.Fuente;
+import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ImportadorCSV implements Importador {
+public class ImportadorCSV {
 
   private static final String CSV_DELIMITER = ";";
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy");
   private static final int EXPECTED_COLUMNS = 7;
   private final SecureRandom secureRandom = new SecureRandom();
-  @Override
-  public List<Hecho> importar(Fuente fuente) {
-    List<Hecho> hechos = new ArrayList<>();
-    String filePathString = fuente.getPath();
+
+  public List<HechoEstatico> importar(String filePathString) {
+    List<HechoEstatico> hechos = new ArrayList<>();
+
 
     if (filePathString == null || filePathString.trim().isEmpty()) {
       throw new IllegalArgumentException("La ruta del archivo CSV es nula o está vacía.");
@@ -100,7 +103,7 @@ public class ImportadorCSV implements Importador {
 
         LocalDate fechaCarga = LocalDate.now();
 
-        Hecho hecho = new Hecho(
+        HechoEstatico hecho = new HechoEstatico(
                 titulo,
                 descripcion,
                 categoria,
