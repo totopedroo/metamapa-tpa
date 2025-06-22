@@ -1,17 +1,13 @@
 package ar.edu.utn.frba.Repository.Implementacion;
 
 import ar.edu.utn.frba.Dtos.ColeccionInputDto;
-import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Repository.IColeccionRepository;
 import ar.edu.utn.frba.domain.*;
 import ar.edu.utn.frba.domain.Coleccion;
-import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
-import ar.edu.utn.frba.Dtos.SolicitudInputDto;
 
 import java.util.List;
 
 
-import ar.edu.utn.frba.domain.Coleccion;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -21,11 +17,11 @@ import java.util.UUID;
 @Repository
 public class ColeccionRepository implements IColeccionRepository {
 
-    private final ImportadorAPI importadorAPI;
+    private final main.ImportadorAPI importadorAPI;
     public List<Coleccion> colecciones;
     public ColeccionInputDto coleccionInput;
 
-    public ColeccionRepository(ImportadorAPI importadorAPI) {
+    public ColeccionRepository(main.ImportadorAPI importadorAPI) {
         this.colecciones = new ArrayList<>();
         this.importadorAPI = importadorAPI;
     }

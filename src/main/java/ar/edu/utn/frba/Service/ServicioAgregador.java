@@ -5,15 +5,14 @@ import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Service.Impl.ColeccionService;
 import ar.edu.utn.frba.domain.Fuente;
 import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.ImportadorAPI;
-import ar.edu.utn.frba.domain.ImportadorCSV;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.utn.frba.domain.main;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +24,10 @@ public class ServicioAgregador {
   @Autowired
   private ColeccionService coleccionService;
 
-  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, IHechosRepository hechosRepository) {
+  public ServicioAgregador(ImportadorCSV importadorCSV, main.ImportadorAPI importadorAPI, IHechosRepository hechosRepository) {
       this.hechosRepository = hechosRepository;
       this.fuentes = List.of(
-        new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", importadorCSV, TipoFuente.LOCAL),
+//        new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", importadorCSV, TipoFuente.LOCAL),
         new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", importadorAPI, TipoFuente.PROXY)
     );
   }

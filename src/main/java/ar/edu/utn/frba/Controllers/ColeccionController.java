@@ -48,12 +48,12 @@ public class ColeccionController {
     public Coleccion crearColeccionPruebaAPI() {
         return coleccionService.setColeccionApi();
     }
-
+/*
     @GetMapping("/createColeccionCSV")
     public Coleccion crearColeccionPruebaCSV() {
         return coleccionService.setColeccionCsv();
     }
-
+*/
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
         try {
