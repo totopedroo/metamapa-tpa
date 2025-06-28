@@ -1,5 +1,5 @@
 package ar.edu.utn.frba.Servicio_Agregador.Domain;
-
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.domain.CriterioDePertenencia;
 import ar.edu.utn.frba.domain.Hecho;
 import ar.edu.utn.frba.domain.Visualizador;
@@ -18,6 +18,8 @@ public class Coleccion {
     public String titulo;
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
+    private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
+    private List<Hecho> hechosConsensuados = new ArrayList<>();
 
     public Coleccion(String id, String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
         this.hechos = new ArrayList<>();
@@ -59,5 +61,21 @@ public class Coleccion {
 
     public void setCriterioDePertenencia(CriterioDePertenencia criterio) {
         criterioDePertenencia.add(criterio);
+    }
+
+    public void setAlgoritmoDeConsenso(AlgoritmoDeConsensoStrategy algoritmoDeConsenso) {
+        this.algoritmoDeConsenso = algoritmoDeConsenso;
+    }
+
+    public AlgoritmoDeConsensoStrategy getAlgoritmoDeConsenso() {
+        return algoritmoDeConsenso;
+    }
+
+    public void actualizarHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
+        if (algoritmoDeConsenso == null) {
+            this.hechosConsensuados = this.getHechos(); // todos valen
+        } else {
+            this.hechosConsensuados = algoritmoDeConsenso.obtenerHechosConsensuados(hechosPorFuente);
+        }
     }
 }

@@ -21,9 +21,9 @@ public class Fuente {
 
   //public boolean esFuenteProxy() { return tipo == TipoFuente.PROXY;}
 
-  public List<Hecho> obtenerHechos() {
+  /*public List<Hecho> obtenerHechos() {
     return importador.importar(this);
-  }
+  }*/
 
 }
 
