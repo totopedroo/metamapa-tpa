@@ -70,4 +70,29 @@ public class ServicioAgregador {
     System.out.println("✅ Refresco automático finalizado.");
 
   }
+
+  @Scheduled(cron = "0 0 3 * * *") // todos los días a las 3am
+  public void ejecutarAlgoritmosDeConsenso() {
+    System.out.println("Ejecutando algoritmos de consenso");
+
+    // Obtener todos los hechos de todas las fuentes
+    List<List<Hecho>> hechosPorFuente = fuentes.stream()
+        .map(Fuente::obtenerHechos)
+        .toList();
+
+    // Recorrer cada colección y aplicar el algoritmo si tiene uno
+    coleccionService.buscarTodos().forEach(coleccion -> {
+      if (coleccion.getAlgoritmoDeConsenso() != null) {
+        List<Hecho> consensuados = coleccion.getAlgoritmoDeConsenso().obtenerHechosConsensuados(hechosPorFuente);
+
+        coleccion.setHechos(consensuados); // o como sea que agregues los hechos consensuados
+        System.out.println("Colección '" + coleccion.getTitulo() + "' actualizada con " + consensuados.size() + " hechos consensuados.");
+      } else {
+        System.out.println("Colección '" + coleccion.getTitulo() + "' no tiene algoritmo de consenso definido.");
+      }
+    });
+
+    System.out.println("Algoritmos de consenso finalizados.");
+  }
+
 }

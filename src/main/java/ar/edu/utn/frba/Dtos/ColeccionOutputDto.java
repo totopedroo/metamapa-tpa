@@ -3,6 +3,7 @@ package ar.edu.utn.frba.Dtos;
 import ar.edu.utn.frba.domain.Coleccion;
 import ar.edu.utn.frba.domain.CriterioDePertenencia;
 import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class ColeccionOutputDto {
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
 
-
+    private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
 
 
     public static ColeccionOutputDto fromModel(Coleccion coleccion) {
