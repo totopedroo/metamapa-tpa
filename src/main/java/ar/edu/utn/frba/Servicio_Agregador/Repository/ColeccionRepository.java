@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Repository;
 
-import ar.edu.utn.frba.Dtos.ColeccionInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.domain.main;

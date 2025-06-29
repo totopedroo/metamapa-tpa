@@ -1,6 +1,8 @@
 package ar.edu.utn.frba.Servicio_Agregador;
 
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosInputDto;
+
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Fuente_Dinamica.Service.FuenteDinamicaService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ServicioAgregador;

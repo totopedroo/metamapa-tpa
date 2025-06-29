@@ -1,9 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Dtos;
 
-import ar.edu.utn.frba.Servicio_Agregador.Domain.ContenidoMultimedia;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Contribuyente;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -24,6 +21,9 @@ public class HechosOutputDto {
     private List<String> etiquetas;
     private List<SolicitudEliminacion> solicitudes;
     private Contribuyente contribuyente;
+    private boolean eliminado = false;
+    private boolean consensuado;
+    private Fuente fuente;
     public HechosOutputDto() {
     }
 
@@ -36,13 +36,16 @@ public class HechosOutputDto {
         dto.latitud = hecho.getLatitud();
         dto.longitud = hecho.getLongitud();
         dto.contribuyente = hecho.getContribuyente();
+        dto.eliminado = hecho.isEliminado();
+        dto.consensuado = hecho.isConsensuado();
+        dto.fuente = hecho.getFuente();
         return dto;
     }
 
     public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria,
                            ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud,
                            LocalDate fechaAcontecimiento, LocalDate fechaCarga,
-                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
+                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente, boolean eliminado, boolean consensuado, Fuente fuente) {
         this.idHecho = idHecho;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -55,6 +58,9 @@ public class HechosOutputDto {
         this.etiquetas = etiquetas;
         this.solicitudes = solicitudes;
         this.contribuyente = contribuyente;
+        this.eliminado = eliminado;
+        this.consensuado = consensuado;
+        this.fuente = fuente;
 
     }
 
