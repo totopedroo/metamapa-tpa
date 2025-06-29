@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Domain;
 
-import ar.edu.utn.frba.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.domain.Contribuyente;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.ContenidoMultimedia;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Contribuyente;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.SolicitudEliminacion;
 import lombok.Getter;
 import lombok.Setter;
 

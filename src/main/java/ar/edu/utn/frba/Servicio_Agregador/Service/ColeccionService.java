@@ -1,15 +1,16 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
-import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
-import ar.edu.utn.frba.Repository.IColeccionRepository;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IColeccionService;
-import ar.edu.utn.frba.domain.Coleccion;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorAPI;
 import ar.edu.utn.frba.domain.main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ColeccionService implements IColeccionService {
     private IColeccionRepository coleccionRepository;
 
     @Autowired
-    private main.ImportadorAPI importadorAPI;
+    private ImportadorAPI importadorAPI;
 
     @Autowired
     private ImportadorCSV importadorCSV;

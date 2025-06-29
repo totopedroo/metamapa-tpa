@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Proxy.Domain;
 
-import ar.edu.utn.frba.Dtos.DesastreDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.DesastreDto;
 
 import java.util.List;
 

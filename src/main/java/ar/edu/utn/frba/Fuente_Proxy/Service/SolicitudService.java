@@ -1,14 +1,14 @@
 package ar.edu.utn.frba.Fuente_Proxy.Service;
 
-import ar.edu.utn.frba.Dtos.SolicitudInputDto;
-import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.SolicitudInputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Repository.ISolicitudRepository;
-import ar.edu.utn.frba.Service.IDetectorDeSpam;
-import ar.edu.utn.frba.Service.ISolicitudService;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Proxy.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Proxy.Repository.ISolicitudRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.IDetectorDeSpam;
+import ar.edu.utn.frba.Fuente_Proxy.Service.ISolicitudService;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

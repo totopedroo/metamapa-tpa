@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Repository;
 
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 
 import java.util.List;
 

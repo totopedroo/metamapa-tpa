@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Proxy.Repository;
 
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.SolicitudEliminacion;
 
 import java.util.List;
 

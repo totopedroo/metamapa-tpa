@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Repository;
 
-import ar.edu.utn.frba.Repository.ISolicitudRepository;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.ISolicitudRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.SolicitudEliminacion;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

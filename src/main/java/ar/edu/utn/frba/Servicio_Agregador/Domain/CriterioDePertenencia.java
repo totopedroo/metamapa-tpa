@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Domain;
 
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

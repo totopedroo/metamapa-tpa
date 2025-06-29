@@ -1,14 +1,14 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
-import ar.edu.utn.frba.Dtos.SolicitudInputDto;
-import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Repository.ISolicitudRepository;
-import ar.edu.utn.frba.Service.IDetectorDeSpam;
-import ar.edu.utn.frba.Service.ISolicitudService;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.ISolicitudRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.IDetectorDeSpam;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ISolicitudService;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

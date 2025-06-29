@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Proxy.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
 
 import java.time.LocalDate;
 import java.util.List;

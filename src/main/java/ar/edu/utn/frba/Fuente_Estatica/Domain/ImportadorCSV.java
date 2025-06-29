@@ -14,9 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import ar.edu.utn.frba.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.ContenidoMultimedia;
+
+
 import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
 import org.springframework.stereotype.Service;
 

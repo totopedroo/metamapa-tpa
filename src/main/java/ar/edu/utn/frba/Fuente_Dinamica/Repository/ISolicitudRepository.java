@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Repository;
 
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.SolicitudEliminacion;
 
 import java.util.List;
 

@@ -5,9 +5,7 @@ import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
 import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Fuente_Estatica.Repository.HechosEstaticosRepository;
 import ar.edu.utn.frba.Fuente_Estatica.Repository.IHechosEstaticosRepository;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.Importador;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService{
         nuevosHechos.stream().forEach(h->repositorio.save(h));
     }
 
-    public List<Hecho> sincronizar(){
+    public List<HechoEstatico> sincronizar(){
         importarHechos("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv");
         List<HechoEstatico> hechosASincronizar = new ArrayList<>();
         hechosASincronizar = repositorio.buscarNoSicronizados();
@@ -37,8 +35,8 @@ public class FuenteEstaticaService implements IFuenteEstaticaService{
 
     }
 
-    public Hecho convertir(HechoEstatico hecho) {
-        Hecho h = new Hecho(
+    public HechoEstatico convertir(HechoEstatico hecho) {
+        HechoEstatico h = new HechoEstatico(
                 hecho.getTitulo(),
                 hecho.getDescripcion(),
                 hecho.getCategoria(),
