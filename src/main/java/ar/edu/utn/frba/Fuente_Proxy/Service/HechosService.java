@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.Fuente_Proxy.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IHechosService;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Proxy.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Proxy.Service.IHechosService;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

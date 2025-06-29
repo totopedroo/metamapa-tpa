@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IHechosService;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.IHechosService;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

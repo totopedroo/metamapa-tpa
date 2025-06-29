@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Servicio_Agregador.Domain;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.Importador;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Importador;
 import lombok.Getter;
 
 import java.util.List;
@@ -21,9 +21,9 @@ public class Fuente {
 
   //public boolean esFuenteProxy() { return tipo == TipoFuente.PROXY;}
 
-  /*public List<Hecho> obtenerHechos() {
+  public List<Hecho> obtenerHechos() {
     return importador.importar(this);
-  }*/
+  }
 
 }
 

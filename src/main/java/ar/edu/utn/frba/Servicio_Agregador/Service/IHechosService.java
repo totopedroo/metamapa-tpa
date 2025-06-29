@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 
 import java.time.LocalDate;
 import java.util.List;

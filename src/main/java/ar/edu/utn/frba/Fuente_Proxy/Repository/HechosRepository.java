@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.Fuente_Proxy.Repository;
 
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.main;
+import ar.edu.utn.frba.Fuente_Proxy.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Fuente;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorAPI;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class HechosRepository implements IHechosRepository {
 
     public List<Hecho> hechosApi;
     public Fuente fuente;
-    public main.ImportadorAPI importador;
+    public ImportadorAPI importador;
     public List<Hecho> hechos;
 
     public HechosRepository() {

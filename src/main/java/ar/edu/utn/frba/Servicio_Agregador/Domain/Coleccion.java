@@ -1,25 +1,29 @@
 package ar.edu.utn.frba.Servicio_Agregador.Domain;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
-import ar.edu.utn.frba.domain.CriterioDePertenencia;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.CriterioDePertenencia;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.domain.Visualizador;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Getter
 @Setter
 public class Coleccion {
     public String id;
-    private List<ar.edu.utn.frba.domain.Hecho> hechos; //verificar nombre
+    private List<Hecho> hechos; //verificar nombre
     public String titulo;
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
     private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
     private List<Hecho> hechosConsensuados = new ArrayList<>();
+    private ModoNavegacionStrategy modoNavegacion;
+
 
     public Coleccion(String id, String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
         this.hechos = new ArrayList<>();
@@ -29,13 +33,13 @@ public class Coleccion {
         this.criterioDePertenencia = criterioDePertenencia;
     }
 
-    public List<ar.edu.utn.frba.domain.Hecho> getHechosVisibles() {
+    public List<Hecho> getHechosVisibles() {
         return hechos.stream()
             .filter(h -> !h.estaEliminado())
             .toList();
     } //REVISAR CON GETHECHOSFILTRADOS, SE PUEDE BORRAR UNA
 
-    public void setHecho(ar.edu.utn.frba.domain.Hecho hecho) {
+    public void setHecho(Hecho hecho) {
         if (hecho.estaEliminado()) {
             System.out.println("No se puede agregar el hecho '" + hecho.getTitulo() + "' porque fue eliminado.");
             return;
@@ -63,13 +67,6 @@ public class Coleccion {
         criterioDePertenencia.add(criterio);
     }
 
-    public void setAlgoritmoDeConsenso(AlgoritmoDeConsensoStrategy algoritmoDeConsenso) {
-        this.algoritmoDeConsenso = algoritmoDeConsenso;
-    }
-
-    public AlgoritmoDeConsensoStrategy getAlgoritmoDeConsenso() {
-        return algoritmoDeConsenso;
-    }
 
     public void actualizarHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
         if (algoritmoDeConsenso == null) {

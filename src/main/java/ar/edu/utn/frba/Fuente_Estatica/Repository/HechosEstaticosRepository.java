@@ -1,8 +1,7 @@
 package ar.edu.utn.frba.Fuente_Estatica.Repository;
 
 import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
-import ar.edu.utn.frba.domain.Hecho;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

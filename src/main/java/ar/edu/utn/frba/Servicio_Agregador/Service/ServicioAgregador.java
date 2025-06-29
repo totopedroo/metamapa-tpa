@@ -2,10 +2,10 @@ package ar.edu.utn.frba.Servicio_Agregador.Service;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.Impl.ColeccionService;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ColeccionService;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.domain.main;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

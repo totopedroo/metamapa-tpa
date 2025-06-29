@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Proxy.Domain;
 
-import ar.edu.utn.frba.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.domain.Contribuyente;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.ContenidoMultimedia;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Contribuyente;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.SolicitudEliminacion;
 import lombok.Getter;
 import lombok.Setter;
 

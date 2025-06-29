@@ -3,10 +3,10 @@ package ar.edu.utn.frba.Servicio_Agregador.Service;
 
 
 
-import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.domain.Coleccion;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 
 import java.util.List;
 

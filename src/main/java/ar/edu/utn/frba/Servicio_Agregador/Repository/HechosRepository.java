@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.Servicio_Agregador.Repository;
 
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.domain.main;
 import org.springframework.stereotype.Repository;
 

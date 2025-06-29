@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.ISeederService;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ISeederService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

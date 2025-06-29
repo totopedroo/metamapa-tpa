@@ -1,16 +1,16 @@
 package ar.edu.utn.frba.Controllers;
 
-import ar.edu.utn.frba.Dtos.ColeccionInputDto;
-import ar.edu.utn.frba.Dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 
-import ar.edu.utn.frba.Repository.Implementacion.ColeccionRepository;
-import ar.edu.utn.frba.Service.IColeccionService;
-import ar.edu.utn.frba.Service.ISeederService;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ISeederService;
 
-import ar.edu.utn.frba.Service.Impl.HechosService;
-import ar.edu.utn.frba.domain.Coleccion;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

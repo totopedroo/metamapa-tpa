@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Proxy.Domain;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.Importador;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.Importador;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public class Fuente {
   private String path;
-  private ar.edu.utn.frba.domain.Importador importador;
+  private Importador importador;
   private TipoFuente tipo;
 
   public Fuente(String path, Importador importador, TipoFuente tipo) {

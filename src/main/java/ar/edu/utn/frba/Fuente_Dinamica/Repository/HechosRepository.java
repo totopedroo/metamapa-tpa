@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Repository;
 
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.domain.Fuente;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.IHechosRepository;
+
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 import ar.edu.utn.frba.domain.main;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class HechosRepository implements IHechosRepository {
 
     public List<Hecho> hechosApi;
-    public Fuente fuente;
+
     public main.ImportadorAPI importador;
     public List<Hecho> hechos;
 

@@ -1,8 +1,4 @@
 package ar.edu.utn.frba.Servicio_Agregador.Domain;
-
-import ar.edu.utn.frba.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.domain.Contribuyente;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +6,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Contribuyente;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.ContenidoMultimedia;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 
 @Getter
 @Setter
@@ -18,18 +18,20 @@ public class Hecho {
     private String titulo;
     private String descripcion;
     private String categoria;
-    private Optional<ar.edu.utn.frba.domain.ContenidoMultimedia> contenidoMultimedia;
+    private Optional<ContenidoMultimedia> contenidoMultimedia;
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
     private List<String> etiquetas = new ArrayList<>();
-    private List<ar.edu.utn.frba.domain.SolicitudEliminacion> solicitudes = new ArrayList<>();
+    private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
+    private boolean consensuado;
+    private Fuente fuente;
 
-    public Hecho(String titulo, String descripcion, String categoria, ar.edu.utn.frba.domain.ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho) {
+    public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, boolean consensuado, Fuente fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -39,6 +41,8 @@ public class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
         this.idHecho = idHecho;
+        this.consensuado = consensuado;
+        this.fuente = fuente;
     }
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) {
@@ -86,7 +90,7 @@ public class Hecho {
         this.categoria = categoria;
     }
 
-    public ar.edu.utn.frba.domain.ContenidoMultimedia getContenidoMultimedia() {
+    public ContenidoMultimedia getContenidoMultimedia() {
         return contenidoMultimedia.orElse(null);
     }
 

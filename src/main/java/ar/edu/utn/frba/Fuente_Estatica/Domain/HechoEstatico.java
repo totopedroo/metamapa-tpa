@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Fuente_Estatica.Domain;
 
-import ar.edu.utn.frba.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.ContenidoMultimedia;
+
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public class HechoEstatico{
         private String categoria;
         private Optional<ContenidoMultimedia> contenidoMultimedia;
         private Double latitud;
+        private Etiqueta etiqueta;
         private Double longitud;
         private LocalDate fechaAcontecimiento;
         private LocalDate fechaCarga;
