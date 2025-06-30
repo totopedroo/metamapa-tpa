@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.domain;
+package ar.edu.utn.frba.Fuente_Proxy.Domain;
 
 import static java.util.stream.Collectors.toList;
 

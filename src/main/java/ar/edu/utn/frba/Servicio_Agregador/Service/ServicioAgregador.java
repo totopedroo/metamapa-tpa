@@ -2,6 +2,9 @@ package ar.edu.utn.frba.Servicio_Agregador.Service;
 
 import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.ImportadorAPI;
+import ar.edu.utn.frba.Fuente_Proxy.Domain.ImportadorMetaMapa;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Importador;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
@@ -23,11 +26,12 @@ public class ServicioAgregador {
   @Autowired
   private ColeccionService coleccionService;
 
-  public ServicioAgregador(ImportadorCSV importadorCSV, main.ImportadorAPI importadorAPI, IHechosRepository hechosRepository) {
+  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, ImportadorMetaMapa importadorMetaMapa, IHechosRepository hechosRepository) {
       this.hechosRepository = hechosRepository;
       this.fuentes = List.of(
-//        new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", importadorCSV, TipoFuente.LOCAL),
-        new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", importadorAPI, TipoFuente.PROXY)
+ //       new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", (Importador) importadorCSV, TipoFuente.LOCAL),
+        new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", (Importador) importadorAPI, TipoFuente.PROXY)
+ //       new Fuente("http://localhost:8080", (Importador) importadorMetaMapa, TipoFuente.PROXY) falta tener URL de otra instancia MetaMapa.
     );
   }
 

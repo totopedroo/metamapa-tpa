@@ -19,4 +19,5 @@ public interface IColeccionService {
     public Coleccion setColeccionApi();
     //public Coleccion setColeccionCsv();
     public void actualizarHechos(List<Hecho> nuevosHechos);
+    List<HechosOutputDto> navegarHechos(String id, String modo);
 }
