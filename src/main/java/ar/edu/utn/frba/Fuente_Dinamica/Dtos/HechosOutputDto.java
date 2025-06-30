@@ -1,6 +1,6 @@
-package ar.edu.utn.frba.Servicio_Agregador.Dtos;
+package ar.edu.utn.frba.Fuente_Dinamica.Dtos;
 
-import ar.edu.utn.frba.Servicio_Agregador.Domain.*;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -22,9 +22,14 @@ public class HechosOutputDto {
     private List<SolicitudEliminacion> solicitudes;
     private Contribuyente contribuyente;
     private boolean eliminado = false;
-    private boolean consensuado;
     private Fuente fuente;
     public HechosOutputDto() {
+    }
+
+    public HechosOutputDto(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, Contribuyente contribuyente, Object o, Long idHecho) {
+    }
+
+    public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
     }
 
     public static HechosOutputDto fromModel(Hecho hecho){

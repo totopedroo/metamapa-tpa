@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +64,8 @@ public class ImportadorAPI implements Importador {
                 dto.getFecha(),
                 LocalDate.now(),
                 dto.getId()
+
+
         );
     }
 

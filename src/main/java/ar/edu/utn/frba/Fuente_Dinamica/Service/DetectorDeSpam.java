@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Service.IDetectorDeSpam;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.IDetectorDeSpam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,40 +1,49 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IFuenteDinamicaService;
-import ar.edu.utn.frba.domain.FuenteDinamica;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.ContenidoMultimedia;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Contribuyente;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Fuente;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.IFuenteDinamicaService;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FuenteDinamicaService implements IFuenteDinamicaService {
 
-    @Autowired
+  /*  @Autowired
     private FuenteDinamica fuenteDinamica;
-
+*/
     @Autowired
     private IHechosRepository hechosRepository;
 
     @Override
     public HechosOutputDto crearHecho( HechosInputDto inputDto) {
-        Hecho hecho = fuenteDinamica.crearHecho(
-                inputDto.getContribuyente(),
+        Hecho hecho = new Hecho(
                 inputDto.getTitulo(),
                 inputDto.getDescripcion(),
                 inputDto.getCategoria(),
                 inputDto.getContenidoMultimedia().orElse(null),
                 inputDto.getLatitud(),
                 inputDto.getLongitud(),
-                inputDto.getFechaAcontecimiento()
+                inputDto.getFechaAcontecimiento(),
+                inputDto.getFechaCarga(),
+                inputDto.getIdHecho()
         );
+
 
         hecho.setContribuyente(inputDto.getContribuyente());
 
         return new HechosOutputDto(
-                hecho.getIdHecho(),
+
                 hecho.getTitulo(),
                 hecho.getDescripcion(),
                 hecho.getCategoria(),
@@ -43,14 +52,13 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getLongitud(),
                 hecho.getFechaAcontecimiento(),
                 hecho.getFechaCarga(),
-                hecho.getEtiquetas(),
-                hecho.getSolicitudes(),
                 hecho.getContribuyente()
+                hecho.getIdHecho()
         );
     }
 
-    @Override
-    public HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto) {
+    //@Override
+  /*  public HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto) {
         Hecho hecho = hechosRepository.findById(idHecho);
         if (hecho == null) {
             return null;
@@ -83,5 +91,5 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getSolicitudes(),
                 hecho.getContribuyente()
         );
-    }
-} 
+    }*/
+}

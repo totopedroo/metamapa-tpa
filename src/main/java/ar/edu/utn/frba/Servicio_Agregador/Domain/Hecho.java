@@ -27,11 +27,11 @@ public class Hecho {
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
-    private boolean consensuado;
-    private Fuente fuente;
+    private Optional<Boolean> consensuado;
+    private Optional <Fuente> fuente;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, boolean consensuado, Fuente fuente) {
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -41,8 +41,7 @@ public class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
         this.idHecho = idHecho;
-        this.consensuado = consensuado;
-        this.fuente = fuente;
+
     }
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) {
@@ -137,4 +136,7 @@ public class Hecho {
     public void setIdHecho(Long idHecho) {
         this.idHecho = idHecho;
     }
+
+
+
 }

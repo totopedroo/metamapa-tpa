@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosOutputDto;
 
 public interface IFuenteDinamicaService {
     /**
@@ -19,5 +19,5 @@ public interface IFuenteDinamicaService {
      * @param inputDto Los nuevos datos del hecho
      * @return El hecho editado o null si no se pudo editar
      */
-    HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto);
+    //HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto);
 } 

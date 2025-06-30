@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 
 import java.time.LocalDate;
 import java.util.List;

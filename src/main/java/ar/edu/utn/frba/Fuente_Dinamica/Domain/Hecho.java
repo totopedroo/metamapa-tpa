@@ -133,4 +133,41 @@ public class Hecho {
     public void setIdHecho(Long idHecho) {
         this.idHecho = idHecho;
     }
+
+    public void setContenidoMultimedia(Optional<ContenidoMultimedia> contenidoMultimedia) {
+        this.contenidoMultimedia = contenidoMultimedia;
+    }
+
+    public boolean isEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(boolean eliminado) {
+        this.eliminado = eliminado;
+    }
+
+    public Contribuyente getContribuyente() {
+        return contribuyente;
+    }
+
+    public void setContribuyente(Contribuyente contribuyente) {
+        this.contribuyente = contribuyente;
+    }
+
+    public List<SolicitudEliminacion> getSolicitudes() {
+        return solicitudes;
+    }
+
+    public void setSolicitudes(List<SolicitudEliminacion> solicitudes) {
+        this.solicitudes = solicitudes;
+    }
+
+    public List<String> getEtiquetas() {
+        return etiquetas;
+    }
+
+    public void setEtiquetas(List<String> etiquetas) {
+        this.etiquetas = etiquetas;
+    }
+
 }

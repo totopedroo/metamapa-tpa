@@ -1,14 +1,14 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Dtos.SolicitudInputDto;
-import ar.edu.utn.frba.Dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.SolicitudInputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Repository.ISolicitudRepository;
-import ar.edu.utn.frba.Service.IDetectorDeSpam;
-import ar.edu.utn.frba.Service.ISolicitudService;
-import ar.edu.utn.frba.domain.Hecho;
-import ar.edu.utn.frba.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.ISolicitudRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.IDetectorDeSpam;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.ISolicitudService;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
