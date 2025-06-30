@@ -66,4 +66,13 @@ public class ColeccionController {
         }
     }
 
+    @GetMapping("/colecciones/{id}/hechos/navegacion")
+    public List<HechosOutputDto> navegarHechos(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "irrestricta") String modo
+    ) {
+        return coleccionService.navegarHechos(id, modo);
+    }
+
+
 }
