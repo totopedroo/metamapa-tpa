@@ -42,12 +42,12 @@ public class ConexionMetamapas {
         return hechos;
     }
 
-    public static void main(String[] args) {
-        ConexionMetamapas cliente = new ConexionMetamapas();
-        List<String> urls = Arrays.asList(
-                "https://metamapa1.com/api/hechos",
-                "https://metamapa2.org/api/hechos"
-        );
+        public static void main(String[] args) {
+            ConexionMetamapas cliente = new ConexionMetamapas();
+            List<String> urls = Arrays.asList(
+                    "https://metamapa1.com/api/hechos",
+                    "https://metamapa2.org/api/hechos"
+            );
 
         List<Hecho> hechosExternos = cliente.obtenerHechosDesdeMultiples(urls);
         hechosExternos.forEach(System.out::println);

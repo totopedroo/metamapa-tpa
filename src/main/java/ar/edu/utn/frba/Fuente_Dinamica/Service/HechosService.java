@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.Fuente_Dinamica.Service;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Repository.IHechosRepository;
-import ar.edu.utn.frba.Service.IHechosService;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Fuente_Dinamica.Repository.IHechosRepository;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.IHechosService;
+import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

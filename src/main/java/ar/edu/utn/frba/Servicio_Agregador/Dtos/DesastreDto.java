@@ -20,4 +20,5 @@ public class DesastreDto {
     @JsonProperty("fecha_hecho")
     private LocalDate fecha;
 
+
 }
