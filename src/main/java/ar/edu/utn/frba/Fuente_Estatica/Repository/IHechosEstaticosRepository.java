@@ -1,14 +1,14 @@
 package ar.edu.utn.frba.Fuente_Estatica.Repository;
 
-import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.Hecho;
 
 import java.util.List;
 
 public interface IHechosEstaticosRepository {
 
-    public void save(HechoEstatico hecho);
+    public void save(Hecho hecho);
 
-    public List<HechoEstatico> findAll();
+    public List<Hecho> findAll();
 
-    public List<HechoEstatico> buscarNoSicronizados();
+    public List<Hecho> buscarNoSicronizados();
 }

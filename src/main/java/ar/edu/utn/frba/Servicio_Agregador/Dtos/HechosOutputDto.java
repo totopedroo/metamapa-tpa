@@ -27,6 +27,9 @@ public class HechosOutputDto {
     public HechosOutputDto() {
     }
 
+    public HechosOutputDto(Object o, String s, Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8, Object o9, Object o10) {
+    }
+
     public static HechosOutputDto fromModel(Hecho hecho){
         HechosOutputDto dto = new HechosOutputDto();
         dto.idHecho = hecho.getIdHecho();

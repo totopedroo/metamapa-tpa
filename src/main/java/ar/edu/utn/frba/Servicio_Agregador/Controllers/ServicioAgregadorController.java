@@ -1,12 +1,9 @@
-package ar.edu.utn.frba.Controllers;
+package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
-import ar.edu.utn.frba.Dtos.HechosInputDto;
-import ar.edu.utn.frba.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Service.Impl.FuenteDinamicaService;
-import ar.edu.utn.frba.Service.ServicioAgregador;
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Dinamica.Service.FuenteDinamicaService;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ServicioAgregador;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -31,13 +28,15 @@ public class ServicioAgregadorController {
     public String sincronizarHechos() {
         servicioAgregador.sincronizarConRepositorio();
         return "Hechos sincronizados con el repositorio en memoria.";
-    }
+    }*/
 
    /* @GetMapping("/refrescar") // Para probar que anda el refresco automatico de colecciones.
     public ResponseEntity<String> refrescarManual() {
         servicioAgregador.refrescarHechosPeriodicamente();
         return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
-    }*/
+    }
+
+    /*
 
     @PostMapping("/crear")
     public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
@@ -54,22 +53,22 @@ public class ServicioAgregadorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
         }
     }
-
-    @PatchMapping("/editar/{hechoId}")
+*/
+ /*   @PatchMapping("/editar/{hechoId}")
     public ResponseEntity<HechosOutputDto> editarHecho(@RequestBody HechosOutputDto hechosOutputDto,@PathVariable Long hechoId)
-        {
-            try {
+    {
+        try {
 
-                HechosOutputDto editedHecho = fuenteDinamicaService.editarHecho(hechosOutputDto.getIdHecho(), hechosOutputDto );
-                return new ResponseEntity<>(editedHecho, HttpStatus.CREATED);
-            } catch (IllegalArgumentException e) {
+            HechosOutputDto editedHecho = fuenteDinamicaService.editarHecho(hechosOutputDto.getIdHecho(), hechosOutputDto );
+            return new ResponseEntity<>(editedHecho, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
 
-                return ResponseEntity.badRequest().body(new HechosOutputDto(null, "Error al crear el hecho: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
-            } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HechosOutputDto(null, "Error al crear el hecho: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
+        } catch (Exception e) {
 
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
-            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
         }
-    }
+    } */ // pase a dinamica
+}
 
 

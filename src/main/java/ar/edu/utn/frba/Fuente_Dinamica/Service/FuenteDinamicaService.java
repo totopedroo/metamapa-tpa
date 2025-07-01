@@ -52,19 +52,19 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getLongitud(),
                 hecho.getFechaAcontecimiento(),
                 hecho.getFechaCarga(),
-                hecho.getContribuyente()
+                hecho.getContribuyente(),
                 hecho.getIdHecho()
         );
     }
 
     //@Override
-  /*  public HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto) {
+   public HechosOutputDto editarHecho( Long idHecho, HechosOutputDto outputDto) {
         Hecho hecho = hechosRepository.findById(idHecho);
         if (hecho == null) {
             return null;
         }
 
-        boolean editado = fuenteDinamica.editarHecho(
+      /*  boolean editado = editarHecho(
                 outputDto.getContribuyente(),
                 hecho,
                 outputDto.getTitulo(),
@@ -76,7 +76,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
         if (!editado) {
             return null;
         }
-
+*/
         return new HechosOutputDto(
                 hecho.getIdHecho(),
                 hecho.getTitulo(),
@@ -91,5 +91,5 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 hecho.getSolicitudes(),
                 hecho.getContribuyente()
         );
-    }*/
+    }
 }

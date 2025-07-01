@@ -14,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import ar.edu.utn.frba.Fuente_Estatica.Domain.ContenidoMultimedia;
 
-
-import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,8 +25,8 @@ public class ImportadorCSV {
   private static final int EXPECTED_COLUMNS = 7;
   private final SecureRandom secureRandom = new SecureRandom();
 
-  public List<HechoEstatico> importar(String filePathString) {
-    List<HechoEstatico> hechos = new ArrayList<>();
+  public List<Hecho> importar(String filePathString) {
+    List<Hecho> hechos = new ArrayList<>();
 
 
     if (filePathString == null || filePathString.trim().isEmpty()) {
@@ -103,7 +100,7 @@ public class ImportadorCSV {
 
         LocalDate fechaCarga = LocalDate.now();
 
-        HechoEstatico hecho = new HechoEstatico(
+        Hecho hecho = new Hecho(
                 titulo,
                 descripcion,
                 categoria,
