@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.Fuente_Estatica.Repository;
 
-import ar.edu.utn.frba.Fuente_Estatica.Domain.HechoEstatico;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.Hecho;
 
 import org.springframework.stereotype.Repository;
 
@@ -10,23 +10,23 @@ import java.util.List;
 
 public class HechosEstaticosRepository implements IHechosEstaticosRepository {
 
-    private List<HechoEstatico> hechos;
+    private List<Hecho> hechos;
 
     public HechosEstaticosRepository() {
-        hechos = new ArrayList<HechoEstatico>();
+        hechos = new ArrayList<Hecho>();
     }
     @Override
-    public void save(HechoEstatico hecho) {
+    public void save(Hecho hecho) {
         hechos.add(hecho);
     }
 
     @Override
-    public List<HechoEstatico> findAll() {
+    public List<Hecho> findAll() {
         return hechos;
     }
 
     @Override
-    public List<HechoEstatico> buscarNoSicronizados() {
+    public List<Hecho> buscarNoSicronizados() {
         return hechos.stream().filter(h-> h.getEstaSincronizado()==false).toList();
     }
 }

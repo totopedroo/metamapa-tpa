@@ -89,7 +89,7 @@ public class ServicioAgregador {
       if (coleccion.getAlgoritmoDeConsenso() != null) {
         List<Hecho> consensuados = coleccion.getAlgoritmoDeConsenso().obtenerHechosConsensuados(hechosPorFuente);
 
-        coleccion.setHechos(consensuados); // o como sea que agregues los hechos consensuados
+        coleccion.setHechos(consensuados);
         System.out.println("Colección '" + coleccion.getTitulo() + "' actualizada con " + consensuados.size() + " hechos consensuados.");
       } else {
         System.out.println("Colección '" + coleccion.getTitulo() + "' no tiene algoritmo de consenso definido.");

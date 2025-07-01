@@ -8,7 +8,7 @@ public class ApiDesastresResponse {
   private int current_page;
   private List<DesastreDto> data;
 
-  public List<DesastreDto> getData() {
+  public List<ar.edu.utn.frba.Servicio_Agregador.Dtos.DesastreDto> getData() {
     return data;
   }
 

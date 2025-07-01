@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.Fuente_Estatica.Service;
 
-import ar.edu.utn.frba.domain.Hecho;
+import ar.edu.utn.frba.Fuente_Estatica.Domain.Hecho;
 
 import java.util.List;
 
 public interface IFuenteEstaticaService {
     public List<Hecho> sincronizar();
+    public void importarHechos(String path);
+    public Hecho convertir(Hecho hecho);
 }

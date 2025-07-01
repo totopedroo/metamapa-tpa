@@ -32,6 +32,9 @@ public class HechosOutputDto {
     public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
     }
 
+    public HechosOutputDto(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, Contribuyente contribuyente, Long idHecho) {
+    }
+
     public static HechosOutputDto fromModel(Hecho hecho){
         HechosOutputDto dto = new HechosOutputDto();
         dto.idHecho = hecho.getIdHecho();
