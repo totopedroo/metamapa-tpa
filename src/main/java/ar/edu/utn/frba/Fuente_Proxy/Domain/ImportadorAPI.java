@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+@Service("importadorProxyAPI")
 public class ImportadorAPI implements Importador {
 
     @Autowired
@@ -49,12 +49,11 @@ public class ImportadorAPI implements Importador {
                 URL_API,
                 HttpMethod.GET,
                 entity,
-                ApiDesastresResponse.class
-        );
+                ApiDesastresResponse.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<DesastreDto> desastres = response.getBody().getData();
-            //desastres.forEach(dto -> System.out.println("DTO recibido: " + dto));
+            // desastres.forEach(dto -> System.out.println("DTO recibido: " + dto));
             return desastres.stream()
                     .map(this::mapearAHecho)
                     .collect(Collectors.toList());
@@ -74,8 +73,7 @@ public class ImportadorAPI implements Importador {
                 dto.getLongitud(),
                 dto.getFecha(),
                 LocalDate.now(),
-                dto.getId()
-        );
+                dto.getId());
     }
 
 }

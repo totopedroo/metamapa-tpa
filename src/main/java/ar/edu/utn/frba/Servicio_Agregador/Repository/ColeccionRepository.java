@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
-@Repository
+@Repository("coleccionRepository")
 public class ColeccionRepository implements IColeccionRepository {
 
     private final main.ImportadorAPI importadorAPI;
@@ -23,7 +22,7 @@ public class ColeccionRepository implements IColeccionRepository {
         this.importadorAPI = importadorAPI;
     }
 
-    public Coleccion create(ColeccionInputDto coleccionInputDto){
+    public Coleccion create(ColeccionInputDto coleccionInputDto) {
         if (coleccionInputDto == null) {
             throw new IllegalArgumentException("no puede ser null");
         }
@@ -32,8 +31,8 @@ public class ColeccionRepository implements IColeccionRepository {
                 newId,
                 coleccionInputDto.getTitulo(),
                 coleccionInputDto.getDescripcion(),
-                coleccionInputDto.getCriterioDePertenencia() != null ? coleccionInputDto.getCriterioDePertenencia() : new ArrayList<>()
-        );
+                coleccionInputDto.getCriterioDePertenencia() != null ? coleccionInputDto.getCriterioDePertenencia()
+                        : new ArrayList<>());
         if (coleccionInputDto.getHechos() != null) {
             for (Hecho hecho : coleccionInputDto.getHechos()) {
 
@@ -46,14 +45,12 @@ public class ColeccionRepository implements IColeccionRepository {
 
     @Override
     public Coleccion findById(String id) {
-        return this.colecciones.stream().
-                filter(g ->g.getId().equals(id)).findFirst().
-                orElse(null);
+        return this.colecciones.stream().filter(g -> g.getId().equals(id)).findFirst().orElse(null);
     }
 
     @Override
     public List<Coleccion> findAll() {
-        //setColeccionEstatica(); //para pruebas
+        // setColeccionEstatica(); //para pruebas
         return colecciones;
     }
 
@@ -66,6 +63,5 @@ public class ColeccionRepository implements IColeccionRepository {
     public void delete(Coleccion coleccion) {
         colecciones.remove(coleccion);
     }
-
 
 }

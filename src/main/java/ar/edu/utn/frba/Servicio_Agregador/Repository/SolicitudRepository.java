@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@Repository("solicitudAgregadorRepository")
 public class SolicitudRepository implements ISolicitudRepository {
 
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();

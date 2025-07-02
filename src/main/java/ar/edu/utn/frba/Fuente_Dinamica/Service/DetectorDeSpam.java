@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+@Component("detectorSpamDinamica")
 public class DetectorDeSpam implements IDetectorDeSpam {
 
     private static final List<String> PALABRAS_SPAM = List.of("oferta", "urgente", "dinero", "compre ahora");
@@ -16,7 +16,7 @@ public class DetectorDeSpam implements IDetectorDeSpam {
         return PALABRAS_SPAM.stream().anyMatch(lower::contains);
     }
 
-    public boolean justificacionRepetida(String justificacion, String justificacionAntigua ){
+    public boolean justificacionRepetida(String justificacion, String justificacionAntigua) {
         return justificacion.equals(justificacionAntigua);
     }
 }

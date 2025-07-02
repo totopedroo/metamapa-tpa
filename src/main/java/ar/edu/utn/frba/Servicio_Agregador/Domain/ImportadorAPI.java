@@ -4,7 +4,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Domain.ApiDesastresResponse;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Importador;
-import ar.edu.utn.frba.Servicio_Agregador.Dtos.DesastreDto;
+import ar.edu.utn.frba.Fuente_Proxy.Dtos.DesastreDto;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ApiAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("importadorAgregadorAPI")
 public class ImportadorAPI implements Importador {
 
     @Autowired
@@ -38,12 +38,11 @@ public class ImportadorAPI implements Importador {
                 URL_API,
                 HttpMethod.GET,
                 entity,
-                ApiDesastresResponse.class
-        );
+                ApiDesastresResponse.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<DesastreDto> desastres = response.getBody().getData();
-            //desastres.forEach(dto -> System.out.println("DTO recibido: " + dto));
+            // desastres.forEach(dto -> System.out.println("DTO recibido: " + dto));
             return desastres.stream()
                     .map(this::mapearAHecho)
                     .collect(Collectors.toList());
@@ -64,7 +63,6 @@ public class ImportadorAPI implements Importador {
                 dto.getFecha(),
                 LocalDate.now(),
                 dto.getId()
-
 
         );
     }

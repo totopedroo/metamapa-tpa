@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-@Service
+@Service("apiAuthAgregadorService")
 public class ApiAuthService {
 
     private static final String LOGIN_URL = "https://api-ddsi.disilab.ar/public/api/login";
@@ -29,7 +29,7 @@ public class ApiAuthService {
             Map<String, Object> responseBody = response.getBody();
             Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
             String token = (String) data.get("access_token");
-            //System.out.println("TOKEN OBTENIDO: " + token);
+            // System.out.println("TOKEN OBTENIDO: " + token);
             return token;
         }
 
