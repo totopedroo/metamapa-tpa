@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service.Consenso;
 
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
 
   @Override

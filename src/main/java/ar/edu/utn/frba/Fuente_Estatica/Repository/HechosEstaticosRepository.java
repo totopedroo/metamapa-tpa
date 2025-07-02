@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-@Repository
 
+@Repository("hechosEstaticosRepository")
 public class HechosEstaticosRepository implements IHechosEstaticosRepository {
 
     private List<Hecho> hechos;
@@ -15,6 +15,7 @@ public class HechosEstaticosRepository implements IHechosEstaticosRepository {
     public HechosEstaticosRepository() {
         hechos = new ArrayList<Hecho>();
     }
+
     @Override
     public void save(Hecho hecho) {
         hechos.add(hecho);
@@ -27,6 +28,6 @@ public class HechosEstaticosRepository implements IHechosEstaticosRepository {
 
     @Override
     public List<Hecho> buscarNoSicronizados() {
-        return hechos.stream().filter(h-> h.getEstaSincronizado()==false).toList();
+        return hechos.stream().filter(h -> h.getEstaSincronizado() == false).toList();
     }
 }

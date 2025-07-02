@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service.Consenso;
 
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
 
   @Override
@@ -32,7 +34,8 @@ public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
   }
 
   private boolean todosIguales(List<Hecho> hechos) {
-    if (hechos.isEmpty()) return true;
+    if (hechos.isEmpty())
+      return true;
     Hecho primero = hechos.get(0);
     return hechos.stream().allMatch(h -> h.getCategoria().equals(primero.getCategoria())
         && h.getLatitud().equals(primero.getLatitud())

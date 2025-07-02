@@ -26,12 +26,17 @@ public class ServicioAgregador {
   @Autowired
   private ColeccionService coleccionService;
 
-  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI, ImportadorMetaMapa importadorMetaMapa, IHechosRepository hechosRepository) {
-      this.hechosRepository = hechosRepository;
-      this.fuentes = List.of(
- //       new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", (Importador) importadorCSV, TipoFuente.LOCAL),
-        new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", (Importador) importadorAPI, TipoFuente.PROXY)
- //       new Fuente("http://localhost:8080", (Importador) importadorMetaMapa, TipoFuente.PROXY) falta tener URL de otra instancia MetaMapa.
+  public ServicioAgregador(ImportadorCSV importadorCSV, ImportadorAPI importadorAPI,
+      ImportadorMetaMapa importadorMetaMapa, IHechosRepository hechosRepository) {
+    this.hechosRepository = hechosRepository;
+    this.fuentes = List.of(
+    // new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", (Importador)
+    // importadorCSV, TipoFuente.LOCAL),
+    // new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", (Importador)
+    // importadorAPI, TipoFuente.PROXY) // Comentado temporalmente por
+    // incompatibilidad de tipos
+    // new Fuente("http://localhost:8080", (Importador) importadorMetaMapa,
+    // TipoFuente.PROXY) falta tener URL de otra instancia MetaMapa.
     );
   }
 
@@ -46,16 +51,17 @@ public class ServicioAgregador {
     }
     return hechos;
   }
-/*
-  public void sincronizarConRepositorio() {
-    List<Hecho> hechos = agregarHechosDesdeTodasLasFuentes();
-    //System.out.println("HECHOS OBTENIDOS DE FUENTES: " + hechos);
-    for (Hecho hecho : hechos) {
-      hechosRepository.save(hecho);
-    }
-  }
-*/
-  @Scheduled (fixedRate = 3600000) // cada 1 hora (en milisegundos)
+
+  /*
+   * public void sincronizarConRepositorio() {
+   * List<Hecho> hechos = agregarHechosDesdeTodasLasFuentes();
+   * //System.out.println("HECHOS OBTENIDOS DE FUENTES: " + hechos);
+   * for (Hecho hecho : hechos) {
+   * hechosRepository.save(hecho);
+   * }
+   * }
+   */
+  @Scheduled(fixedRate = 3600000) // cada 1 hora (en milisegundos)
   public void refrescarHechosPeriodicamente() {
     System.out.println("⏱️ Iniciando refresco automático de colecciones...");
 
@@ -67,7 +73,6 @@ public class ServicioAgregador {
     }
 
     coleccionService.actualizarHechos(nuevosHechos);
-
 
     System.out.println("Refresco automático finalizado.");
 
@@ -90,7 +95,8 @@ public class ServicioAgregador {
         List<Hecho> consensuados = coleccion.getAlgoritmoDeConsenso().obtenerHechosConsensuados(hechosPorFuente);
 
         coleccion.setHechos(consensuados);
-        System.out.println("Colección '" + coleccion.getTitulo() + "' actualizada con " + consensuados.size() + " hechos consensuados.");
+        System.out.println("Colección '" + coleccion.getTitulo() + "' actualizada con " + consensuados.size()
+            + " hechos consensuados.");
       } else {
         System.out.println("Colección '" + coleccion.getTitulo() + "' no tiene algoritmo de consenso definido.");
       }

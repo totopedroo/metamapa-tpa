@@ -15,6 +15,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.domain.main;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,10 +24,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
+@Service("coleccionService")
 public class ColeccionService implements IColeccionService {
 
     @Autowired
+    @Qualifier("coleccionRepository")
     private IColeccionRepository coleccionRepository;
 
     @Autowired
@@ -36,6 +38,7 @@ public class ColeccionService implements IColeccionService {
     private ImportadorCSV importadorCSV;
 
     @Autowired
+    @Qualifier("hechosAgregadorRepository")
     private IHechosRepository hechosRepository;
 
     @Autowired
@@ -74,14 +77,14 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> hechosImportados;
 
-        Fuente fuente = new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", this.importadorAPI, TipoFuente.PROXY);
+        Fuente fuente = new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", this.importadorAPI,
+                TipoFuente.PROXY);
         hechosImportados = this.importadorAPI.importar(fuente);
         Coleccion coleccion = new Coleccion(
                 UUID.randomUUID().toString(),
                 "COLECCION API",
                 "Colección creada a partir de datos de API",
-                new ArrayList<>()
-        );
+                new ArrayList<>());
         if (hechosImportados != null) {
             for (Hecho hecho : hechosImportados) {
                 if (hecho != null) {
@@ -93,26 +96,29 @@ public class ColeccionService implements IColeccionService {
         return coleccion;
     }
 
-
- /*public Coleccion setColeccionCsv() {
-     List<Hecho> hechosImportadosCSV;
-     Fuente fuente = new Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv", this.importadorCSV, TipoFuente.LOCAL);
-     hechosImportadosCSV = this.importadorCSV.importar(fuente);
-     Coleccion coleccionCSV = new Coleccion(
-             UUID.randomUUID().toString(),
-             "COLECCION CSV",
-             "Colección creada a partir de datos de CSV",
-             new ArrayList<>()
-     );
-        coleccionCSV.setHechos(hechosImportadosCSV);
-        coleccionRepository.save(coleccionCSV);
-        return coleccionCSV;
-    }
-*/
+    /*
+     * public Coleccion setColeccionCsv() {
+     * List<Hecho> hechosImportadosCSV;
+     * Fuente fuente = new
+     * Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv",
+     * this.importadorCSV, TipoFuente.LOCAL);
+     * hechosImportadosCSV = this.importadorCSV.importar(fuente);
+     * Coleccion coleccionCSV = new Coleccion(
+     * UUID.randomUUID().toString(),
+     * "COLECCION CSV",
+     * "Colección creada a partir de datos de CSV",
+     * new ArrayList<>()
+     * );
+     * coleccionCSV.setHechos(hechosImportadosCSV);
+     * coleccionRepository.save(coleccionCSV);
+     * return coleccionCSV;
+     * }
+     */
     public void actualizarHechos(List<Hecho> nuevosHechos) {
         for (Coleccion coleccion : coleccionRepository.findAll()) {
             for (Hecho hecho : nuevosHechos) {
-                if (hecho.estaEliminado()) continue;
+                if (hecho.estaEliminado())
+                    continue;
 
                 boolean cumple = coleccion.getCriterioDePertenencia()
                         .stream()
@@ -137,7 +143,8 @@ public class ColeccionService implements IColeccionService {
             throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
         }
         if (hecho.estaEliminado()) { //
-            throw new IllegalArgumentException("El hecho '" + hecho.getTitulo() + "' está marcado como eliminado y no puede ser agregado.");
+            throw new IllegalArgumentException(
+                    "El hecho '" + hecho.getTitulo() + "' está marcado como eliminado y no puede ser agregado.");
         }
         coleccion.setHecho(hecho); //
         return coleccionOutputDto(coleccion); // Convert to DTO for the response
@@ -159,8 +166,7 @@ public class ColeccionService implements IColeccionService {
                     dto.getLongitud(),
                     dto.getFechaAcontecimiento(),
                     dto.getFechaCarga(),
-                    dto.getIdHecho()
-            );
+                    dto.getIdHecho());
             h.setEtiquetas(dto.getEtiquetas());
             h.setSolicitudes(dto.getSolicitudes());
             h.setContribuyente(dto.getContribuyente());

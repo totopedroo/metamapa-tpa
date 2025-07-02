@@ -10,18 +10,22 @@ import ar.edu.utn.frba.Fuente_Dinamica.Service.ISolicitudService;
 import ar.edu.utn.frba.Fuente_Dinamica.Domain.Hecho;
 import ar.edu.utn.frba.Fuente_Dinamica.Domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("solicitudDinamicaService")
 public class SolicitudService implements ISolicitudService {
 
     @Autowired
+    @Qualifier("hechosDinamicaRepository")
     private IHechosRepository hechosRepository;
 
     @Autowired
+    @Qualifier("solicitudDinamicaRepository")
     private ISolicitudRepository solicitudRepository;
 
     @Autowired
+    @Qualifier("detectorSpamDinamica")
     private IDetectorDeSpam detectorDeSpam;
 
     @SuppressWarnings("checkstyle:Indentation")
@@ -36,14 +40,16 @@ public class SolicitudService implements ISolicitudService {
         System.out.println("Longitud justificación: " + inputDto.getJustificacion().length());
 
         boolean justificacionSpam = false;
-        if(hecho.getSolicitudes().size() > 0){
-            justificacionSpam = hecho.getSolicitudes().stream().anyMatch
-                    (solicitud -> detectorDeSpam.justificacionRepetida(solicitud.getJustificacion(), inputDto.getJustificacion()));
+        if (hecho.getSolicitudes().size() > 0) {
+            justificacionSpam = hecho.getSolicitudes().stream().anyMatch(solicitud -> detectorDeSpam
+                    .justificacionRepetida(solicitud.getJustificacion(), inputDto.getJustificacion()));
 
-        };
+        }
+        ;
         try {
             if (detectorDeSpam.esSpam(inputDto.getJustificacion()) || justificacionSpam) {
-                SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
+                SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(),
+                        inputDto.getIdHecho());
                 solicitudSpam.rechazarSolicitud();
                 solicitudRepository.guardarSolicitud(solicitudSpam);
 
@@ -55,7 +61,8 @@ public class SolicitudService implements ISolicitudService {
                 return dto;
             }
 
-            SolicitudEliminacion solicitud = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
+            SolicitudEliminacion solicitud = new SolicitudEliminacion(inputDto.getJustificacion(),
+                    inputDto.getIdHecho());
             hecho.agregarSolicitud(solicitud);
 
             solicitudRepository.guardarSolicitud(solicitud);

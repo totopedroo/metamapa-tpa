@@ -5,23 +5,27 @@ import ar.edu.utn.frba.Fuente_Proxy.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.Fuente_Proxy.Repository.IHechosRepository;
 import ar.edu.utn.frba.Fuente_Proxy.Repository.ISolicitudRepository;
-import ar.edu.utn.frba.Fuente_Dinamica.Service.IDetectorDeSpam;
+import ar.edu.utn.frba.Fuente_Proxy.Service.IDetectorDeSpam;
 import ar.edu.utn.frba.Fuente_Proxy.Service.ISolicitudService;
 import ar.edu.utn.frba.Fuente_Proxy.Domain.Hecho;
 import ar.edu.utn.frba.Fuente_Proxy.Domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("solicitudProxyService")
 public class SolicitudService implements ISolicitudService {
 
     @Autowired
+    @Qualifier("hechosProxyRepository")
     private IHechosRepository hechosRepository;
 
     @Autowired
+    @Qualifier("solicitudProxyRepository")
     private ISolicitudRepository solicitudRepository;
 
     @Autowired
+    @Qualifier("detectorSpamProxy")
     private IDetectorDeSpam detectorDeSpam;
 
     @SuppressWarnings("checkstyle:Indentation")
@@ -36,14 +40,16 @@ public class SolicitudService implements ISolicitudService {
         System.out.println("Longitud justificación: " + inputDto.getJustificacion().length());
 
         boolean justificacionSpam = false;
-        if(hecho.getSolicitudes().size() > 0){
-            justificacionSpam = hecho.getSolicitudes().stream().anyMatch
-                    (solicitud -> detectorDeSpam.justificacionRepetida(solicitud.getJustificacion(), inputDto.getJustificacion()));
+        if (hecho.getSolicitudes().size() > 0) {
+            justificacionSpam = hecho.getSolicitudes().stream().anyMatch(solicitud -> detectorDeSpam
+                    .justificacionRepetida(solicitud.getJustificacion(), inputDto.getJustificacion()));
 
-        };
+        }
+        ;
         try {
             if (detectorDeSpam.esSpam(inputDto.getJustificacion()) || justificacionSpam) {
-                SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
+                SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(inputDto.getJustificacion(),
+                        inputDto.getIdHecho());
                 solicitudSpam.rechazarSolicitud();
                 solicitudRepository.guardarSolicitud(solicitudSpam);
 
@@ -55,7 +61,8 @@ public class SolicitudService implements ISolicitudService {
                 return dto;
             }
 
-            SolicitudEliminacion solicitud = new SolicitudEliminacion(inputDto.getJustificacion(), inputDto.getIdHecho());
+            SolicitudEliminacion solicitud = new SolicitudEliminacion(inputDto.getJustificacion(),
+                    inputDto.getIdHecho());
             hecho.agregarSolicitud(solicitud);
 
             solicitudRepository.guardarSolicitud(solicitud);

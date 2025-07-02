@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +26,6 @@ public class ImportadorCSV {
 
   public List<Hecho> importar(String filePathString) {
     List<Hecho> hechos = new ArrayList<>();
-
 
     if (filePathString == null || filePathString.trim().isEmpty()) {
       throw new IllegalArgumentException("La ruta del archivo CSV es nula o está vacía.");
@@ -55,8 +53,11 @@ public class ImportadorCSV {
         }
         String[] values = trimmedLine.split(CSV_DELIMITER);
 
+        validarLinea(values, lineNumber);
+
         if (values.length < EXPECTED_COLUMNS) {
-          throw new RuntimeException("Fila con datos insuficientes en la línea " + lineNumber + ". Se esperaban " + EXPECTED_COLUMNS + " columnas, se encontraron " + values.length + ". Línea: " + trimmedLine);
+          throw new RuntimeException("Fila con datos insuficientes en la línea " + lineNumber + ". Se esperaban "
+              + EXPECTED_COLUMNS + " columnas, se encontraron " + values.length + ". Línea: " + trimmedLine);
         }
 
         long idHecho;
@@ -94,23 +95,25 @@ public class ImportadorCSV {
         if (values.length > 7) {
           String etiquetasStr = values[7].trim();
           if (!"null".equalsIgnoreCase(etiquetasStr) && !etiquetasStr.isEmpty()) {
-
+            String[] etiquetasArray = etiquetasStr.split(",");
+            for (String etiqueta : etiquetasArray) {
+              etiquetas.add(etiqueta.trim());
+            }
           }
         }
 
         LocalDate fechaCarga = LocalDate.now();
 
         Hecho hecho = new Hecho(
-                titulo,
-                descripcion,
-                categoria,
-                contenidoMultimedia.orElse(null),
-                latitud,
-                longitud,
-                fechaAcontecimiento,
-                fechaCarga,
-                idHecho
-        );
+            titulo,
+            descripcion,
+            categoria,
+            contenidoMultimedia.orElse(null),
+            latitud,
+            longitud,
+            fechaAcontecimiento,
+            fechaCarga,
+            idHecho);
         hechos.add(hecho);
       }
     } catch (IOException e) {
@@ -118,5 +121,126 @@ public class ImportadorCSV {
     }
     System.out.println("ImportadorCSV: Se importaron " + hechos.size() + " hechos desde '" + filePathString + "'.");
     return hechos;
+  }
+
+  private void validarFecha(String fechaStr, int lineNumber) {
+    try {
+      if (fechaStr == null || fechaStr.trim().isEmpty()) {
+        System.out.println("Warning - Línea " + lineNumber + ": Fecha vacía");
+        return;
+      }
+
+      LocalDate fecha = LocalDate.parse(fechaStr, DATE_FORMATTER);
+
+      if (fecha.isAfter(LocalDate.now())) {
+        System.out.println("Warning - Línea " + lineNumber + ": Fecha futura detectada '" + fechaStr + "'");
+      }
+
+      if (fecha.isBefore(LocalDate.of(1900, 1, 1))) {
+        System.out.println("Warning - Línea " + lineNumber + ": Fecha anterior a 1900 detectada '" + fechaStr + "'");
+      }
+    } catch (Exception e) {
+      System.out.println("Warning - Línea " + lineNumber + ": Error en formato de fecha '" + fechaStr + "'");
+    }
+  }
+
+  private void validarCoordenadas(String latitudStr, String longitudStr, int lineNumber) {
+    try {
+      if (!latitudStr.isEmpty()) {
+        double latitud = Double.parseDouble(latitudStr.replace(',', '.'));
+        if (latitud < -90 || latitud > 90) {
+          System.out.println("Warning - Línea " + lineNumber + ": Latitud fuera de rango '" + latitudStr + "'");
+        }
+      }
+
+      if (!longitudStr.isEmpty()) {
+        double longitud = Double.parseDouble(longitudStr.replace(',', '.'));
+        if (longitud < -180 || longitud > 180) {
+          System.out.println("Warning - Línea " + lineNumber + ": Longitud fuera de rango '" + longitudStr + "'");
+        }
+      }
+    } catch (Exception e) {
+      System.out.println("Warning - Línea " + lineNumber + ": Error en formato de coordenadas");
+    }
+  }
+
+  private void validarCamposObligatorios(String[] values, int lineNumber) {
+    try {
+      if (values[0].trim().isEmpty()) {
+        System.out.println("Warning - Línea " + lineNumber + ": Título vacío");
+      }
+      if (values[1].trim().isEmpty()) {
+        System.out.println("Warning - Línea " + lineNumber + ": Descripción vacía");
+      }
+      if (values[2].trim().isEmpty()) {
+        System.out.println("Warning - Línea " + lineNumber + ": Categoría vacía");
+      }
+    } catch (Exception e) {
+      System.out.println("Warning - Línea " + lineNumber + ": Error validando campos obligatorios");
+    }
+  }
+
+  private void validarLinea(String[] values, int lineNumber) {
+    try {
+      validarCamposObligatorios(values, lineNumber);
+      validarCoordenadas(values[4], values[5], lineNumber);
+      validarFecha(values[6], lineNumber);
+    } catch (Exception e) {
+      System.out.println("Warning - Error en validación de línea " + lineNumber + ": " + e.getMessage());
+    }
+  }
+
+  public Hecho parsearLineaCSV(String line) {
+    if (line == null || line.trim().isEmpty()) {
+      return null;
+    }
+
+    String[] values = line.trim().split(CSV_DELIMITER);
+
+    if (values.length < EXPECTED_COLUMNS) {
+      throw new RuntimeException("Línea con datos insuficientes. Se esperaban " + EXPECTED_COLUMNS
+          + " columnas, se encontraron " + values.length);
+    }
+
+    long idHecho;
+    do {
+      idHecho = secureRandom.nextLong();
+    } while (idHecho <= 0);
+
+    String titulo = values[0].trim();
+    String descripcion = values[1].trim();
+    String categoria = values[2].trim();
+    Optional<ContenidoMultimedia> contenidoMultimedia = Optional.empty();
+
+    Double latitud = null;
+    String latitudStr = values[4].trim();
+    if (!latitudStr.isEmpty()) {
+      latitud = Double.parseDouble(latitudStr.replace(',', '.'));
+    }
+
+    Double longitud = null;
+    String longitudStr = values[5].trim();
+    if (!longitudStr.isEmpty()) {
+      longitud = Double.parseDouble(longitudStr.replace(',', '.'));
+    }
+
+    LocalDate fechaAcontecimiento = null;
+    String fechaAcontecimientoStr = values[6].trim();
+    if (!fechaAcontecimientoStr.isEmpty()) {
+      fechaAcontecimiento = LocalDate.parse(fechaAcontecimientoStr, DATE_FORMATTER);
+    }
+
+    LocalDate fechaCarga = LocalDate.now();
+
+    return new Hecho(
+        titulo,
+        descripcion,
+        categoria,
+        contenidoMultimedia.orElse(null),
+        latitud,
+        longitud,
+        fechaAcontecimiento,
+        fechaCarga,
+        idHecho);
   }
 }
