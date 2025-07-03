@@ -38,10 +38,6 @@ public class AdminController {
     @Qualifier("coleccionRepository")
     private IColeccionRepository coleccionRepository;
 
-    /**
-     * GET /admin/colecciones
-     * Obtiene todas las colecciones
-     */
     @GetMapping("/colecciones")
     public ResponseEntity<List<ColeccionOutputDto>> obtenerTodasLasColecciones() {
         try {
@@ -52,10 +48,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * GET /admin/colecciones/{id}
-     * Obtiene una colección específica por ID
-     */
     @GetMapping("/colecciones/{id}")
     public ResponseEntity<ColeccionOutputDto> obtenerColeccionPorId(@PathVariable String id) {
         try {
@@ -75,10 +67,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * POST /admin/colecciones
-     * Crea una nueva colección
-     */
     @PostMapping("/colecciones")
     public ResponseEntity<ColeccionOutputDto> crearColeccion(@RequestBody ColeccionInputDto coleccionInput) {
         try {
@@ -217,8 +205,6 @@ public class AdminController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Aquí podrías implementar la lógica para cambiar el algoritmo de consenso
-            // Por ahora, simplemente actualizamos la colección
             coleccionRepository.save(coleccion);
 
             ColeccionOutputDto dto = new ColeccionOutputDto();
@@ -227,6 +213,7 @@ public class AdminController {
             dto.setDescripcion(coleccion.getDescripcion());
             dto.setHechos(coleccion.getHechos());
             dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
+            dto.setAlgoritmoDeConsenso(coleccion.getAlgoritmoDeConsenso());
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

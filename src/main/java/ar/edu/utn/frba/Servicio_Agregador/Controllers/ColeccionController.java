@@ -5,12 +5,15 @@ import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 
 import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ISeederService;
 
 import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,8 @@ public class ColeccionController {
     private ISeederService seederService;
     @Autowired
     private ColeccionRepository coleccionRepository;
+    @Autowired
+    private IrrestrictaStrategy irrestrictaStrategy;
 
     @GetMapping("/colecciones")
     public List<ColeccionOutputDto> getColecciones() {
@@ -54,6 +59,8 @@ public class ColeccionController {
             return coleccionService.setColeccionCsv();
         }
     */
+
+
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
         try {
@@ -69,7 +76,7 @@ public class ColeccionController {
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public List<HechosOutputDto> navegarHechos(
             @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") String modo
+            @RequestParam(defaultValue = "irrestricta") ModoNavegacionStrategy modo
     ) {
         return coleccionService.navegarHechos(id, modo);
     }

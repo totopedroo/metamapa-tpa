@@ -1,13 +1,18 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ISolicitudService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IHechosService;
 
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,6 +43,8 @@ public class MetaMapaApiController {
     @Autowired
     @Qualifier("solicitudAgregadorService")
     private ISolicitudService solicitudService;
+    @Autowired
+    private ColeccionRepository coleccionRepository;
 
     /**
      * GET /hechos
@@ -127,8 +134,17 @@ public class MetaMapaApiController {
             @PathVariable String id,
             @RequestParam(defaultValue = "irrestricta") String modo) {
         try {
-            List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, modo);
+            Coleccion coleccion = coleccionRepository.findById(id);
+
+            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
+                case "curada" -> new CuradaStrategy(coleccion.getAlgoritmoDeConsenso());
+                case "irrestricta" -> new IrrestrictaStrategy();
+                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
+            };
+
+            List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, estrategia);
             return ResponseEntity.ok(hechos);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -142,3 +158,4 @@ public class MetaMapaApiController {
         return ResponseEntity.ok("MetaMapa API operativa");
     }
 }
+
