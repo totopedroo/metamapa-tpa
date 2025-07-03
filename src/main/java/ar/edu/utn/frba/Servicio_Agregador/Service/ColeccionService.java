@@ -10,6 +10,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorAPI;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
@@ -152,13 +153,14 @@ public class ColeccionService implements IColeccionService {
                     dto.getLongitud(),
                     dto.getFechaAcontecimiento(),
                     dto.getFechaCarga(),
-                    dto.getIdHecho());
+                    dto.getIdHecho(),
+                    dto.getFuente());
             h.setEtiquetas(dto.getEtiquetas());
             h.setSolicitudes(dto.getSolicitudes());
             h.setContribuyente(dto.getContribuyente());
             h.setEliminado(dto.isEliminado());
             h.setConsensuado(Optional.of(dto.isConsensuado()));
-            h.setFuente(Optional.ofNullable(dto.getFuente()));
+            h.setFuente(dto.getFuente());
             return h;
         }).toList();
 
@@ -171,5 +173,10 @@ public class ColeccionService implements IColeccionService {
                 .toList();
     }
 
+    public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
+        Coleccion coleccion = coleccionRepository.findById(idColeccion);
+        coleccion.setAlgoritmoDeConsenso(algoritmo);
+        coleccionRepository.save(coleccion);
+    }
 
 }

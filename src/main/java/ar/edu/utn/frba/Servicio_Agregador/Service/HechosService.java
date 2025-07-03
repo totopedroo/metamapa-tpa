@@ -71,7 +71,8 @@ public class HechosService implements IHechosService {
                                 inputDto.getLongitud(),
                                 inputDto.getFechaAcontecimiento(),
                                 LocalDate.now(),
-                                System.currentTimeMillis());
+                                System.currentTimeMillis(),
+                                inputDto.getFuente());
 
                 hechosRepository.save(hecho);
 

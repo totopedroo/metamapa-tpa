@@ -6,6 +6,10 @@ import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AbsolutaStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MayoriaSimpleStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MultiplesMencionesStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ISolicitudService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IHechosService;
@@ -157,5 +161,30 @@ public class MetaMapaApiController {
     public ResponseEntity<String> obtenerEstado() {
         return ResponseEntity.ok("MetaMapa API operativa");
     }
+
+
+    @PutMapping("/colecciones/{id}/algoritmo")
+    public ResponseEntity<Void> setearAlgoritmoPorNombre(
+            @PathVariable String id,
+            @RequestParam String tipo) {
+
+        try {
+            AlgoritmoDeConsensoStrategy algoritmo = switch (tipo.toLowerCase()) {
+                case "mayoriasimple"       -> new MayoriaSimpleStrategy();
+                case "multiplesmenciones"  -> new MultiplesMencionesStrategy();
+                case "absoluta"            -> new AbsolutaStrategy();
+                default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
+            };
+
+            coleccionService.setAlgoritmoDeConsenso(id, algoritmo);
+            return ResponseEntity.ok().build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
 

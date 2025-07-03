@@ -7,6 +7,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 
 import java.util.List;
@@ -23,4 +24,5 @@ public interface IColeccionService {
     //public Coleccion setColeccionCsv();
     public void actualizarHechos(List<Hecho> nuevosHechos);
     List<HechosOutputDto> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion);
+    public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
 }

@@ -28,10 +28,10 @@ public class Hecho {
     private Contribuyente contribuyente;
     private boolean eliminado = false;
     private Optional<Boolean> consensuado;
-    private Optional <Fuente> fuente;
+    private TipoFuente fuente;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho) {
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, TipoFuente fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -41,6 +41,7 @@ public class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
         this.idHecho = idHecho;
+        this.fuente = fuente;
 
     }
 
@@ -136,7 +137,6 @@ public class Hecho {
     public void setIdHecho(Long idHecho) {
         this.idHecho = idHecho;
     }
-
 
 
 }

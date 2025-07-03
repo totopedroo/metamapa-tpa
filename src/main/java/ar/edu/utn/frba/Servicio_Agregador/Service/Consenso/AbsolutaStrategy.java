@@ -34,4 +34,5 @@ public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
 
     return consensuados;
   }
+
 }

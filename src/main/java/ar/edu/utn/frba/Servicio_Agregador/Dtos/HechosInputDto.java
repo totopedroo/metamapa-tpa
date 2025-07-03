@@ -3,6 +3,7 @@ package ar.edu.utn.frba.Servicio_Agregador.Dtos;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.ContenidoMultimedia;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Contribuyente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.TipoFuente;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +26,5 @@ public class HechosInputDto {
     private List<String> etiquetas = new ArrayList();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
-    private Fuente fuente;
+    private TipoFuente fuente;
 }

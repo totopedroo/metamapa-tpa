@@ -5,13 +5,17 @@ import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 
 import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AbsolutaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MayoriaSimpleStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MultiplesMencionesStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ISeederService;
 
 import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +78,47 @@ public class ColeccionController {
     }
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
-    public List<HechosOutputDto> navegarHechos(
+    public ResponseEntity<List<HechosOutputDto>> navegarHechos(
             @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") ModoNavegacionStrategy modo
-    ) {
-        return coleccionService.navegarHechos(id, modo);
+            @RequestParam(defaultValue = "irrestricta") String modo) {
+        try {
+            Coleccion coleccion = coleccionRepository.findById(id);
+
+            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
+                case "curada" -> new CuradaStrategy(coleccion.getAlgoritmoDeConsenso());
+                case "irrestricta" -> new IrrestrictaStrategy();
+                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
+            };
+
+            List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, estrategia);
+            return ResponseEntity.ok(hechos);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/colecciones/{id}/algoritmo")
+    public ResponseEntity<Void> setearAlgoritmoPorNombre(
+            @PathVariable String id,
+            @RequestParam String tipo) {
+
+        try {
+            AlgoritmoDeConsensoStrategy algoritmo = switch (tipo.toLowerCase()) {
+                case "mayoriasimple"       -> new MayoriaSimpleStrategy();
+                case "multiplesmenciones"  -> new MultiplesMencionesStrategy();
+                case "absoluta"            -> new AbsolutaStrategy();
+                default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
+            };
+
+            coleccionService.setAlgoritmoDeConsenso(id, algoritmo);
+            return ResponseEntity.ok().build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
