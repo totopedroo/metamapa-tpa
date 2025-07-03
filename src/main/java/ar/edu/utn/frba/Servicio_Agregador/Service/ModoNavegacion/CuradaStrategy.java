@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion;
 
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,13 @@ public class CuradaStrategy implements ModoNavegacionStrategy {
             return new ArrayList<>();
         }
 
-        Map<Object, List<Hecho>> hechosAgrupadosPorFuente = hechos.stream()
-                .collect(Collectors.groupingBy(Hecho::getFuente));
+        Map<Fuente, List<Hecho>> hechosAgrupadosPorFuente = hechos.stream()
+                .filter(h -> h.getFuente().isPresent())
+                .collect(Collectors.groupingBy(h -> h.getFuente().get()));
 
         List<List<Hecho>> hechosPorFuente = new ArrayList<>(hechosAgrupadosPorFuente.values());
 
         return this.algoritmoDeConsenso.obtenerHechosConsensuados(hechosPorFuente);
     }
+
 }

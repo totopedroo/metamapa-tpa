@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository("coleccionRepository")
@@ -52,6 +53,13 @@ public class ColeccionRepository implements IColeccionRepository {
     public List<Coleccion> findAll() {
         // setColeccionEstatica(); //para pruebas
         return colecciones;
+    }
+
+    @Override
+    public List<Hecho> obtenerHechosComoEntidad(String coleccionId) {
+        Coleccion coleccion = this.findById(coleccionId);
+        if (coleccion == null) return List.of();
+        return coleccion.getHechos();
     }
 
     @Override

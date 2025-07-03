@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Repository;
 
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 
@@ -10,7 +11,8 @@ public interface IColeccionRepository {
     public void save(Coleccion coleccion);
     public void delete(Coleccion coleccion);
     public Coleccion findById(String id);
-    Coleccion create(ColeccionInputDto coleccionInputDto); 
+    Coleccion create(ColeccionInputDto coleccionInputDto);
+    public List<Hecho> obtenerHechosComoEntidad(String coleccionId);
 
 }
 

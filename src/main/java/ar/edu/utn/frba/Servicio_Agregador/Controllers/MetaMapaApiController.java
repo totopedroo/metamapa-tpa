@@ -125,7 +125,7 @@ public class MetaMapaApiController {
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<List<HechosOutputDto>> navegarHechosDeColeccion(
             @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") String modo) {
+            @RequestParam(defaultValue = "curada") String modo) {
         try {
             List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, modo);
             return ResponseEntity.ok(hechos);

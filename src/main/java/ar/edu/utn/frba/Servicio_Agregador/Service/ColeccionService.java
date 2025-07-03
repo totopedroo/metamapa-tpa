@@ -152,36 +152,15 @@ public class ColeccionService implements IColeccionService {
 
     @Override
     public List<HechosOutputDto> navegarHechos(String coleccionId, String modo) {
-        // 1. Obtener hechos ya en DTO
-        List<HechosOutputDto> hechosDTOs = this.obtenerHechosPorColeccion(coleccionId);
+        // 1. Obtener directamente los hechos de la colección como objetos de dominio
+        List<Hecho> hechos = coleccionRepository.obtenerHechosComoEntidad(coleccionId);
 
-        // 2. Mapear a entidad Hecho (usamos setters porque no hay constructor completo)
-        List<Hecho> hechos = hechosDTOs.stream().map(dto -> {
-            Hecho h = new Hecho(
-                    dto.getTitulo(),
-                    dto.getDescripcion(),
-                    dto.getCategoria(),
-                    dto.getContenidoMultimedia().orElse(null),
-                    dto.getLatitud(),
-                    dto.getLongitud(),
-                    dto.getFechaAcontecimiento(),
-                    dto.getFechaCarga(),
-                    dto.getIdHecho());
-            h.setEtiquetas(dto.getEtiquetas());
-            h.setSolicitudes(dto.getSolicitudes());
-            h.setContribuyente(dto.getContribuyente());
-            h.setEliminado(dto.isEliminado());
-            h.setConsensuado(Optional.of(dto.isConsensuado()));
-            h.setFuente(Optional.ofNullable(dto.getFuente()));
-            return h;
-        }).toList();
-
-        // 3. Aplicar estrategia
+        // 2. Aplicar la estrategia correspondiente
         List<Hecho> hechosFiltrados = "curada".equalsIgnoreCase(modo)
                 ? curadaStrategy.filtrar(hechos)
                 : irrestrictaStrategy.filtrar(hechos);
 
-        // 4. Volver a mapear a DTO usando tu metodo existente
+        // 3. Convertir a DTO solo al final
         return hechosFiltrados.stream()
                 .map(HechosOutputDto::fromModel)
                 .toList();

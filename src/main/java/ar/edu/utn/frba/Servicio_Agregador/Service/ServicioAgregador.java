@@ -35,7 +35,7 @@ public class ServicioAgregador {
     // new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", (Importador)
     // importadorAPI, TipoFuente.PROXY) // Comentado temporalmente por
     // incompatibilidad de tipos
-    // new Fuente("http://localhost:8080", (Importador) importadorMetaMapa,
+    // new Fuente("http://localhost:8080/api", (Importador) importadorMetaMapa,
     // TipoFuente.PROXY) falta tener URL de otra instancia MetaMapa.
     );
   }

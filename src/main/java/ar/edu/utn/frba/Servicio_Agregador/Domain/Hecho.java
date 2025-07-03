@@ -6,10 +6,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Contribuyente;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.ContenidoMultimedia;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 
 @Getter
 @Setter
@@ -28,7 +24,7 @@ public class Hecho {
     private Contribuyente contribuyente;
     private boolean eliminado = false;
     private Optional<Boolean> consensuado;
-    private Optional <Fuente> fuente;
+    private Optional<Fuente> fuente;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
                  Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho) {
@@ -137,6 +133,7 @@ public class Hecho {
         this.idHecho = idHecho;
     }
 
-
-
+    public Optional<Fuente> getFuente() {
+        return Optional.ofNullable(fuente).orElse(Optional.empty());
+    }
 }
