@@ -82,6 +82,10 @@ public class ColeccionController {
         try {
             Coleccion coleccion = coleccionRepository.findById(id);
 
+            if (coleccion == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
+            }
+
             ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
                 case "curada" -> new CuradaStrategy();
                 case "irrestricta" -> new IrrestrictaStrategy();
@@ -93,9 +97,10 @@ public class ColeccionController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
     }
+
 
 
     @PutMapping("/colecciones/{id}/algoritmo")

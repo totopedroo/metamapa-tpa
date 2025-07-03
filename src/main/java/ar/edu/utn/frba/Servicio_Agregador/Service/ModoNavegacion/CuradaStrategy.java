@@ -10,13 +10,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-    public class CuradaStrategy implements ModoNavegacionStrategy {
-        @Override
-        public List<Hecho> filtrar(List<Hecho> hechos) {
-            return hechos.stream()
-                    .filter(h -> h.getConsensuado().orElse(false))
-                    .collect(Collectors.toList());
+public class CuradaStrategy implements ModoNavegacionStrategy {
+    @Override
+    public List<Hecho> filtrar(List<Hecho> hechos) {
+        List<Hecho> consensuados = new ArrayList<>();
+
+        for (Hecho hecho : hechos) {
+            if (hecho.getConsensuado().isPresent() && hecho.getConsensuado().get()) {
+                consensuados.add(hecho);
+            }
         }
+
+        return consensuados;
     }
+}
+
 
 

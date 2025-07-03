@@ -28,7 +28,8 @@ public class Hecho {
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
-    private Optional<Boolean> consensuado;
+    private Optional<Boolean> consensuado = Optional.of(false);
+
     private TipoFuente fuente;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
