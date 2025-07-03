@@ -62,9 +62,10 @@ public class ImportadorAPI implements Importador {
                 dto.getLongitud(),
                 dto.getFecha(),
                 LocalDate.now(),
-                dto.getId()
+                dto.getId(),
+                dto.getTipo());
 
-        );
+
     }
 
 }

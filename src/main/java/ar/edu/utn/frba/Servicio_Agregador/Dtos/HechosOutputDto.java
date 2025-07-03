@@ -23,7 +23,7 @@ public class HechosOutputDto {
     private Contribuyente contribuyente;
     private boolean eliminado = false;
     private boolean consensuado;
-    private Fuente fuente;
+    private TipoFuente fuente;
     public HechosOutputDto() {
     }
 
@@ -46,7 +46,7 @@ public class HechosOutputDto {
     public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria,
                            ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud,
                            LocalDate fechaAcontecimiento, LocalDate fechaCarga,
-                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente, boolean eliminado) {
+                           List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente, boolean eliminado, TipoFuente fuente) {
         this.idHecho = idHecho;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -60,7 +60,7 @@ public class HechosOutputDto {
         this.solicitudes = solicitudes;
         this.contribuyente = contribuyente;
         this.eliminado = eliminado;
-
+        this.fuente = fuente;
     }
 
 }

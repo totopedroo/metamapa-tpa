@@ -16,7 +16,7 @@ import java.util.Optional;
 @Setter
 public class Coleccion {
     public String id;
-    private List<Hecho> hechos; //verificar nombre
+    private List<Hecho> hechos;
     public String titulo;
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
