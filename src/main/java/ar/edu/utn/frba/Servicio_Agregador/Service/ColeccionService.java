@@ -6,14 +6,13 @@ import ar.edu.utn.frba.Enums.TipoFuente;
 import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
-import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorAPI;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
-import ar.edu.utn.frba.domain.main;
+import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -60,7 +59,26 @@ public class ColeccionService implements IColeccionService {
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
         dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
+        dto.setAlgoritmoDeConsenso(coleccion.getAlgoritmoDeConsenso());
         return dto;
+    }
+
+    @Override
+    public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId); //
+        if (coleccion == null) {
+            throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
+        }
+        Hecho hecho = hechosRepository.findById(hechoId); // Assumes hechosRepository.findById exists and works
+        if (hecho == null) {
+            throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
+        }
+        if (hecho.estaEliminado()) { //
+            throw new IllegalArgumentException(
+                    "El hecho '" + hecho.getTitulo() + "' está marcado como eliminado y no puede ser agregado.");
+        }
+        coleccion.setHecho(hecho); //
+        return coleccionOutputDto(coleccion); // Convert to DTO for the response
     }
 
     public List<HechosOutputDto> obtenerHechosPorColeccion(String idColeccion) {
@@ -72,6 +90,7 @@ public class ColeccionService implements IColeccionService {
                 .map(HechosOutputDto::fromModel)
                 .collect(Collectors.toList());
     }
+
 
     public Coleccion setColeccionApi() {
 
@@ -96,24 +115,6 @@ public class ColeccionService implements IColeccionService {
         return coleccion;
     }
 
-    /*
-     * public Coleccion setColeccionCsv() {
-     * List<Hecho> hechosImportadosCSV;
-     * Fuente fuente = new
-     * Fuente("src/main/java/ar/edu/utn/frba/Assets/prueba1.csv",
-     * this.importadorCSV, TipoFuente.LOCAL);
-     * hechosImportadosCSV = this.importadorCSV.importar(fuente);
-     * Coleccion coleccionCSV = new Coleccion(
-     * UUID.randomUUID().toString(),
-     * "COLECCION CSV",
-     * "Colección creada a partir de datos de CSV",
-     * new ArrayList<>()
-     * );
-     * coleccionCSV.setHechos(hechosImportadosCSV);
-     * coleccionRepository.save(coleccionCSV);
-     * return coleccionCSV;
-     * }
-     */
     public void actualizarHechos(List<Hecho> nuevosHechos) {
         for (Coleccion coleccion : coleccionRepository.findAll()) {
             for (Hecho hecho : nuevosHechos) {
@@ -133,29 +134,14 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId); //
-        if (coleccion == null) {
-            throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
-        }
-        Hecho hecho = hechosRepository.findById(hechoId); // Assumes hechosRepository.findById exists and works
-        if (hecho == null) {
-            throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
-        }
-        if (hecho.estaEliminado()) { //
-            throw new IllegalArgumentException(
-                    "El hecho '" + hecho.getTitulo() + "' está marcado como eliminado y no puede ser agregado.");
-        }
-        coleccion.setHecho(hecho); //
-        return coleccionOutputDto(coleccion); // Convert to DTO for the response
-    }
+    public List<HechosOutputDto> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion) {
 
-    @Override
-    public List<HechosOutputDto> navegarHechos(String coleccionId, String modo) {
-        // 1. Obtener hechos ya en DTO
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+
+
         List<HechosOutputDto> hechosDTOs = this.obtenerHechosPorColeccion(coleccionId);
 
-        // 2. Mapear a entidad Hecho (usamos setters porque no hay constructor completo)
+
         List<Hecho> hechos = hechosDTOs.stream().map(dto -> {
             Hecho h = new Hecho(
                     dto.getTitulo(),
@@ -176,15 +162,14 @@ public class ColeccionService implements IColeccionService {
             return h;
         }).toList();
 
-        // 3. Aplicar estrategia
-        List<Hecho> hechosFiltrados = "curada".equalsIgnoreCase(modo)
-                ? curadaStrategy.filtrar(hechos)
-                : irrestrictaStrategy.filtrar(hechos);
 
-        // 4. Volver a mapear a DTO usando tu metodo existente
+        List<Hecho> hechosFiltrados = modoNavegacion.filtrar(hechos);
+
+
         return hechosFiltrados.stream()
                 .map(HechosOutputDto::fromModel)
                 .toList();
     }
+
 
 }

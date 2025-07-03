@@ -16,7 +16,6 @@ public class ColeccionOutputDto {
     public String titulo;
     public String descripcion;
     public  List<CriterioDePertenencia> criterioDePertenencia;
-
     private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
 
 
@@ -27,6 +26,7 @@ public class ColeccionOutputDto {
         dto.titulo = coleccion.getTitulo();
         dto.descripcion = coleccion.getDescripcion();
         dto.criterioDePertenencia = coleccion.getCriterioDePertenencia();
+        dto.algoritmoDeConsenso = coleccion.getAlgoritmoDeConsenso();
         return dto;
     }
 }
