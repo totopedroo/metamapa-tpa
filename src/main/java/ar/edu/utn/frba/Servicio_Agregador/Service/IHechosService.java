@@ -13,7 +13,7 @@ public interface IHechosService
     public HechosOutputDto crearHecho(HechosInputDto inputDto);
 
     HechosOutputDto convertirDto(Hecho hechos);
-
+    public void  setConsensuado(Hecho hecho);
     List<HechosOutputDto> filtrarHechos(String categoria, LocalDate fechaReporteDesde, LocalDate fechaReporteHasta, LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta, Double latitud, Double longitud);
 }
 

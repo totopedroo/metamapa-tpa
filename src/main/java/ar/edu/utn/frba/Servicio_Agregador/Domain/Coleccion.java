@@ -68,11 +68,5 @@ public class Coleccion {
     }
 
 
-    public void actualizarHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
-        if (algoritmoDeConsenso == null) {
-            this.hechosConsensuados = this.getHechos(); // todos valen
-        } else {
-            this.hechosConsensuados = algoritmoDeConsenso.obtenerHechosConsensuados(hechosPorFuente);
-        }
-    }
+
 }
