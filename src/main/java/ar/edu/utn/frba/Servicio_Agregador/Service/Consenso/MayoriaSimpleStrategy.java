@@ -1,35 +1,26 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service.Consenso;
-
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
-
   @Override
-  public List<Hecho> obtenerHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
-    Map<String, Integer> contador = new HashMap<>();
-    Map<String, Hecho> hechosUnicos = new HashMap<>();
+  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
+    long fuentesConCoincidencia = todos.stream()
+            .filter(h -> h.esIgualA(hecho))
+            .map(Hecho::getTipoFuente)
+            .distinct()
+            .count();
 
-    for (List<Hecho> fuente : hechosPorFuente) {
-      for (Hecho h : fuente) {
-        String clave = h.getTitulo().toLowerCase().trim(); // criterio simple
-        contador.put(clave, contador.getOrDefault(clave, 0) + 1);
-        hechosUnicos.putIfAbsent(clave, h);
-      }
-    }
+    long totalFuentes = todos.stream()
+            .map(Hecho::getTipoFuente)
+            .distinct()
+            .count();
 
-    int cantidadFuentes = hechosPorFuente.size();
-    List<Hecho> consensuados = new ArrayList<>();
-
-    for (String clave : contador.keySet()) {
-      if (contador.get(clave) >= Math.ceil(cantidadFuentes / 2.0)) {
-        consensuados.add(hechosUnicos.get(clave));
-      }
-    }
-
-    return consensuados;
+    return fuentesConCoincidencia >= Math.ceil(totalFuentes / 2.0);
   }
 }
+

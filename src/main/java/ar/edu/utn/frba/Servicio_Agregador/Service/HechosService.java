@@ -111,4 +111,11 @@ public class HechosService implements IHechosService {
                                 hecho.getSolicitudes(),
                                 hecho.getContribuyente());
         }
+
+
+       public void  setConsensuado(Hecho hecho) {
+                hechosRepository.findById(hecho.getIdHecho());
+                setConsensuado(hecho);
+                hechosRepository.save(hecho);
+       }
 }

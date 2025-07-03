@@ -5,6 +5,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Contribuyente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.ContenidoMultimedia;
@@ -138,5 +139,19 @@ public class Hecho {
         this.idHecho = idHecho;
     }
 
+    public TipoFuente getTipoFuente() {
+        return fuente;
+    }
+
+    public void setTipoFuente(TipoFuente fuente) {this.fuente = fuente;}
+
+    public boolean esIgualA(Hecho otro) {
+        return this.titulo.equalsIgnoreCase(otro.titulo)
+                && Objects.equals(this.descripcion, otro.descripcion)
+                && this.latitud == otro.latitud
+                && this.longitud == otro.longitud
+                && Objects.equals(this.categoria, otro.categoria)
+                && Objects.equals(this.fechaAcontecimiento, otro.fechaAcontecimiento);
+    }
 
 }

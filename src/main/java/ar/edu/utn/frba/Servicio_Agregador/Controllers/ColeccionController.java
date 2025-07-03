@@ -1,18 +1,15 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
-import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
+import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 
 import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
-import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AbsolutaStrategy;
-import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
-import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MayoriaSimpleStrategy;
-import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MultiplesMencionesStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.HechosRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.*;
 import ar.edu.utn.frba.Servicio_Agregador.Service.IColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ISeederService;
 
-import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
@@ -23,11 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListResourceBundle;
-import java.util.UUID;
+import java.util.*;
 import java.security.SecureRandom;
 @RestController
 @RequestMapping
@@ -43,13 +36,18 @@ public class ColeccionController {
     @Autowired
     private IrrestrictaStrategy irrestrictaStrategy;
 
+    @Autowired
+    private HechosRepository hechosRepository;
+    @Autowired
+    private HechosService hechosService;
+
     @GetMapping("/colecciones")
     public List<ColeccionOutputDto> getColecciones() {
         return coleccionService.buscarTodos();
     }
 
     @GetMapping("/{id}/hechos")
-    public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable String id) {
+    public List<Hecho> obtenerHechosDeColeccion(@PathVariable String id) {
         return coleccionService.obtenerHechosPorColeccion(id);
     }
 
@@ -58,7 +56,7 @@ public class ColeccionController {
         return coleccionService.setColeccionApi();
     }
     /*
-        @GetMapping("/createColeccionCSV")
+    @GetMapping("/createColeccionCSV")
         public Coleccion crearColeccionPruebaCSV() {
             return coleccionService.setColeccionCsv();
         }
@@ -78,25 +76,27 @@ public class ColeccionController {
     }
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
-    public ResponseEntity<List<HechosOutputDto>> navegarHechos(
+    public ResponseEntity<List<Hecho>> navegarHechos(
             @PathVariable String id,
             @RequestParam(defaultValue = "irrestricta") String modo) {
         try {
             Coleccion coleccion = coleccionRepository.findById(id);
 
             ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
-                case "curada" -> new CuradaStrategy(coleccion.getAlgoritmoDeConsenso());
+                case "curada" -> new CuradaStrategy();
                 case "irrestricta" -> new IrrestrictaStrategy();
                 default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
             };
 
-            List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, estrategia);
+            List<Hecho> hechos = coleccionService.navegarHechos(id, estrategia);
             return ResponseEntity.ok(hechos);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     @PutMapping("/colecciones/{id}/algoritmo")
     public ResponseEntity<Void> setearAlgoritmoPorNombre(
@@ -108,6 +108,7 @@ public class ColeccionController {
                 case "mayoriasimple"       -> new MayoriaSimpleStrategy();
                 case "multiplesmenciones"  -> new MultiplesMencionesStrategy();
                 case "absoluta"            -> new AbsolutaStrategy();
+                case "defecto"              -> new ConsensoPorDefectoStrategy();
                 default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
             };
 
@@ -120,6 +121,57 @@ public class ColeccionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+/*
+    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
+    public ResponseEntity<String> consensuarHecho(
+            @PathVariable String coleccionId,
+            @PathVariable String hechoId) {
+
+            Coleccion coleccion = coleccionRepository.findById(coleccionId);
+            Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
+                    .filter(h -> String.valueOf(h.getIdHecho()).equals(hechoId))
+                    .findFirst();
 
 
-}
+        if (hechoOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado en la colección.");
+            }
+
+            Hecho hecho = hechoOpt.get();
+            hecho.setConsensuado(Optional.of(true));
+            hechosRepository.save(hecho);
+
+            return ResponseEntity.ok("Hecho marcado como consensuado.");
+
+        }*/
+
+
+    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
+    public ResponseEntity<String> consensuarHecho(
+            @PathVariable String coleccionId,
+            @PathVariable String hechoId) {
+
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Colección no encontrada.");
+        }
+
+        Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
+                .filter(h -> String.valueOf(h.getIdHecho()).equals(hechoId))
+                .findFirst();
+
+        if (hechoOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado.");
+        }
+
+        Hecho hecho = hechoOpt.get();
+        hecho.setConsensuado(Optional.of(true));
+
+        // 💾 Persistir si corresponde
+        coleccionRepository.save(coleccion); // si los hechos están embebidos
+
+        return ResponseEntity.ok("Hecho marcado como consensuado.");
+    }
+
+    }
+

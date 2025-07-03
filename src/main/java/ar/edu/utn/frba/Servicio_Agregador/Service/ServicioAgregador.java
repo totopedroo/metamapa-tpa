@@ -9,6 +9,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.domain.main;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ServicioAgregador {
@@ -81,27 +83,27 @@ public class ServicioAgregador {
   }
 
   //@Scheduled(cron = "0 0 3 * * *")
-  @Scheduled(cron = "*/10 * * * * *")
+  @Scheduled(cron = "/10 * * * * *")
 
   // todos los días a las 3am
   public void ejecutarAlgoritmosDeConsenso() {
-    System.out.println("Ejecutando algoritmos de consenso");
+    System.out.println("🔄 Ejecutando algoritmos de consenso...");
 
-    // Obtener todos los hechos de todas las fuentes
-    List<List<Hecho>> hechosPorFuente = fuentes.stream()
-        .map(Fuente::obtenerHechos)
-        .toList();
+    List<Hecho> todosLosHechos = coleccionService.buscarTodos().stream()
+            .flatMap(coleccion -> coleccion.getHechos().stream())
+            .toList();
 
-    // Recorrer cada colección y aplicar el algoritmo si tiene uno
     coleccionService.buscarTodos().forEach(coleccion -> {
-      if (coleccion.getAlgoritmoDeConsenso() != null) {
-        List<Hecho> consensuados = coleccion.getAlgoritmoDeConsenso().obtenerHechosConsensuados(hechosPorFuente);
-
-        coleccion.setHechos(consensuados);
-        System.out.println("Colección '" + coleccion.getTitulo() + "' actualizada con " + consensuados.size()
-            + " hechos consensuados.");
+      AlgoritmoDeConsensoStrategy algoritmo = coleccion.getAlgoritmoDeConsenso();
+      if (algoritmo != null) {
+        coleccion.getHechos().forEach(h -> {
+          boolean esConsensuado = algoritmo.tieneConsenso(h, todosLosHechos);
+          h.setConsensuado(Optional.of(esConsensuado));
+        });
+        System.out.println(" Colección '" + coleccion.getTitulo() + "' actualizada con consenso.");
       } else {
-        System.out.println("Colección '" + coleccion.getTitulo() + "' no tiene algoritmo de consenso definido.");
+        coleccion.getHechos().forEach(h -> h.setConsensuado(Optional.of(true)));
+        System.out.println(" Colección '" + coleccion.getTitulo() + "' no tiene algoritmo definido, se marcan todos como consensuados.");
       }
     });
 

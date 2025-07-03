@@ -10,26 +10,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class CuradaStrategy implements ModoNavegacionStrategy {
-
-    private final AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
-
-    public CuradaStrategy(AlgoritmoDeConsensoStrategy algoritmoDeConsenso) {
-        this.algoritmoDeConsenso = algoritmoDeConsenso;
-    }
-
-
-    @Override
-    public List<Hecho> filtrar(List<Hecho> hechos) {
-        if (hechos == null || hechos.isEmpty()) {
-            return new ArrayList<>();
+    public class CuradaStrategy implements ModoNavegacionStrategy {
+        @Override
+        public List<Hecho> filtrar(List<Hecho> hechos) {
+            return hechos.stream()
+                    .filter(h -> h.getConsensuado().orElse(false))
+                    .collect(Collectors.toList());
         }
-
-        Map<Object, List<Hecho>> hechosAgrupadosPorFuente = hechos.stream()
-                .collect(Collectors.groupingBy(Hecho::getFuente));
-
-        List<List<Hecho>> hechosPorFuente = new ArrayList<>(hechosAgrupadosPorFuente.values());
-
-        return this.algoritmoDeConsenso.obtenerHechosConsensuados(hechosPorFuente);
     }
-}
+
+

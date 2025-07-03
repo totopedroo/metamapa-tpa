@@ -3,42 +3,25 @@ package ar.edu.utn.frba.Servicio_Agregador.Service.Consenso;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
-
   @Override
-  public List<Hecho> obtenerHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
-    Map<String, List<Hecho>> agrupadosPorTitulo = new HashMap<>();
+  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
+    long coincidencias = todos.stream()
+            .filter(h -> h.esIgualA(hecho) && h != hecho)
+            .map(Hecho::getTipoFuente)
+            .distinct()
+            .count();
 
-    for (List<Hecho> fuente : hechosPorFuente) {
-      for (Hecho h : fuente) {
-        String titulo = h.getTitulo().toLowerCase().trim();
-        agrupadosPorTitulo.computeIfAbsent(titulo, k -> new ArrayList<>()).add(h);
-      }
-    }
+    boolean hayConflicto = todos.stream()
+            .filter(h -> h.getTitulo().equalsIgnoreCase(hecho.getTitulo()) && !h.equals(hecho) && !h.esIgualA(hecho))
+            .findAny()
+            .isPresent();
 
-    List<Hecho> consensuados = new ArrayList<>();
-
-    for (Map.Entry<String, List<Hecho>> entry : agrupadosPorTitulo.entrySet()) {
-      List<Hecho> hechos = entry.getValue();
-
-      // Si hay al menos 2 menciones y no hay conflictos entre ellos
-      if (hechos.size() >= 2 && todosIguales(hechos)) {
-        consensuados.add(hechos.get(0));
-      }
-    }
-
-    return consensuados;
-  }
-
-  private boolean todosIguales(List<Hecho> hechos) {
-    if (hechos.isEmpty())
-      return true;
-    Hecho primero = hechos.get(0);
-    return hechos.stream().allMatch(h -> h.getCategoria().equals(primero.getCategoria())
-        && h.getLatitud().equals(primero.getLatitud())
-        && h.getLongitud().equals(primero.getLongitud()));
+    return coincidencias >= 1 && !hayConflicto;
   }
 }

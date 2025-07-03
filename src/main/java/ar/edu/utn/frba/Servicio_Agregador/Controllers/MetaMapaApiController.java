@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudInputDto;
@@ -102,9 +103,9 @@ public class MetaMapaApiController {
      * mismo formato.
      */
     @GetMapping("/colecciones/{identificador}/hechos")
-    public ResponseEntity<List<HechosOutputDto>> obtenerHechosDeColeccion(@PathVariable String identificador) {
+    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String identificador) {
         try {
-            List<HechosOutputDto> hechos = coleccionService.obtenerHechosPorColeccion(identificador);
+            List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(identificador);
             return ResponseEntity.ok(hechos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -134,22 +135,23 @@ public class MetaMapaApiController {
      * Endpoint para navegación curada o irrestricta sobre una colección
      */
     @GetMapping("/colecciones/{id}/hechos/navegacion")
-    public ResponseEntity<List<HechosOutputDto>> navegarHechosDeColeccion(
+    public ResponseEntity<List<Hecho>> navegarHechos(
             @PathVariable String id,
             @RequestParam(defaultValue = "irrestricta") String modo) {
         try {
             Coleccion coleccion = coleccionRepository.findById(id);
 
             ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
-                case "curada" -> new CuradaStrategy(coleccion.getAlgoritmoDeConsenso());
+                case "curada" -> new CuradaStrategy(); // Ya no necesita argumento
                 case "irrestricta" -> new IrrestrictaStrategy();
                 default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
             };
 
-            List<HechosOutputDto> hechos = coleccionService.navegarHechos(id, estrategia);
+            List<Hecho> hechos = coleccionService.navegarHechos(id, estrategia);
             return ResponseEntity.ok(hechos);
 
         } catch (Exception e) {
+            e.printStackTrace(); // útil para desarrollo
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

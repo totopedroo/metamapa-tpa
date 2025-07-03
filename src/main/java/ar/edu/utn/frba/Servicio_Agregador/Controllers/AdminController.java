@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
@@ -140,9 +141,9 @@ public class AdminController {
      * Obtiene todos los hechos de una colección específica
      */
     @GetMapping("/colecciones/{id}/hechos")
-    public ResponseEntity<List<HechosOutputDto>> obtenerHechosDeColeccion(@PathVariable String id) {
+    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String id) {
         try {
-            List<HechosOutputDto> hechos = coleccionService.obtenerHechosPorColeccion(id);
+            List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(id);
             return ResponseEntity.ok(hechos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

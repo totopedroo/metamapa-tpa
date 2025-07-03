@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("coleccionService")
@@ -82,14 +79,25 @@ public class ColeccionService implements IColeccionService {
         return coleccionOutputDto(coleccion); // Convert to DTO for the response
     }
 
-    public List<HechosOutputDto> obtenerHechosPorColeccion(String idColeccion) {
+    /*public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
         Coleccion coleccion = coleccionRepository.findById(idColeccion);
         if (coleccion == null) {
             throw new RuntimeException("Colección no encontrada con ID: " + idColeccion);
         }
         return coleccion.getHechos().stream()
-                .map(HechosOutputDto::fromModel)
+                .map(Hecho::fromModel)
                 .collect(Collectors.toList());
+    }*/
+    public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
+      Coleccion coleccion = (coleccionRepository.findById(idColeccion));
+
+  /*      if (coleccionOpt.isEmpty()) {
+            throw new NoSuchElementException("Colección no encontrada con ID: " + idColeccion);
+        }
+*/
+
+
+        return new ArrayList<>(coleccion.getHechos());
     }
 
 
@@ -135,42 +143,20 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<HechosOutputDto> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion) {
+    public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion) {
 
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
 
 
-        List<HechosOutputDto> hechosDTOs = this.obtenerHechosPorColeccion(coleccionId);
+        List<Hecho> hechos = this.obtenerHechosPorColeccion(coleccionId);
 
 
-        List<Hecho> hechos = hechosDTOs.stream().map(dto -> {
-            Hecho h = new Hecho(
-                    dto.getTitulo(),
-                    dto.getDescripcion(),
-                    dto.getCategoria(),
-                    dto.getContenidoMultimedia().orElse(null),
-                    dto.getLatitud(),
-                    dto.getLongitud(),
-                    dto.getFechaAcontecimiento(),
-                    dto.getFechaCarga(),
-                    dto.getIdHecho(),
-                    dto.getFuente());
-            h.setEtiquetas(dto.getEtiquetas());
-            h.setSolicitudes(dto.getSolicitudes());
-            h.setContribuyente(dto.getContribuyente());
-            h.setEliminado(dto.isEliminado());
-            h.setConsensuado(Optional.of(dto.isConsensuado()));
-            h.setFuente(dto.getFuente());
-            return h;
-        }).toList();
 
 
         List<Hecho> hechosFiltrados = modoNavegacion.filtrar(hechos);
 
 
-        return hechosFiltrados.stream()
-                .map(HechosOutputDto::fromModel)
-                .toList();
+        return hechosFiltrados;
     }
 
     public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {

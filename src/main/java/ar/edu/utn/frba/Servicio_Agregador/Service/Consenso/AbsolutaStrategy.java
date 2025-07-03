@@ -1,38 +1,26 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service.Consenso;
 
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
-import org.springframework.context.annotation.Primary;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.TipoFuente;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 @Component
-@Primary
 public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
-
   @Override
-  public List<Hecho> obtenerHechosConsensuados(List<List<Hecho>> hechosPorFuente) {
-    Map<String, Integer> contador = new HashMap<>();
-    Map<String, Hecho> hechosUnicos = new HashMap<>();
+  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
+    Set<TipoFuente> fuentesTotales = todos.stream()
+            .map(Hecho::getTipoFuente)
+            .collect(Collectors.toSet());
 
-    for (List<Hecho> fuente : hechosPorFuente) {
-      for (Hecho h : fuente) {
-        String clave = h.getTitulo().toLowerCase().trim();
-        contador.put(clave, contador.getOrDefault(clave, 0) + 1);
-        hechosUnicos.putIfAbsent(clave, h);
-      }
-    }
+    Set<TipoFuente> fuentesCoincidentes = todos.stream()
+            .filter(h -> h.esIgualA(hecho))
+            .map(Hecho::getTipoFuente)
+            .collect(Collectors.toSet());
 
-    int cantidadFuentes = hechosPorFuente.size();
-    List<Hecho> consensuados = new ArrayList<>();
-
-    for (String clave : contador.keySet()) {
-      if (contador.get(clave) == cantidadFuentes) {
-        consensuados.add(hechosUnicos.get(clave));
-      }
-    }
-
-    return consensuados;
+    return fuentesCoincidentes.containsAll(fuentesTotales);
   }
-
 }
