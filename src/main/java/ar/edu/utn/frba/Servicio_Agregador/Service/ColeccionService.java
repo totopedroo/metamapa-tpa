@@ -1,15 +1,13 @@
 package ar.edu.utn.frba.Servicio_Agregador.Service;
 
+import ar.edu.utn.frba.Servicio_Agregador.Domain.*;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Enums.TipoFuente;
-import ar.edu.utn.frba.Fuente_Estatica.Domain.ImportadorCSV;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
-import ar.edu.utn.frba.Servicio_Agregador.Domain.ImportadorAPI;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
@@ -43,6 +41,7 @@ public class ColeccionService implements IColeccionService {
 
     @Autowired
     private IrrestrictaStrategy irrestrictaStrategy;
+    private Importador importador;
 
     @Override
     public List<ColeccionOutputDto> buscarTodos() {
@@ -165,4 +164,19 @@ public class ColeccionService implements IColeccionService {
         coleccionRepository.save(coleccion);
     }
 
+
+    public Coleccion setColeccionCsv() {
+        List<Hecho> hechosImportadosCSV;
+        Fuente fuente = new Fuente("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/src/main/java/ar/edu/utn/frba/Assets/prueba1.csv/", this.importador, TipoFuente.LOCAL);
+        hechosImportadosCSV = this.importadorCSV.importar("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/src/main/java/ar/edu/utn/frba/Assets/prueba1.csv/");
+        Coleccion coleccionCSV = new Coleccion(
+                UUID.randomUUID().toString(),
+                "COLECCION CSV",
+                "Colección creada a partir de datos de CSV",
+                new ArrayList<>()
+        );
+        coleccionCSV.setHechos(hechosImportadosCSV);
+        coleccionRepository.save(coleccionCSV);
+        return coleccionCSV;
+    }
 }

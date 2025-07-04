@@ -10,6 +10,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Service.ColeccionService;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.ConsensoPorDefectoStrategy;
 import ar.edu.utn.frba.domain.main;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,36 +79,37 @@ public class ServicioAgregador {
 
     System.out.println("Refresco automático finalizado.");
 
-    System.out.println("✅ Refresco automático finalizado.");
+    System.out.println(" Refresco automático finalizado.");
 
   }
 
   //@Scheduled(cron = "0 0 3 * * *")
   @Scheduled(cron = "/10 * * * * *")
-
-  // todos los días a las 3am
   public void ejecutarAlgoritmosDeConsenso() {
-    System.out.println("🔄 Ejecutando algoritmos de consenso...");
+      System.out.println("Ejecutando algoritmos de consenso...");
 
-    List<Hecho> todosLosHechos = coleccionService.buscarTodos().stream()
-            .flatMap(coleccion -> coleccion.getHechos().stream())
-            .toList();
+      List<Hecho> todosLosHechos = coleccionService.buscarTodos().stream()
+              .flatMap(coleccion -> coleccion.getHechos().stream())
+              .toList();
 
-    coleccionService.buscarTodos().forEach(coleccion -> {
-      AlgoritmoDeConsensoStrategy algoritmo = coleccion.getAlgoritmoDeConsenso();
-      if (algoritmo != null) {
-        coleccion.getHechos().forEach(h -> {
-          boolean esConsensuado = algoritmo.tieneConsenso(h, todosLosHechos);
-          h.setConsensuado(Optional.of(esConsensuado));
-        });
-        System.out.println(" Colección '" + coleccion.getTitulo() + "' actualizada con consenso.");
-      } else {
-        coleccion.getHechos().forEach(h -> h.setConsensuado(Optional.of(true)));
-        System.out.println(" Colección '" + coleccion.getTitulo() + "' no tiene algoritmo definido, se marcan todos como consensuados.");
-      }
-    });
+      coleccionService.buscarTodos().forEach(coleccion -> {
 
-    System.out.println("Algoritmos de consenso finalizados.");
+        AlgoritmoDeConsensoStrategy algoritmo = coleccion.getAlgoritmoDeConsenso();
+        String nombreColeccion = coleccion.getTitulo();
+
+
+        if (algoritmo == null) {
+          algoritmo = new ConsensoPorDefectoStrategy();
+          System.out.println("  - Colección '" + nombreColeccion + "': No tiene algoritmo. Usando estrategia por defecto.");
+        } else {
+          System.out.println("  - Colección '" + nombreColeccion + "': Aplicando algoritmo '" + algoritmo.getClass().getSimpleName() + "'.");
+        }
+        final AlgoritmoDeConsensoStrategy algoritmoFinal = algoritmo;
+        coleccion.getHechos().forEach(hecho ->
+                algoritmoFinal.procesarYEstablecerConsenso(hecho, todosLosHechos)
+        );
+      });
+
+      System.out.println("Algoritmos de consenso finalizados.");
+    }
   }
-
-}

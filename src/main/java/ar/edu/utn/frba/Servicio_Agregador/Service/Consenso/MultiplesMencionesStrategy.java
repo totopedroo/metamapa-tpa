@@ -5,23 +5,23 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
-  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
-    long coincidencias = todos.stream()
-            .filter(h -> h.esIgualA(hecho) && h != hecho)
+  public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
+    long mencionesDelMismoHecho = todosLosHechos.stream()
+            .filter(h -> h.esIgualA(hechoAProcesar))
             .map(Hecho::getTipoFuente)
             .distinct()
             .count();
 
-    boolean hayConflicto = todos.stream()
-            .filter(h -> h.getTitulo().equalsIgnoreCase(hecho.getTitulo()) && !h.equals(hecho) && !h.esIgualA(hecho))
-            .findAny()
-            .isPresent();
+    boolean hayConflicto = todosLosHechos.stream()
+            .anyMatch(h -> h.getTitulo().equalsIgnoreCase(hechoAProcesar.getTitulo()) && !h.esIgualA(hechoAProcesar));
 
-    return coincidencias >= 1 && !hayConflicto;
+    boolean esConsensuado = mencionesDelMismoHecho >= 2 && !hayConflicto;
+    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
   }
 }

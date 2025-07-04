@@ -4,23 +4,29 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
-  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
-    long fuentesConCoincidencia = todos.stream()
-            .filter(h -> h.esIgualA(hecho))
+  public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
+    long totalFuentes = todosLosHechos.stream()
             .map(Hecho::getTipoFuente)
             .distinct()
             .count();
 
-    long totalFuentes = todos.stream()
+    if (totalFuentes == 0) {
+      hechoAProcesar.setConsensuado(Optional.of(false));
+      return;
+    }
+
+    long fuentesCoincidentes = todosLosHechos.stream()
+            .filter(h -> h.esIgualA(hechoAProcesar))
             .map(Hecho::getTipoFuente)
             .distinct()
             .count();
 
-    return fuentesConCoincidencia >= Math.ceil(totalFuentes / 2.0);
+    boolean esConsensuado = (double) fuentesCoincidentes / totalFuentes >= 0.5;
+    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
   }
 }
-

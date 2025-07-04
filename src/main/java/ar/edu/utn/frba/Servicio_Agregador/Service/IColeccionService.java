@@ -27,4 +27,5 @@ public interface IColeccionService {
     public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
 
 
+    Coleccion setColeccionCsv();
 }
