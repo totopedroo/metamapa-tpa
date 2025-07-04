@@ -35,5 +35,9 @@ public class SolicitudEliminacion {
     public long getIdSolicitud() { return idSolicitud; }
     public long getIdHechoAsociado() { return idHechoAsociado; }
 
+    public void setEstado(EstadoDeSolicitud estado) {
+        this.estado = estado;
+    }
+
     public void setId(long idSolicitud) { this.idSolicitud = idSolicitud; }
 }

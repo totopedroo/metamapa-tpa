@@ -83,11 +83,6 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-     * PUT /admin/colecciones/{id}
-     * Actualiza una colección existente
-     */
     @PutMapping("/colecciones/{id}")
     public ResponseEntity<ColeccionOutputDto> actualizarColeccion(
             @PathVariable String id,
@@ -118,10 +113,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * DELETE /admin/colecciones/{id}
-     * Elimina una colección
-     */
     @DeleteMapping("/colecciones/{id}")
     public ResponseEntity<Void> eliminarColeccion(@PathVariable String id) {
         try {
@@ -136,10 +127,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * GET /admin/colecciones/{id}/hechos
-     * Obtiene todos los hechos de una colección específica
-     */
+
     @GetMapping("/colecciones/{id}/hechos")
     public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String id) {
         try {
@@ -150,10 +138,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * POST /admin/colecciones/{coleccionId}/hechos/{hechoId}
-     * Agrega un hecho a una colección
-     */
+
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<ColeccionOutputDto> agregarHechoAColeccion(
             @PathVariable String coleccionId,
@@ -168,10 +153,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * DELETE /admin/colecciones/{coleccionId}/hechos/{hechoId}
-     * Remueve un hecho de una colección
-     */
+
     @DeleteMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<Void> removerHechoDeColeccion(
             @PathVariable String coleccionId,
@@ -182,7 +164,7 @@ public class AdminController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Remover el hecho de la colección
+
             coleccion.getHechos().removeIf(hecho -> hecho.getIdHecho().equals(hechoId));
             coleccionRepository.save(coleccion);
 
@@ -192,10 +174,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * PUT /admin/colecciones/{id}/algoritmo-consenso
-     * Modifica el algoritmo de consenso de una colección
-     */
+
     @PutMapping("/colecciones/{id}/algoritmo-consenso")
     public ResponseEntity<ColeccionOutputDto> modificarAlgoritmoConsenso(
             @PathVariable String id,
@@ -221,10 +200,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * POST /admin/solicitudes/{id}/aprobar
-     * Aprueba una solicitud de eliminación
-     */
     @PostMapping("/solicitudes/{id}/aprobar")
     public ResponseEntity<Void> aprobarSolicitud(@PathVariable Long id) {
         try {
@@ -237,10 +212,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * POST /admin/solicitudes/{id}/denegar
-     * Deniega una solicitud de eliminación
-     */
+
     @PostMapping("/solicitudes/{id}/denegar")
     public ResponseEntity<Void> denegarSolicitud(@PathVariable Long id) {
         try {
@@ -253,10 +225,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * GET /admin/estado
-     * Obtiene el estado del sistema administrativo
-     */
+
     @GetMapping("/estado")
     public ResponseEntity<String> obtenerEstadoAdmin() {
         return ResponseEntity.ok("Sistema administrativo MetaMapa operativo");
