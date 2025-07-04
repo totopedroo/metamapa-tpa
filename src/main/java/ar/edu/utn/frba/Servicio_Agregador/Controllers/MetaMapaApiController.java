@@ -26,12 +26,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * API pública para otras instancias de MetaMapa
- * Implementa los endpoints especificados en la consigna de la Entrega 2
- */
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:8080")
@@ -51,12 +50,7 @@ public class MetaMapaApiController {
     @Autowired
     private ColeccionRepository coleccionRepository;
 
-    /**
-     * GET /hechos
-     * Expone todos los hechos del sistema y los devuelve como una lista en formato
-     * JSON.
-     * Acepta parámetros para filtrar los resultados.
-     */
+
     @GetMapping("/hechos")
     public ResponseEntity<List<HechosOutputDto>> obtenerHechos(
             @RequestParam(required = false) String categoria,
@@ -81,11 +75,6 @@ public class MetaMapaApiController {
         }
     }
 
-    /**
-     * GET /colecciones
-     * Expone todas las colecciones disponibles en esta instancia de MetaMapa,
-     * independientemente del origen de sus fuentes.
-     */
     @GetMapping("/colecciones")
     public ResponseEntity<List<ColeccionOutputDto>> obtenerColecciones() {
         try {
@@ -96,12 +85,7 @@ public class MetaMapaApiController {
         }
     }
 
-    /**
-     * GET /colecciones/:identificador/hechos
-     * Permite obtener los hechos asociados a una colección.
-     * Acepta los mismos parámetros que /hechos y devuelve los resultados en el
-     * mismo formato.
-     */
+
     @GetMapping("/colecciones/{identificador}/hechos")
     public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String identificador) {
         try {
@@ -112,11 +96,30 @@ public class MetaMapaApiController {
         }
     }
 
-    /**
-     * POST /solicitudes
-     * Permite crear solicitudes de eliminación, enviando los datos de la solicitud
-     * como un JSON a través del cuerpo (body) de la misma.
-     */
+    @GetMapping("/colecciones/{id}/hechos/navegacion")
+    public ResponseEntity<List<Hecho>> navegarHechos(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "irrestricta") String modo) {
+        try {
+            Coleccion coleccion = coleccionRepository.findById(id);
+            if (coleccion == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
+            }
+            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
+                case "curada" -> new CuradaStrategy();
+                case "irrestricta" -> new IrrestrictaStrategy();
+                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
+            };
+
+            List<Hecho> hechos = coleccionService.navegarHechos(id, estrategia);
+            return ResponseEntity.ok(hechos);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+        }
+    }
+
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDto> crearSolicitudEliminacion(
             @RequestBody SolicitudInputDto solicitudInputDto) {
@@ -130,62 +133,32 @@ public class MetaMapaApiController {
         }
     }
 
-    /**
-     * GET /colecciones/{id}/hechos/navegacion
-     * Endpoint para navegación curada o irrestricta sobre una colección
-     */
-    @GetMapping("/colecciones/{id}/hechos/navegacion")
-    public ResponseEntity<List<Hecho>> navegarHechos(
-            @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") String modo) {
-        try {
-            Coleccion coleccion = coleccionRepository.findById(id);
+    @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
+    public ResponseEntity<List<Hecho>> filtrarHechosPorColeccion(
+            @PathVariable String coleccionId,
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String categoria
+    ) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
 
-            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
-                case "curada" -> new CuradaStrategy(); // Ya no necesita argumento
-                case "irrestricta" -> new IrrestrictaStrategy();
-                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
-            };
-
-            List<Hecho> hechos = coleccionService.navegarHechos(id, estrategia);
-            return ResponseEntity.ok(hechos);
-
-        } catch (Exception e) {
-            e.printStackTrace(); // útil para desarrollo
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (coleccion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
         }
+
+
+        List<Hecho> hechosFiltrados = coleccion.getHechos().stream()
+                .filter(h -> (titulo == null || h.getTitulo().toLowerCase().contains(titulo.toLowerCase())))
+                .filter(h -> (categoria == null || h.getCategoria().equalsIgnoreCase(categoria)))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(hechosFiltrados);
     }
 
-    /**
-     * Endpoint para verificar el estado de la API
-     */
+
     @GetMapping("/estado")
     public ResponseEntity<String> obtenerEstado() {
         return ResponseEntity.ok("MetaMapa API operativa");
-    }
-
-
-    @PutMapping("/colecciones/{id}/algoritmo")
-    public ResponseEntity<Void> setearAlgoritmoPorNombre(
-            @PathVariable String id,
-            @RequestParam String tipo) {
-
-        try {
-            AlgoritmoDeConsensoStrategy algoritmo = switch (tipo.toLowerCase()) {
-                case "mayoriasimple"       -> new MayoriaSimpleStrategy();
-                case "multiplesmenciones"  -> new MultiplesMencionesStrategy();
-                case "absoluta"            -> new AbsolutaStrategy();
-                default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
-            };
-
-            coleccionService.setAlgoritmoDeConsenso(id, algoritmo);
-            return ResponseEntity.ok().build();
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
 }

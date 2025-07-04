@@ -1,6 +1,4 @@
-package ar.edu.utn.frba.domain;
-
-import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
+package ar.edu.utn.frba.Servicio_Agregador.Domain;
 
 import java.util.ArrayList;
 import java.util.List;

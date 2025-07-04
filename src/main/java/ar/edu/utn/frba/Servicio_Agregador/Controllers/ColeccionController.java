@@ -1,4 +1,6 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.TipoFuente;
+import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
@@ -42,6 +44,8 @@ public class ColeccionController {
     public List<ColeccionOutputDto> getColecciones() {
         return coleccionService.buscarTodos();
     }
+
+
 
     @GetMapping("/{id}/hechos")
     public List<Hecho> obtenerHechosDeColeccion(@PathVariable String id) {
@@ -142,6 +146,58 @@ public class ColeccionController {
 
         coleccionRepository.save(coleccion);
         return ResponseEntity.ok("Hecho marcado como consensuado.");
+    }
+
+    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente")
+    public ResponseEntity<?> agregarFuenteAHecho(
+            @PathVariable String coleccionId,
+            @PathVariable Long hechoId,
+            @RequestParam TipoFuente tipoFuente) {
+
+        try {
+            Coleccion coleccion = coleccionRepository.findById(coleccionId);
+            if (coleccion == null) return ResponseEntity.notFound().build();
+
+            Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
+                    .filter(h -> h.getIdHecho().equals(hechoId))
+                    .findFirst();
+
+            if (hechoOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+            Hecho hecho = hechoOpt.get();
+            hecho.setTipoFuente(tipoFuente);
+            coleccionRepository.save(coleccion);
+            return ResponseEntity.ok("Fuente agregada correctamente al hecho.");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/quitar-fuente")
+    public ResponseEntity<?> quitarFuenteDeHecho(
+            @PathVariable String coleccionId,
+            @PathVariable Long hechoId) {
+
+        try {
+            Coleccion coleccion = coleccionRepository.findById(coleccionId);
+            if (coleccion == null) return ResponseEntity.notFound().build();
+
+            Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
+                    .filter(h -> h.getIdHecho().equals(hechoId))
+                    .findFirst();
+
+            if (hechoOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+            Hecho hecho = hechoOpt.get();
+            hecho.setTipoFuente(null);
+
+            coleccionRepository.save(coleccion);
+            return ResponseEntity.ok("Fuente quitada del hecho.");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
 
    }

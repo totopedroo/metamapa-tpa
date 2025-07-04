@@ -38,10 +38,10 @@ public class SolicitudController {
         try {
             if ("ACEPTADA".equalsIgnoreCase(nuevoEstado)) {
                 solicitudService.aceptarSolicitud(id);
-                return ResponseEntity.ok("✅ Solicitud aceptada");
+                return ResponseEntity.ok("Solicitud aceptada");
             } else if ("RECHAZADA".equalsIgnoreCase(nuevoEstado)) {
                 solicitudService.rechazarSolicitud(id);
-                return ResponseEntity.ok("❌ Solicitud rechazada");
+                return ResponseEntity.ok(" Solicitud rechazada");
             } else {
                 return ResponseEntity.badRequest().body("Estado no válido. Debe ser 'ACEPTADA' o 'RECHAZADA'");
             }
