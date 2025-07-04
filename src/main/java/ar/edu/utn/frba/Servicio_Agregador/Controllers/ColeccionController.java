@@ -16,6 +16,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
 import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.Servicio_Agregador.Service.SolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping
 @CrossOrigin("http://localhost:8080")
 public class ColeccionController {
+
     private final SecureRandom secureRandom = new SecureRandom();
     @Autowired
     private IColeccionService coleccionService;
@@ -42,6 +44,9 @@ public class ColeccionController {
     private HechosRepository hechosRepository;
     @Autowired
     private HechosService hechosService;
+    @Autowired
+    private SolicitudService solicitudService;
+
 
     @GetMapping("/colecciones")
     public List<ColeccionOutputDto> getColecciones() {
@@ -223,6 +228,30 @@ public class ColeccionController {
         return ResponseEntity.ok(hechosFiltrados);
     }
 
+    @PostMapping("/solicitudes/{id}/aprobar")
+    public ResponseEntity<Void> aprobarSolicitud(@PathVariable Long id) {
+        try {
+            solicitudService.aceptarSolicitud(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @PostMapping("/solicitudes/{id}/denegar")
+    public ResponseEntity<Void> denegarSolicitud(@PathVariable Long id) {
+        try {
+            solicitudService.rechazarSolicitud(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
 
