@@ -155,4 +155,8 @@ public class Hecho {
                 && Objects.equals(this.fechaAcontecimiento, otro.fechaAcontecimiento);
     }
 
+    public long getId(){
+        return idHecho;
+    }
+
 }

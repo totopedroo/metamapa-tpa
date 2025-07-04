@@ -1,4 +1,5 @@
 package ar.edu.utn.frba.Servicio_Agregador.Controllers;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.TipoFuente;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Service.HechosService;
@@ -14,12 +15,14 @@ import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
+import ar.edu.utn.frba.Enums.EstadoDeSolicitud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.security.SecureRandom;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -44,8 +47,6 @@ public class ColeccionController {
     public List<ColeccionOutputDto> getColecciones() {
         return coleccionService.buscarTodos();
     }
-
-
 
     @GetMapping("/{id}/hechos")
     public List<Hecho> obtenerHechosDeColeccion(@PathVariable String id) {
@@ -200,5 +201,28 @@ public class ColeccionController {
         }
     }
 
-   }
+    @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
+    public ResponseEntity<List<Hecho>> filtrarHechosPorColeccion(
+            @PathVariable String coleccionId,
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String categoria
+    ) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+
+        if (coleccion == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+
+
+        List<Hecho> hechosFiltrados = coleccion.getHechos().stream()
+                .filter(h -> (titulo == null || h.getTitulo().toLowerCase().contains(titulo.toLowerCase())))
+                .filter(h -> (categoria == null || h.getCategoria().equalsIgnoreCase(categoria)))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(hechosFiltrados);
+    }
+
+
+}
 

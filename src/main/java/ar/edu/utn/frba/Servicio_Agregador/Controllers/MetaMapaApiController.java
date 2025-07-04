@@ -2,11 +2,13 @@ package ar.edu.utn.frba.Servicio_Agregador.Controllers;
 
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Servicio_Agregador.Domain.SolicitudEliminacion;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudInputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.Servicio_Agregador.Repository.ColeccionRepository;
+import ar.edu.utn.frba.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AbsolutaStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.Servicio_Agregador.Service.Consenso.MayoriaSimpleStrategy;
@@ -41,6 +43,8 @@ public class MetaMapaApiController {
     private IHechosService hechosService;
 
     @Autowired
+    private IHechosRepository hechosRepository;
+    @Autowired
     @Qualifier("coleccionService")
     private IColeccionService coleccionService;
 
@@ -51,28 +55,9 @@ public class MetaMapaApiController {
     private ColeccionRepository coleccionRepository;
 
 
-    @GetMapping("/hechos")
-    public ResponseEntity<List<HechosOutputDto>> obtenerHechos(
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
-            @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud) {
-        try {
-            List<HechosOutputDto> hechos = hechosService.filtrarHechos(
-                    categoria,
-                    fechaReporteDesde,
-                    fechaReporteHasta,
-                    fechaAcontecimientoDesde,
-                    fechaAcontecimientoHasta,
-                    latitud,
-                    longitud);
-            return ResponseEntity.ok(hechos);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @GetMapping("/{id}/hechos")
+    public List<Hecho> obtenerHechosColeccion(@PathVariable String id) {
+        return coleccionService.obtenerHechosPorColeccion(id);
     }
 
     @GetMapping("/colecciones")
@@ -154,6 +139,22 @@ public class MetaMapaApiController {
 
         return ResponseEntity.ok(hechosFiltrados);
     }
+
+
+    @PostMapping("/hechos/{id}/crearSolicitud")
+    public ResponseEntity<String> solicitarEliminacion(@PathVariable Long id, @RequestBody String motivo) {
+        Hecho hecho = hechosRepository.findById(id);
+        if (hecho == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
+        }
+
+        SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(motivo, id);
+        hecho.agregarSolicitud(nuevaSolicitud);
+        hechosRepository.save(hecho);
+
+        return ResponseEntity.ok("Solicitud de eliminación generada.");
+    }
+
 
 
     @GetMapping("/estado")

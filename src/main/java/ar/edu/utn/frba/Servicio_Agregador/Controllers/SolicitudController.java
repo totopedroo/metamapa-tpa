@@ -18,7 +18,7 @@ public class SolicitudController {
     @Autowired
     private ISolicitudService solicitudService;
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<SolicitudOutputDto> crearSolicitud(@RequestBody SolicitudInputDto dto) {
         try {
             SolicitudOutputDto salida = solicitudService.crearSolicitud(dto);

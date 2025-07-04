@@ -5,6 +5,7 @@ import ar.edu.utn.frba.Servicio_Agregador.Domain.Hecho;
 import java.util.List;
 
 public interface IHechosRepository {
+
     public List<Hecho> findAll();
     public void save(Hecho hecho);
     public void delete(Hecho hecho);
