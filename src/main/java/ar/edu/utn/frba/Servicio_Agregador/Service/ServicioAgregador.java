@@ -83,8 +83,7 @@ public class ServicioAgregador {
 
   }
 
-  //@Scheduled(cron = "0 0 3 * * *")
-  @Scheduled(cron = "/10 * * * * *")
+  @Scheduled(cron = "0 0 3 * * *")
   public void ejecutarAlgoritmosDeConsenso() {
       System.out.println("Ejecutando algoritmos de consenso...");
 

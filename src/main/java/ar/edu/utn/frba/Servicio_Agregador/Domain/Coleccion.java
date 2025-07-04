@@ -26,6 +26,7 @@ public class Coleccion {
 
 
     public Coleccion(String id, String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
+
         this.hechos = new ArrayList<>();
         this.id = id;
         this.titulo = titulo;
