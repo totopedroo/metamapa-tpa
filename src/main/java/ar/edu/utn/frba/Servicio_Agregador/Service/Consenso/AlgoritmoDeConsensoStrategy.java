@@ -11,6 +11,7 @@ import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
+import java.util.Optional;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -26,7 +27,6 @@ import java.util.List;
 
 
 public interface AlgoritmoDeConsensoStrategy {
-    boolean tieneConsenso(Hecho hecho, List<Hecho> todosLosHechos);
-
+    void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos);
 
 }

@@ -6,21 +6,29 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Component
 public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
-  public boolean tieneConsenso(Hecho hecho, List<Hecho> todos) {
-    Set<TipoFuente> fuentesTotales = todos.stream()
+  public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
+    Set<TipoFuente> fuentesTotales = todosLosHechos.stream()
             .map(Hecho::getTipoFuente)
             .collect(Collectors.toSet());
 
-    Set<TipoFuente> fuentesCoincidentes = todos.stream()
-            .filter(h -> h.esIgualA(hecho))
+    if (fuentesTotales.isEmpty()) {
+      hechoAProcesar.setConsensuado(Optional.of(false));
+      return;
+    }
+
+    Set<TipoFuente> fuentesCoincidentes = todosLosHechos.stream()
+            .filter(h -> h.esIgualA(hechoAProcesar))
             .map(Hecho::getTipoFuente)
             .collect(Collectors.toSet());
 
-    return fuentesCoincidentes.containsAll(fuentesTotales);
+    boolean esConsensuado = fuentesCoincidentes.equals(fuentesTotales);
+    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
   }
 }
+
