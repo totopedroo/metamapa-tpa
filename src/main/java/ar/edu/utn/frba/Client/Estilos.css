@@ -1,0 +1,17 @@
+.login{
+    width: 300px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 15px;
+    margin: 0 auto;
+    align-content: center;
+    display: grid; /* Habilita CSS Grid */
+    place-items: center; /* Centra horizontal y verticalmente */
+    height: 45vh;
+}
+.imagenFondo{
+    display: flex;
+    background-size: cover;
+    background-position: center;
+}
