@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MetaMapa - Registro</title>
+  <link rel="stylesheet" href="../common/common.css"/>
+  <link rel="stylesheet" href="registro.css"/>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <a class="brand" href="../landing/index.html" aria-label="MetaMapa inicio">
+        <span class="brand-logo" aria-hidden="true">🗺️</span>
+        <span class="brand-text">MetaMapa</span>
+    </a>
+  </header>
+
+  <!-- CONTENIDO REGISTRO -->
+  <main class="register-container">
+    <form class="register-box" id="register-form">
+      <h2>Crear Cuenta</h2>
+
+      <label for="nombre">Nombre <span style="color:red">*</span></label>
+      <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required />
+
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" name="usuario" placeholder="Nombre de usuario (opcional)" />
+
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" name="email" placeholder="Email (opcional)" />
+
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" name="password" placeholder="Contraseña (opcional)" />
+
+      <button type="submit" class="btn-register">Registrarme</button>
+
+      <p class="login-text">
+        ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión</a>
+      </p>
+
+      <button type="button" class="btn-invitado">
+        <a href="../hechos/hechos.html" style="color: white !important;text-decoration: none !important;">
+          Entrar como INVITADO
+        </a>
+      </button>
+
+      <p id="error-msg" class="error-msg"></p>
+    </form>
+  </main>
+
+  <!-- MODAL DE CONFIRMACIÓN -->
+  <div class="modal" id="success-modal">
+    <div class="modal-content">
+      <h3>✅ Registro exitoso</h3>
+      <p>¡Bienvenido a MetaMapa! Tu cuenta se ha creado correctamente.</p>
+      <button id="close-modal" class="btn-register">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-container">
+        <span class="footer-left">MetaMapa 2025</span>
+        <a class="footer-center" href="../legal/privacidad.html">Información legal y de privacidad</a>
+        <span class="footer-right">Español (AR)</span>
+    </div>
+  </footer>
+
+  <script src="registro.js"></script>
+</body>
+</html>

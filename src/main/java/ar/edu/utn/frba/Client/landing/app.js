@@ -120,5 +120,14 @@ $$(".tab").forEach(btn=>{
 /* Init */
 document.addEventListener("DOMContentLoaded", ()=>{
   cargarColecciones();
-  cargarHechos("irrestricto");
+  cargarHechos("irrestricto");    
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".fade-in-left, .fade-in-right, .fade-in-up")
+    .forEach((el, i) => {
+      el.style.animationDelay = `${i * 0.3}s`; // efecto cascada
+      el.classList.add("animate"); // dispara animación
+    });
+});
+

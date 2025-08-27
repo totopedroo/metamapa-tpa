@@ -1,3 +1,12 @@
+/* Colores principales */
+:root {
+  --primary: #688549;
+  --secondary: #a95038;
+  --background: #EBE5DD;
+  --text: #333333;
+}
+
+
 /* RESET básico */
 * {
   margin: 0;
@@ -39,15 +48,31 @@ body::before {
 
 /* HEADER */
 .main-header {
-  background-color: #688549;
+  background-color: var(--primary);
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.5rem;
 }
 
 .main-header .logo {
   font-size: 1.5rem;
   font-weight: bold;
 }
+
+.brand{
+  display:flex; 
+  align-items:center; 
+  gap:.6rem; color:#fff; 
+  text-decoration:none; 
+  font-weight:700
+}
+.brand-logo{
+  font-size:1.3rem
+}
+.brand-text{
+  letter-spacing: 1px;
+  font-size: 30px;
+}
+
 
 /* FOOTER */
 .main-footer {
@@ -128,6 +153,8 @@ body::before {
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .btn-login:hover {
@@ -144,6 +171,7 @@ body::before {
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
+  letter-spacing: 2px;
 }
 
 .btn-invitado:hover {
