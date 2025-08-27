@@ -23,12 +23,27 @@ body {
 .main-header {
   background-color: var(--primary);
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.5rem;
 }
 
 .main-header .logo {
   font-size: 1.5rem;
   font-weight: bold;
+}
+
+.brand{
+  display:flex; 
+  align-items:center; 
+  gap:.6rem; color:#fff; 
+  text-decoration:none; 
+  font-weight:700
+}
+.brand-logo{
+  font-size:1.3rem
+}
+.brand-text{
+  letter-spacing: 1px;
+  font-size: 30px;
 }
 
 
@@ -37,8 +52,6 @@ body {
   background-color: var(--primary);
   color: white;
   padding: 0.5rem 1.5rem;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   z-index: 1000;
 }
@@ -157,6 +170,13 @@ body {
   padding: 0.6rem 1rem;
   cursor: pointer;
   border-radius: 4px;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-primary:hover {
+  background-color: #57713a;
 }
 
 .btn-secondary {
@@ -166,6 +186,13 @@ body {
   padding: 0.6rem 1rem;
   cursor: pointer;
   border-radius: 4px;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-secondary:hover {
+  background-color: #8c3e2a;
 }
 
 /* Mapa */
