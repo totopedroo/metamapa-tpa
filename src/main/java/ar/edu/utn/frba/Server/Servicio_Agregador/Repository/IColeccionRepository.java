@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IColeccionRepository {
     public List<Coleccion> findAll();
-    public void save(Coleccion coleccion);
+    public Coleccion save(Coleccion coleccion);
     public void delete(Coleccion coleccion);
     public Coleccion findById(String id);
     Coleccion create(ColeccionInputDto coleccionInputDto); 

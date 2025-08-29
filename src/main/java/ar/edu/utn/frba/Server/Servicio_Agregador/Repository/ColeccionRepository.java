@@ -50,13 +50,14 @@ public class ColeccionRepository implements IColeccionRepository {
 
     @Override
     public List<Coleccion> findAll() {
-        // setColeccionEstatica(); //para pruebas
-        return colecciones;
+        return new ArrayList<>(colecciones);
     }
 
     @Override
-    public void save(Coleccion coleccion) {
+    public Coleccion save(Coleccion coleccion) {
+        colecciones.removeIf(c -> c.getId().equals(coleccion.getId())); // evita duplicados/estados viejos
         colecciones.add(coleccion);
+        return coleccion;
     }
 
     @Override

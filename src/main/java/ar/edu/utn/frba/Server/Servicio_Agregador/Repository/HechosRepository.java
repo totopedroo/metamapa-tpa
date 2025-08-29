@@ -1,64 +1,54 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Repository;
 
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Fuente;
+
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
-import ar.edu.utn.frba.Server.domain.main;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
 
-@Repository("hechosAgregadorRepository")
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Repository("hechosRepository")   // nombre explícito del bean
 public class HechosRepository implements IHechosRepository {
+    private final List<Hecho> hechos = new ArrayList<>();
+    private final AtomicLong sec = new AtomicLong(1);
 
-    public List<Hecho> hechosApi;
-    public Fuente fuente;
-    public main.ImportadorAPI importador;
-    public List<Hecho> hechos;
 
-    public HechosRepository() {
-        this.hechos = new ArrayList<>();
-    }
-
-    /*
-     * @Override
-     * public List<Hecho> findAll() {
-     * return new ArrayList<>(hechos);
-     * }
-     */
-
-    @Override
-    public Hecho findById(long id) {
-        return this.hechos.stream().filter(g -> g.getIdHecho() == id).findFirst().orElse(null);
-    }
-
-    @Override
-
-    public List<Hecho> findAll() {
-        System.out.println("hechos: " + hechos);
-        return hechos;
-    }
-
-    public Hecho create(Hecho hecho) {
-        if (hecho == null) {
-            throw new IllegalArgumentException("El hecho no puede ser nulo.");
+    public Hecho save(Hecho h) {
+        if (h.getIdHecho() == null) {
+            h.setIdHecho(sec.getAndIncrement());
         }
-        this.hechos.add(hecho);
-        System.out.println("Hecho creado y agregado a la lista: " + hecho.getTitulo());
-        return hecho;
-    }
-
-    @Override
-    public void save(Hecho hecho) {
-        hechos.add(hecho);
-    }
-
-    public void saveList(List<Hecho> listaHechos) {
-        hechos.addAll(listaHechos);
+// reemplazar si ya existe
+        hechos.removeIf(x -> Objects.equals(x.getIdHecho(), h.getIdHecho()));
+        hechos.add(h);
+        return h;
     }
 
     @Override
     public void delete(Hecho hecho) {
-        hechos.remove(hecho);
+
     }
+
+    @Override
+    public Hecho findById(long id) {
+        return null;
+    }
+
+    @Override
+    public void saveList(List<Hecho> listaHechos) {
+
+    }
+
+    @Override
+    public Hecho create(Hecho hecho) {
+        return null;
+    }
+
+
+    public Optional<Hecho> findById(Long id) {
+        return hechos.stream().filter(h -> Objects.equals(h.getIdHecho(), id)).findFirst();
+    }
+
+
+    public List<Hecho> findAll() { return new ArrayList<>(hechos); }
 }

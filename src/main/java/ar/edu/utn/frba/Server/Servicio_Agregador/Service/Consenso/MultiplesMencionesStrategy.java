@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso;
 
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
