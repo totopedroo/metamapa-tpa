@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class SolicitudService implements ISolicitudService {
 
     @Autowired
-    @Qualifier("hechosAgregadorRepository")
     private IHechosRepository hechosRepository;
 
     @Autowired

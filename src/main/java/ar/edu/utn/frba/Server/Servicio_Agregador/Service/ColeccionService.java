@@ -3,8 +3,9 @@ package ar.edu.utn.frba.Server.Servicio_Agregador.Service;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.*;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.Server.Enums.TipoFuente;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.ImportadorCSV;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("coleccionService")
 public class ColeccionService implements IColeccionService {
@@ -31,7 +34,6 @@ public class ColeccionService implements IColeccionService {
     private ImportadorCSV importadorCSV;
 
     @Autowired
-    @Qualifier("hechosAgregadorRepository")
     private IHechosRepository hechosRepository;
 
     @Autowired
@@ -44,18 +46,21 @@ public class ColeccionService implements IColeccionService {
 
 
     @Override
-    public List<ColeccionOutputDto> buscarTodos() {
-        List<Coleccion> colecciones = coleccionRepository.findAll();
-        return colecciones.stream().map(this::coleccionOutputDto).toList();
+    public List<Coleccion> findAll() {
+        return coleccionRepository.findAll();
     }
 
     public ColeccionOutputDto coleccionOutputDto(Coleccion coleccion) {
         var dto = new ColeccionOutputDto();
         dto.setId(coleccion.getId());
-        dto.setHechos(coleccion.getHechos());
+        dto.setHechos(
+                coleccion.getHechos().stream()
+                        .map(HechosOutputDto::fromModel)
+                        .collect(Collectors.toList())
+        );
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
-        dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
+        //dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
         dto.setAlgoritmoDeConsenso(coleccion.getAlgoritmoDeConsenso());
         return dto;
     }
@@ -81,7 +86,22 @@ public class ColeccionService implements IColeccionService {
         return ColeccionOutputDto.fromModel(coleccion);
     }
 
+    public List<Hecho> navegarHechos(String coleccionId, String modo) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) {
+            throw new NoSuchElementException("Colección no encontrada con ID: " + coleccionId);
+        }
 
+        // elegimos la estrategia sin crear objetos nuevos
+        ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
+            case "curada"      -> curadaStrategy;
+            case "irrestricta" -> irrestrictaStrategy;
+            default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
+        };
+
+        List<Hecho> hechos = new ArrayList<>(coleccion.getHechos());
+        return estrategia.filtrar(hechos);
+    }
 
     /*public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
         Coleccion coleccion = coleccionRepository.findById(idColeccion);
@@ -109,24 +129,34 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> hechosImportados;
 
-        Fuente fuente = new Fuente("https://api-ddsi.disilab.ar/public/api/desastres", this.importadorAPI,
-                TipoFuente.PROXY);
+        Fuente fuente = new Fuente(
+                "https://api-ddsi.disilab.ar/public/api/desastres",
+                this.importadorAPI,
+                TipoFuente.PROXY
+        );
+
         hechosImportados = this.importadorAPI.importar(fuente);
+
         Coleccion coleccion = new Coleccion(
                 UUID.randomUUID().toString(),
                 "COLECCION API",
                 "Colección creada a partir de datos de API",
-                new ArrayList<>());
+                new ArrayList<>()
+        );
+
         if (hechosImportados != null) {
             for (Hecho hecho : hechosImportados) {
                 if (hecho != null) {
                     coleccion.setHecho(hecho);
+                    hechosRepository.save(hecho);
                 }
             }
         }
+
         coleccionRepository.save(coleccion);
         return coleccion;
     }
+
 
     public void actualizarHechos(List<Hecho> nuevosHechos) {
         for (Coleccion coleccion : coleccionRepository.findAll()) {
@@ -161,19 +191,140 @@ public class ColeccionService implements IColeccionService {
         coleccionRepository.save(coleccion);
     }
 
+@Override
+public Coleccion setColeccionCsv(String pathOresource, String nombreColeccion) {
+    List<Hecho> hechos = null;
+    try {
+        hechos = importadorCSV.importar(pathOresource);
+    } catch (Exception e) {
+        // loguear si tenés logger
+    }
+    if (hechos == null) hechos = new ArrayList<>();
 
-    public Coleccion setColeccionCsv() {
-        List<Hecho> hechosImportadosCSV;
-        Fuente fuente = new Fuente("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/src/main/java/ar/edu/utn/frba/Assets/prueba1.csv/", this.importador, TipoFuente.LOCAL);
-        hechosImportadosCSV = this.importadorCSV.importar("C:/Users/Usuario/Desktop/DSI/2025-tpa-mi-no-grupo-15/src/main/java/ar/edu/utn/frba/Assets/prueba1.csv/");
-        Coleccion coleccionCSV = new Coleccion(
-                UUID.randomUUID().toString(),
-                "COLECCION CSV",
-                "Colección creada a partir de datos de CSV",
-                new ArrayList<>()
-        );
-        coleccionCSV.setHechos(hechosImportadosCSV);
-        coleccionRepository.save(coleccionCSV);
-        return coleccionCSV;
+    // Persistir hechos para garantizar IDs válidos
+    List<Hecho> persistidos = new ArrayList<>();
+    for (Hecho h : hechos) {
+        if (h != null) {
+            persistidos.add(hechosRepository.save(h));
+        }
+    }
+
+    // Crear y guardar la colección
+    Coleccion coleccion = new Coleccion();
+    coleccion.setId(UUID.randomUUID().toString());
+    coleccion.setTitulo(nombreColeccion);
+    coleccion.setDescripcion("Colección creada desde CSV");
+    coleccion.setHechos(persistidos);
+
+    coleccionRepository.save(coleccion);
+
+    return coleccion; // ✅ devolvés la colección creada
+}
+
+
+    public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion) {
+        // LEE SIEMPRE desde /archivodefinitivo.csv en resources
+        List<Hecho> hechos = importadorCSV.importar("/archivodefinitivo.csv");
+
+        // Persistir hechos en repo in-memory (asigna IDs si aplica)
+        for (Hecho h : hechos) {
+            if (h != null) hechosRepository.save(h);
+        }
+
+        Coleccion c = new Coleccion();
+        c.setId(UUID.randomUUID().toString()); // UUID String
+        c.setTitulo(nombreColeccion);
+        c.setDescripcion("Colección creada desde CSV (classpath hardcoded)");
+        c.setHechos(new ArrayList<>(hechos));
+
+        coleccionRepository.save(c);
+        return c;
+    }
+    public Hecho consensuarHecho(String coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
+
+        Hecho hecho = coleccion.getHechos().stream()
+                .filter(h -> Objects.equals(h.getIdHecho(), hechoId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
+
+        hecho.setConsensuado(Optional.of(true));
+        coleccionRepository.save(coleccion); // upsert (removeIf + add)
+        return hecho;
+    }
+    public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) {
+            throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
+        }
+        if (tipoFuente == null) {
+            throw new IllegalArgumentException("tipoFuente es obligatorio.");
+        }
+
+        Hecho hecho = coleccion.getHechos().stream()
+                .filter(h -> h != null && Objects.equals(h.getIdHecho(), hechoId)) // null-safe
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
+
+        hecho.setTipoFuente(tipoFuente);
+
+        // Persistir cambios de la colección (upsert)
+        coleccionRepository.save(coleccion);
+
+        // (Opcional) Si guardás Hecho también en su repo:
+        if (hechosRepository != null) {
+            hechosRepository.save(hecho);
+        }
+
+        return hecho;
+    }
+    public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) {
+            throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
+        }
+
+        // null-safe: evita NPE si idHecho es null
+        Hecho hecho = coleccion.getHechos().stream()
+                .filter(h -> h != null && java.util.Objects.equals(h.getIdHecho(), hechoId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
+
+        // Quitar la fuente
+        hecho.setTipoFuente(null);
+
+        // Guardar colección (upsert)
+        coleccionRepository.save(coleccion);
+
+        // (Opcional) Si además guardás Hecho en su repo:
+        if (hechosRepository != null) {
+            hechosRepository.save(hecho);
+        }
+
+        return hecho;
+    }
+    public List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        if (coleccion == null) {
+            throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
+        }
+
+        String tituloNorm = titulo == null ? null : titulo.trim().toLowerCase();
+        String catNorm    = categoria == null ? null : categoria.trim().toLowerCase();
+
+        return coleccion.getHechos().stream()
+                .filter(Objects::nonNull)
+                .filter(h -> {
+                    if (tituloNorm == null || tituloNorm.isEmpty()) return true;
+                    String ht = h.getTitulo() == null ? "" : h.getTitulo().toLowerCase();
+                    return ht.contains(tituloNorm);
+                })
+                .filter(h -> {
+                    if (catNorm == null || catNorm.isEmpty()) return true;
+                    String hc = h.getCategoria() == null ? "" : h.getCategoria().toLowerCase();
+                    return hc.equals(catNorm); // si querés “contiene”, cambiá por contains
+                })
+                .toList();
     }
 }

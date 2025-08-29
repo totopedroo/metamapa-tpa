@@ -1,32 +1,56 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Dtos;
 
+
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Coleccion;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.CriterioDePertenencia;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ColeccionOutputDto {
-    public String id;
-    private List<Hecho> hechos; //verificar nombre
-    public String titulo;
-    public String descripcion;
-    public  List<CriterioDePertenencia> criterioDePertenencia;
-    private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
+    private String id;
+    private String titulo;
+    private String descripcion;
+    private List<HechosOutputDto> hechos = new ArrayList<>();
 
 
-    public static ColeccionOutputDto fromModel(Coleccion coleccion) {
+    // Exponemos sólo nombres/etiquetas, no objetos de estrategia
+    private List<CriterioDePertenencia> criterios; // nombres simples de criterios
+    private AlgoritmoDeConsensoStrategy algoritmoDeConsenso; // nombre del algoritmo
+
+
+    public static ColeccionOutputDto fromModel(Coleccion c) {
         ColeccionOutputDto dto = new ColeccionOutputDto();
-        dto.id = coleccion.getId();
-        dto.hechos = new ArrayList<Hecho>();
-        dto.titulo = coleccion.getTitulo();
-        dto.descripcion = coleccion.getDescripcion();
-        dto.criterioDePertenencia = coleccion.getCriterioDePertenencia();
-        dto.algoritmoDeConsenso = coleccion.getAlgoritmoDeConsenso();
+        if (c == null) return dto;
+
+
+        dto.setId(c.getId());
+        dto.setTitulo(c.getTitulo());
+        dto.setDescripcion(c.getDescripcion());
+
+
+        dto.setHechos(
+                c.getHechos() == null ? List.of() :
+                        c.getHechos().stream().map(HechosOutputDto::fromModel).collect(Collectors.toList())
+        );
+
+
+        dto.setCriterios(
+                c.getCriterioDePertenencia() == null ? List.of()
+                        : c.getCriterioDePertenencia()
+        );
+
+        dto.setAlgoritmoDeConsenso(c.getAlgoritmoDeConsenso());
+
         return dto;
     }
 }
+

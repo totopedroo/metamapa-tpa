@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class HechosService implements IHechosService {
 
         @Autowired
-        @Qualifier("hechosAgregadorRepository")
         private IHechosRepository hechosRepository;
 
         @Override
@@ -38,6 +37,7 @@ public class HechosService implements IHechosService {
                 return hechosOutputDto;
 
         }
+
 
         public List<HechosOutputDto> filtrarHechos(String categoria,
                         LocalDate fechaReporteDesde, LocalDate fechaReporteHasta,

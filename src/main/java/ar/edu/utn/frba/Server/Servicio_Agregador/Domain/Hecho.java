@@ -43,6 +43,10 @@ public class Hecho {
 
     }
 
+    public Hecho() {
+
+    }
+
     public void agregarSolicitud(SolicitudEliminacion solicitud) {
         solicitudes.add(solicitud);
     }
@@ -88,12 +92,13 @@ public class Hecho {
         this.categoria = categoria;
     }
 
-    public ContenidoMultimedia getContenidoMultimedia() {
-        return contenidoMultimedia.orElse(null);
+    public Optional<ContenidoMultimedia> getContenidoMultimedia() {
+        return contenidoMultimedia == null ? Optional.empty() : contenidoMultimedia;
     }
 
-    public void setContenidoMultimedia(ContenidoMultimedia contenidoMultimedia) {
-        this.contenidoMultimedia = Optional.ofNullable(contenidoMultimedia);
+    // setter null-safe
+    public void setContenidoMultimedia(Optional<ContenidoMultimedia> contenidoMultimedia) {
+        this.contenidoMultimedia = (contenidoMultimedia == null) ? Optional.empty() : contenidoMultimedia;
     }
 
     public Double getLatitud() {
@@ -154,5 +159,16 @@ public class Hecho {
     public long getId(){
         return idHecho;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Hecho hecho = (Hecho) o;
+        return Objects.equals(idHecho, hecho.idHecho);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(idHecho);
+    }
 }

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
