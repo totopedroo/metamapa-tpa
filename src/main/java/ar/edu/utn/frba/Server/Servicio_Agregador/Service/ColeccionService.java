@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -192,33 +193,38 @@ public class ColeccionService implements IColeccionService {
     }
 
 @Override
-public Coleccion setColeccionCsv(String pathOresource, String nombreColeccion) {
-    List<Hecho> hechos = null;
-    try {
-        hechos = importadorCSV.importar(pathOresource);
-    } catch (Exception e) {
-        // loguear si tenés logger
-    }
-    if (hechos == null) hechos = new ArrayList<>();
+public Coleccion setColeccionCsv() {
+    List<Hecho> hechosImportadosCSV;
 
-    // Persistir hechos para garantizar IDs válidos
-    List<Hecho> persistidos = new ArrayList<>();
-    for (Hecho h : hechos) {
-        if (h != null) {
-            persistidos.add(hechosRepository.save(h));
+    InputStream archivoCsvStream = getClass().getClassLoader().getResourceAsStream("archivodefinitivo.csv");
+
+    if (archivoCsvStream != null) {
+        hechosImportadosCSV = this.importadorCSV.importar(archivoCsvStream.toString());
+    } else {
+        System.err.println("Archivo CSV no encontrado en el classpath.");
+        throw new RuntimeException("El archivo archivodefinitivo.csv no fue encontrado.");
+    }
+
+    Coleccion coleccionCSV = new Coleccion(
+            UUID.randomUUID().toString(),
+            "COLECCION CSV",
+            "Colección creada a partir de datos de CSV",
+            new ArrayList<>()
+    );
+
+    if (hechosImportadosCSV != null && !hechosImportadosCSV.isEmpty()) {
+        // **CORRECCIÓN CLAVE**
+        // Usa el mismo bucle y método de guardado que en tu método de la API
+        for (Hecho hecho : hechosImportadosCSV) {
+            if (hecho != null) {
+                coleccionCSV.setHecho(hecho); // Añade el hecho a la colección
+                hechosRepository.save(hecho);  // Guarda el hecho en el repositorio
+            }
         }
     }
 
-    // Crear y guardar la colección
-    Coleccion coleccion = new Coleccion();
-    coleccion.setId(UUID.randomUUID().toString());
-    coleccion.setTitulo(nombreColeccion);
-    coleccion.setDescripcion("Colección creada desde CSV");
-    coleccion.setHechos(persistidos);
-
-    coleccionRepository.save(coleccion);
-
-    return coleccion; // ✅ devolvés la colección creada
+    coleccionRepository.save(coleccionCSV);
+    return coleccionCSV;
 }
 
 
