@@ -67,9 +67,8 @@ public class ColeccionController {
 
     //TODO
     @PostMapping("/crearDesdeCSV")
-    public ResponseEntity<ColeccionOutputDto> crearDesdeCSV(@RequestParam String archivo,
-                                                            @RequestParam String nombreColeccion) {
-        var creada = coleccionService.setColeccionCsv(archivo, nombreColeccion);
+    public ResponseEntity<ColeccionOutputDto> crearDesdeCSV() {
+        var creada = coleccionService.setColeccionCsv();
         return ResponseEntity.ok(ColeccionOutputDto.fromModel(creada));
     }
     //TODO
