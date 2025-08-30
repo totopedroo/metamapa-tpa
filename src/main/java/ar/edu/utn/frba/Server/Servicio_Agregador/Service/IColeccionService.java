@@ -25,7 +25,7 @@ public interface IColeccionService {
     public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion);
     public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
     public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion);
-    public Coleccion setColeccionCsv();
+    public Coleccion setColeccionCsv(String archivoCsvStream);
     public Hecho consensuarHecho(String coleccionId, Long hechoId);
     public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente);
     public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId);

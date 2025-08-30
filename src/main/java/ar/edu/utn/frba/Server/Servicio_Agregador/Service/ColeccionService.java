@@ -193,13 +193,11 @@ public class ColeccionService implements IColeccionService {
     }
 
 @Override
-public Coleccion setColeccionCsv() {
+public Coleccion setColeccionCsv(String archivoCsvStream) {
     List<Hecho> hechosImportadosCSV;
 
-    InputStream archivoCsvStream = getClass().getClassLoader().getResourceAsStream("archivodefinitivo.csv");
-
     if (archivoCsvStream != null) {
-        hechosImportadosCSV = this.importadorCSV.importar(archivoCsvStream.toString());
+        hechosImportadosCSV = this.importadorCSV.importar(archivoCsvStream);
     } else {
         System.err.println("Archivo CSV no encontrado en el classpath.");
         throw new RuntimeException("El archivo archivodefinitivo.csv no fue encontrado.");
