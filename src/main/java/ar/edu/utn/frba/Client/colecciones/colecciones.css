@@ -1,0 +1,85 @@
+/* ==============================
+   Variables de colores
+============================== */
+:root {
+  --primary: #688549;
+  --secondary: #a95038;
+  --background: #EBE5DD;
+  --text: #333333;
+}
+
+/* Header */
+header {
+  background: var(--primary);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+header h1 a {
+  text-decoration: none;
+  color: white;
+}
+header nav a {
+  margin-left: 1.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+header nav a.active {
+  text-decoration: underline;
+}
+
+/* Container */
+body {
+  background: var(--background);
+  font-family: Arial, sans-serif;
+  color: var(--text);
+}
+
+/* Título + botón */
+.title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+.title-section h2 {
+  font-weight: bold;
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--primary);
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #54713b;
+}
+.btn-secondary {
+  background-color: var(--secondary);
+  border: none;
+}
+.btn-secondary:hover {
+  background-color: #883b29;
+}
+
+/* Badge confirmación */
+.badge-confirm {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  z-index: 1055;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.badge-confirm.show {
+  opacity: 1;
+  transform: translateY(0);
+}

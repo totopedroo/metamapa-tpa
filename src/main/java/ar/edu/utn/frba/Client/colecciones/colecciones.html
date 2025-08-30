@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colecciones - MetaMapa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="colecciones.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1><a href="../landing/index.html">MetaMapa</a></h1>
+    <nav>
+      <a href="../hechos/hechos.html">Hechos</a>
+      <a href="../colecciones/colecciones.html" class="active">Colecciones</a>
+      <a href="../acceso/login.html">Cerrar Sesión</a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- Título + botón -->
+    <div class="title-section">
+      <h2>Colecciones</h2>
+      <button class="btn btn-primary" onclick="abrirModalColeccion()">+ AGREGAR COLECCIÓN</button>
+    </div>
+
+    <!-- Resultados -->
+    <div class="results" id="resultados">
+      <h3>Listado de Colecciones:</h3>
+
+      <div class="table-responsive mt-3">
+        <table class="table table-striped align-middle" id="tablaColecciones">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Descripción</th>
+              <th>Hechos</th>
+              <th>Fuentes</th>
+              <th>Tag</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filas generadas desde JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar Colección -->
+  <div class="modal fade" id="modalColeccion" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="formColeccion">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalColeccionTitle">Nueva Colección</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+
+            <div class="mb-3">
+              <label for="titulo" class="form-label">Título</label>
+              <input type="text" class="form-control" id="titulo" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción</label>
+              <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="tag" class="form-label">Tag</label>
+              <input type="text" class="form-control" id="tag" required>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badge de confirmación -->
+  <div id="badgeConfirm" class="badge-confirm">¡Acción realizada!</div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="colecciones.js"></script>
+</body>
+</html>
