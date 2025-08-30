@@ -49,3 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     form.classList.remove("was-validated");
   });
 });
+
+// Abrir página de solicitudes al hacer click en la card
+document.getElementById("solicitudesEliminacion").addEventListener("click", () => {
+  window.location.href = "solicitud-eliminacion/solicitud-eliminacion.html";
+});
