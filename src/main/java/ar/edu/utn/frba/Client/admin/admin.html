@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - MetaMapa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header d-flex align-items-center px-4">
+    <h1 class="logo m-0">MetaMapa</h1>
+  </header>
+
+  <!-- PANEL DE CONTROL -->
+  <main class="container my-5">
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="resumenActividad">
+          <div class="card-body">
+            <h5 class="card-title">Resumen de Actividad</h5>
+            <p class="card-subtitle">Hechos, fuentes, solicitudes de eliminación</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="administrarColecciones">
+          <div class="card-body">
+            <h5 class="card-title">Administrar Colecciones</h5>
+            <p class="card-subtitle">Crear, editar y eliminar colecciones</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="configurarFuente">
+          <div class="card-body">
+            <h5 class="card-title">Configurar Fuente de Colección</h5>
+            <p class="card-subtitle">Estáticas, dinámica y proxy</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="configurarConsenso">
+          <div class="card-body">
+            <h5 class="card-title">Configurar Algoritmo Consenso</h5>
+            <p class="card-subtitle">Para cada colección</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="administrarHechos">
+          <div class="card-body">
+            <h5 class="card-title">Administrar Hechos subidos</h5>
+            <p class="card-subtitle">Aprobar, rechazar o aceptar con modificaciones</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 position-relative">
+        <div class="card admin-card" id="solicitudesEliminacion">
+            <div class="card-body">
+            <h5 class="card-title">Solicitudes de eliminación de Hechos</h5>
+            <span class="badge-notification">3</span>
+            </div>
+        </div>
+        </div>
+
+
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card admin-card" id="importarCSV">
+          <div class="card-body">
+            <h5 class="card-title">Importar hechos desde archivos CSV</h5>
+            <p class="card-subtitle">Con más de 10.000 entradas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+    <!-- Modal Asociar Algoritmo -->
+    <div class="modal fade" id="modalConsenso" tabindex="-1" aria-labelledby="modalConsensoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalConsensoLabel">Asociar Algoritmo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            <form id="formConsenso" novalidate>
+            <div class="mb-3">
+                <label for="selectColeccion" class="form-label">Colección</label>
+                <select class="form-select" id="selectColeccion" required>
+                <option value="" disabled selected>Seleccione una colección</option>
+                </select>
+                <div class="invalid-feedback">Este campo es obligatorio.</div>
+            </div>
+            <div class="mb-3">
+                <label for="selectAlgoritmo" class="form-label">Algoritmo</label>
+                <select class="form-select" id="selectAlgoritmo" required>
+                <option value="" disabled selected>Seleccione un algoritmo</option>
+                </select>
+                <div class="invalid-feedback">Este campo es obligatorio.</div>
+            </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="btnAceptarConsenso">Aceptar</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Badge de confirmación -->
+    <div id="badgeConfirm" class="badge-confirm">¡Guardado con éxito!</div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
