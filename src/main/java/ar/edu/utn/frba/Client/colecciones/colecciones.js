@@ -105,5 +105,31 @@ function mostrarBadge(msg) {
   setTimeout(() => badge.classList.remove("show"), 2000);
 }
 
+// Manejo de Tags con chips
+  const tagInput = document.getElementById("tagInput");
+  const tagContainer = document.getElementById("tagContainer");
+
+  tagInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && tagInput.value.trim() !== "") {
+      event.preventDefault();
+
+      const tagText = "#" + tagInput.value.trim();
+
+      // Crear chip
+      const chip = document.createElement("span");
+      chip.className = "badge bg-success d-flex align-items-center";
+      chip.style.gap = "6px";
+      chip.innerHTML = `${tagText} <span style="cursor:pointer;">&times;</span>`;
+
+      // Quitar chip al hacer click en la cruz
+      chip.querySelector("span").addEventListener("click", () => {
+        tagContainer.removeChild(chip);
+      });
+
+      tagContainer.appendChild(chip);
+      tagInput.value = "";
+    }
+  });
+
 // Inicializar
 renderTabla();

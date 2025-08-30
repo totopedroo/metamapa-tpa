@@ -21,26 +21,42 @@ body {
   min-height: 100vh; /* ocupa toda la altura de la ventana */
 }
 
-/* ==============================
-   Header
-============================== */
-header {
-  background: var(--primary);
+
+/* HEADER */
+.header {
+  background: #688549; 
   color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 1rem 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-header h1 {
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 50px;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.header h1 {
+  font-size: 1.3rem;
   margin: 0;
-  font-size: 1.6rem;
-}
-
-header h1 a {
-  color: white;
-  text-decoration: none;
+  font-weight: 400;
 }
 
 nav a {

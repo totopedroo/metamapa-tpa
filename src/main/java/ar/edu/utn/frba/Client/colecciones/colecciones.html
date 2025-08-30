@@ -10,14 +10,20 @@
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <h1><a href="../landing/index.html">MetaMapa</a></h1>
-    <nav>
-      <a href="../hechos/hechos.html">Hechos</a>
-      <a href="../colecciones/colecciones.html" class="active">Colecciones</a>
-      <a href="../acceso/login.html">Cerrar Sesión</a>
-    </nav>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../landing/index.html" aria-label="MetaMapa inicio">
+          <img src="../img/logo.png" alt="Logo MetaMapa">
+        </a>
+      </div>
+        <nav>
+          <a href="../hechos/hechos.html">Hechos</a>
+          <a href="../colecciones/colecciones.html">Colecciones</a>
+          <a href="../acceso/login.html">Cerrar Sesión</a>
+        </nav>
+    </div>
   </header>
 
   <div class="container">
@@ -55,38 +61,77 @@
   <!-- Modal Crear/Editar Colección -->
   <div class="modal fade" id="modalColeccion" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+        <div class="modal-content">
         <form id="formColeccion">
-          <div class="modal-header">
+            <div class="modal-header">
             <h5 class="modal-title" id="modalColeccionTitle">Nueva Colección</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
+            </div>
+            <div class="modal-body">
 
+            <!-- Título -->
             <div class="mb-3">
-              <label for="titulo" class="form-label">Título</label>
-              <input type="text" class="form-control" id="titulo" required>
+                <label for="titulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="titulo" required>
             </div>
 
+            <!-- Descripción -->
             <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripción</label>
-              <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" rows="3" required></textarea>
             </div>
 
+            <!-- Tags con chips -->
             <div class="mb-3">
-              <label for="tag" class="form-label">Tag</label>
-              <input type="text" class="form-control" id="tag" required>
+                <label for="tag" class="form-label">Tags</label>
+                <input type="text" class="form-control" id="tagInput" placeholder="Escriba y presione Enter">
+                <div id="tagContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
             </div>
 
-          </div>
-          <div class="modal-footer">
+            <!-- Fuente -->
+            <div class="mb-3">
+                <label for="fuente" class="form-label">Fuente</label>
+                <select class="form-select" id="fuente" required>
+                <option value="" disabled selected>Seleccione una fuente</option>
+                <option value="fuente1">Fuente 1</option>
+                <option value="fuente2">Fuente 2</option>
+                <option value="fuente3">Fuente 3</option>
+                </select>
+            </div>
+
+            <!-- Consenso -->
+            <div class="mb-3">
+                <label for="consenso" class="form-label">Consenso</label>
+                <select class="form-select" id="consenso" required>
+                <option value="" disabled selected>Seleccione un nivel de consenso</option>
+                <option value="alto">Alto</option>
+                <option value="medio">Medio</option>
+                <option value="bajo">Bajo</option>
+                </select>
+            </div>
+
+            <!-- Modo de Navegación -->
+            <div class="mb-3">
+                <label class="form-label">Modo de Navegación</label>
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="modoNavegacion" id="curado" value="Curado" required>
+                <label class="form-check-label" for="curado">Curado</label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="modoNavegacion" id="irrestricto" value="Irrestricto">
+                <label class="form-check-label" for="irrestricto">Irrestricto</label>
+                </div>
+            </div>
+
+            </div>
+            <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          </div>
+            </div>
         </form>
-      </div>
+        </div>
     </div>
-  </div>
+    </div>
 
   <!-- Badge de confirmación -->
   <div id="badgeConfirm" class="badge-confirm">¡Acción realizada!</div>
