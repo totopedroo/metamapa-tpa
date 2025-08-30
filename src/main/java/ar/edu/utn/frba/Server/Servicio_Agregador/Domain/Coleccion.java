@@ -31,6 +31,13 @@ public class Coleccion {
         this.criterioDePertenencia = criterioDePertenencia;
     }
 
+    public Coleccion(String nombreColeccion, List<Hecho> hechos) {
+    }
+
+    public Coleccion() {
+
+    }
+
     public List<Hecho> getHechosVisibles() {
         return hechos.stream()
             .filter(h -> !h.estaEliminado())

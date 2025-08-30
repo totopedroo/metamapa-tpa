@@ -17,6 +17,9 @@ public class Fuente {
     this.tipo = tipo;
   }
 
+  public Fuente(String url, ImportadorAPI importadorAPI, ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente tipoFuente) {
+  }
+
   //public boolean esFuenteProxy() { return tipo == TipoFuente.PROXY;}
 
   public List<Hecho> obtenerHechos() {

@@ -1,251 +1,251 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
 
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Service
-@Component("importadorCSVAgregador")
+/**
+ * Importador CSV robusto para crear Hechos a partir de un archivo con separador ';'.
+ *
+ * Reglas admitidas:
+ *  - Encabezados tolerantes a espacios y mayúsculas/minúsculas.
+ *  - Columnas esperadas: "Titulo", "Descripcion" (o "Descripción"), "Categoria",
+ *    "latitud", "longitud", "fecha del hecho" (o "fecha").
+ *  - Formatos de fecha admitidos: dd/MM/yyyy, yyyy-MM-dd.
+ *  - Manejo por-fila con logs: errores en una fila NO abortan todo el import.
+ *  - Búsqueda del archivo: primero classpath (resources), luego filesystem absoluto/relativo.
+ */
+@Component("importadorColeccionesCsv")
 public class ImportadorCSV {
 
-  private static final String CSV_DELIMITER = ";";
-  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy");
-  private static final int EXPECTED_COLUMNS = 7;
-  private final SecureRandom secureRandom = new SecureRandom();
+  private static final Logger log = LoggerFactory.getLogger(ImportadorCSV.class);
 
-  public List<Hecho> importar(String filePathString) {
-    List<Hecho> hechos = new ArrayList<>();
+  private static final char DEFAULT_SEPARATOR = ';';
+  private static final Charset[] CHARSETS_TRY = new Charset[]{
+          StandardCharsets.UTF_8,
+          StandardCharsets.ISO_8859_1
+  };
 
-    if (filePathString == null || filePathString.trim().isEmpty()) {
-      throw new IllegalArgumentException("La ruta del archivo CSV es nula o está vacía.");
+  private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
+          DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+          DateTimeFormatter.ISO_LOCAL_DATE // yyyy-MM-dd
+  );
+
+  /**
+   * Importa hechos desde un archivo CSV ubicado en classpath o filesystem.
+   * @param pathOrResource nombre en resources o ruta en disco
+   * @return lista de Hecho nunca null (vacía si nada válido)
+   */
+  public List<Hecho> importar(String pathOrResource) {
+    if (pathOrResource == null || pathOrResource.isBlank()) {
+      log.warn("[CSV] Path nulo o vacío");
+      return List.of();
     }
 
-    Path filePath = Paths.get(filePathString);
-
-    try (BufferedReader br = Files.newBufferedReader(filePath, StandardCharsets.ISO_8859_1)) {
-      String line;
-      boolean isHeader = true;
-      int lineNumber = 0;
-
-      while ((line = br.readLine()) != null) {
-        lineNumber++;
-
-        if (isHeader) {
-          isHeader = false;
-          continue;
-        }
-
-        String trimmedLine = line.trim();
-
-        if (trimmedLine.isEmpty()) {
-          continue;
-        }
-        String[] values = trimmedLine.split(CSV_DELIMITER);
-
-        validarLinea(values, lineNumber);
-
-        if (values.length < EXPECTED_COLUMNS) {
-          throw new RuntimeException("Fila con datos insuficientes en la línea " + lineNumber + ". Se esperaban "
-              + EXPECTED_COLUMNS + " columnas, se encontraron " + values.length + ". Línea: " + trimmedLine);
-        }
-
-        long idHecho;
-
-        do {
-          idHecho = secureRandom.nextLong();
-        } while (idHecho <= 0);
-
-        String titulo = values[0].trim();
-        String descripcion = values[1].trim();
-        String categoria = values[2].trim();
-        Optional<ContenidoMultimedia> contenidoMultimedia = Optional.empty();
-        String contenidoMultimediaStr = values[3].trim();
-        if (!"null".equalsIgnoreCase(contenidoMultimediaStr) && !contenidoMultimediaStr.isEmpty()) {
-        }
-        Double latitud = null;
-        String latitudStr = values[4].trim();
-        if (!latitudStr.isEmpty()) {
-          latitud = Double.parseDouble(latitudStr.replace(',', '.'));
-        }
-
-        Double longitud = null;
-        String longitudStr = values[5].trim();
-        if (!longitudStr.isEmpty()) {
-          longitud = Double.parseDouble(longitudStr.replace(',', '.'));
-        }
-
-        LocalDate fechaAcontecimiento = null;
-        String fechaAcontecimientoStr = values[6].trim();
-        if (!fechaAcontecimientoStr.isEmpty()) {
-          fechaAcontecimiento = LocalDate.parse(fechaAcontecimientoStr, DATE_FORMATTER);
-        }
-
-        List<String> etiquetas = new ArrayList<>();
-        if (values.length > 7) {
-          String etiquetasStr = values[7].trim();
-          if (!"null".equalsIgnoreCase(etiquetasStr) && !etiquetasStr.isEmpty()) {
-            String[] etiquetasArray = etiquetasStr.split(",");
-            for (String etiqueta : etiquetasArray) {
-              etiquetas.add(etiqueta.trim());
-            }
-          }
-        }
-
-        LocalDate fechaCarga = LocalDate.now();
-
-        TipoFuente fuente = TipoFuente.LOCAL;
-        Hecho hecho = new Hecho(
-            titulo,
-            descripcion,
-            categoria,
-            contenidoMultimedia.orElse(null),
-            latitud,
-            longitud,
-            fechaAcontecimiento,
-            fechaCarga,
-            idHecho,
-                fuente);
-        hechos.add(hecho);
+    // 1) Intentar classpath
+    try {
+      Resource res = new ClassPathResource(pathOrResource.strip());
+      if (res.exists()) {
+        log.info("[CSV] Leyendo desde classpath: {}", pathOrResource);
+        return leer(res.getInputStream());
       }
     } catch (IOException e) {
-      throw new RuntimeException("No se pudo leer el archivo '" + filePathString + "'. Detalle: " + e.getMessage(), e);
+      log.debug("[CSV] Error leyendo desde classpath {}: {}", pathOrResource, e.toString());
     }
-    System.out.println("ImportadorCSV: Se importaron " + hechos.size() + " hechos desde '" + filePathString + "'.");
+
+    // 2) Intentar filesystem
+    File f = new File(pathOrResource);
+    if (!f.exists()) {
+      // probar relativo al working dir
+      f = new File("./" + pathOrResource);
+    }
+    if (f.exists() && f.isFile()) {
+      log.info("[CSV] Leyendo desde filesystem: {}", f.getAbsolutePath());
+      for (Charset cs : CHARSETS_TRY) {
+        try (InputStream in = new FileInputStream(f)) {
+          return leer(in, cs);
+        } catch (IOException ex) {
+          log.debug("[CSV] Error con charset {}: {}", cs, ex.toString());
+        }
+      }
+    } else {
+      log.warn("[CSV] No se encontró el archivo en classpath ni filesystem: {}", pathOrResource);
+    }
+    return List.of();
+  }
+
+  // --- Implementación ---
+
+  private List<Hecho> leer(InputStream in) {
+    return leer(in, StandardCharsets.UTF_8);
+  }
+
+  private List<Hecho> leer(InputStream in, Charset cs) {
+    List<Hecho> hechos = new ArrayList<>();
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(in, cs))) {
+      String headerLine = br.readLine();
+      if (headerLine == null) {
+        log.warn("[CSV] Archivo vacío");
+        return List.of();
+      }
+
+      List<String> headers = parseLine(headerLine, DEFAULT_SEPARATOR);
+      Map<String, Integer> idx = indexar(headers);
+
+      String line;
+      int rowNum = 1; // ya leímos encabezado
+      while ((line = br.readLine()) != null) {
+        rowNum++;
+        if (line.isBlank()) continue;
+        List<String> cols = parseLine(line, DEFAULT_SEPARATOR);
+        try {
+          Hecho h = mapear(cols, idx, rowNum);
+          if (h != null) hechos.add(h);
+        } catch (Exception e) {
+          log.warn("[CSV] Fila {} inválida: {} | line='{}'", rowNum, e.getMessage(), line);
+        }
+      }
+    } catch (IOException e) {
+      log.error("[CSV] Error general leyendo CSV: {}", e.toString());
+    }
     return hechos;
   }
 
-  private void validarFecha(String fechaStr, int lineNumber) {
-    try {
-      if (fechaStr == null || fechaStr.trim().isEmpty()) {
-        System.out.println("Warning - Línea " + lineNumber + ": Fecha vacía");
-        return;
-      }
+  private Map<String, Integer> indexar(List<String> headers) {
+    Map<String, Integer> map = new HashMap<>();
+    for (int i = 0; i < headers.size(); i++) {
+      String key = norm(headers.get(i));
+      map.put(key, i);
+    }
+    // Aliases útiles
+    alias(map, "descripcion", "descripción");
+    alias(map, "fecha del hecho", "fecha");
+    return map;
+  }
 
-      LocalDate fecha = LocalDate.parse(fechaStr, DATE_FORMATTER);
-
-      if (fecha.isAfter(LocalDate.now())) {
-        System.out.println("Warning - Línea " + lineNumber + ": Fecha futura detectada '" + fechaStr + "'");
-      }
-
-      if (fecha.isBefore(LocalDate.of(1900, 1, 1))) {
-        System.out.println("Warning - Línea " + lineNumber + ": Fecha anterior a 1900 detectada '" + fechaStr + "'");
-      }
-    } catch (Exception e) {
-      System.out.println("Warning - Línea " + lineNumber + ": Error en formato de fecha '" + fechaStr + "'");
+  private void alias(Map<String, Integer> map, String canonical, String alt) {
+    if (!map.containsKey(canonical) && map.containsKey(alt)) {
+      map.put(canonical, map.get(alt));
     }
   }
 
-  private void validarCoordenadas(String latitudStr, String longitudStr, int lineNumber) {
-    try {
-      if (!latitudStr.isEmpty()) {
-        double latitud = Double.parseDouble(latitudStr.replace(',', '.'));
-        if (latitud < -90 || latitud > 90) {
-          System.out.println("Warning - Línea " + lineNumber + ": Latitud fuera de rango '" + latitudStr + "'");
-        }
-      }
+  private Hecho mapear(List<String> cols, Map<String, Integer> idx, int rowNum) {
+    String titulo = get(cols, idx, "titulo");
+    String descripcion = get(cols, idx, "descripcion");
+    String categoria = get(cols, idx, "categoria");
+    String latStr = get(cols, idx, "latitud");
+    String lonStr = get(cols, idx, "longitud");
+    String fechaStr = get(cols, idx, "fecha del hecho");
 
-      if (!longitudStr.isEmpty()) {
-        double longitud = Double.parseDouble(longitudStr.replace(',', '.'));
-        if (longitud < -180 || longitud > 180) {
-          System.out.println("Warning - Línea " + lineNumber + ": Longitud fuera de rango '" + longitudStr + "'");
-        }
-      }
-    } catch (Exception e) {
-      System.out.println("Warning - Línea " + lineNumber + ": Error en formato de coordenadas");
-    }
-  }
-
-  private void validarCamposObligatorios(String[] values, int lineNumber) {
-    try {
-      if (values[0].trim().isEmpty()) {
-        System.out.println("Warning - Línea " + lineNumber + ": Título vacío");
-      }
-      if (values[1].trim().isEmpty()) {
-        System.out.println("Warning - Línea " + lineNumber + ": Descripción vacía");
-      }
-      if (values[2].trim().isEmpty()) {
-        System.out.println("Warning - Línea " + lineNumber + ": Categoría vacía");
-      }
-    } catch (Exception e) {
-      System.out.println("Warning - Línea " + lineNumber + ": Error validando campos obligatorios");
-    }
-  }
-
-  private void validarLinea(String[] values, int lineNumber) {
-    try {
-      validarCamposObligatorios(values, lineNumber);
-      validarCoordenadas(values[4], values[5], lineNumber);
-      validarFecha(values[6], lineNumber);
-    } catch (Exception e) {
-      System.out.println("Warning - Error en validación de línea " + lineNumber + ": " + e.getMessage());
-    }
-  }
-
-  public Hecho parsearLineaCSV(String line) {
-    if (line == null || line.trim().isEmpty()) {
+    if (isAllBlank(titulo, descripcion, categoria, latStr, lonStr, fechaStr)) {
+      // fila vacía
       return null;
     }
 
-    String[] values = line.trim().split(CSV_DELIMITER);
+    Hecho h = new Hecho();
+    // Si "Titulo" es un número tipo ID en tu archivo, podés prefijarlo para evitar colisiones
+    h.setTitulo(titulo == null ? null : titulo.trim());
+    h.setDescripcion(nullIfBlank(descripcion));
+    h.setCategoria(nullIfBlank(categoria));
+    h.setLatitud(parseDouble(latStr));
+    h.setLongitud(parseDouble(lonStr));
+    h.setFechaAcontecimiento(parseFecha(fechaStr));
 
-    if (values.length < EXPECTED_COLUMNS) {
-      throw new RuntimeException("Línea con datos insuficientes. Se esperaban " + EXPECTED_COLUMNS
-          + " columnas, se encontraron " + values.length);
+    return h;
+  }
+
+  private String get(List<String> cols, Map<String, Integer> idx, String key) {
+    Integer i = idx.get(key);
+    if (i == null || i < 0 || i >= cols.size()) return null;
+    String v = cols.get(i);
+    return v == null ? null : v.trim();
+  }
+
+  private boolean isAllBlank(String... xs) {
+    for (String x : xs) if (x != null && !x.isBlank()) return false;
+    return true;
+  }
+
+  private String nullIfBlank(String s) {
+    return (s == null || s.isBlank()) ? null : s.trim();
+  }
+
+  private Double parseDouble(String s) {
+    if (s == null || s.isBlank()) return null;
+    // tolerar coma decimal
+    String n = s.replace(',', '.');
+    try {
+      return Double.parseDouble(n);
+    } catch (NumberFormatException e) {
+      log.warn("[CSV] no se pudo parsear número '{}': {}", s, e.getMessage());
+      return null;
     }
+  }
 
-    long idHecho;
-    do {
-      idHecho = secureRandom.nextLong();
-    } while (idHecho <= 0);
-
-    String titulo = values[0].trim();
-    String descripcion = values[1].trim();
-    String categoria = values[2].trim();
-    Optional<ContenidoMultimedia> contenidoMultimedia = Optional.empty();
-
-    Double latitud = null;
-    String latitudStr = values[4].trim();
-    if (!latitudStr.isEmpty()) {
-      latitud = Double.parseDouble(latitudStr.replace(',', '.'));
+  private LocalDate parseFecha(String s) {
+    if (s == null || s.isBlank()) return null;
+    for (DateTimeFormatter f : DATE_FORMATS) {
+      try {
+        return LocalDate.parse(s, f);
+      } catch (DateTimeParseException ignored) { }
     }
-
-    Double longitud = null;
-    String longitudStr = values[5].trim();
-    if (!longitudStr.isEmpty()) {
-      longitud = Double.parseDouble(longitudStr.replace(',', '.'));
+    // intentos extra: normalizar separadores
+    String s2 = s.replace('.', '/').replace('-', '/');
+    for (DateTimeFormatter f : DATE_FORMATS) {
+      try {
+        return LocalDate.parse(s2, f);
+      } catch (DateTimeParseException ignored) { }
     }
+    log.warn("[CSV] fecha inválida '{}'. Formatos soportados: dd/MM/yyyy, yyyy-MM-dd", s);
+    return null;
+  }
 
-    LocalDate fechaAcontecimiento = null;
-    String fechaAcontecimientoStr = values[6].trim();
-    if (!fechaAcontecimientoStr.isEmpty()) {
-      fechaAcontecimiento = LocalDate.parse(fechaAcontecimientoStr, DATE_FORMATTER);
+  /**
+   * Parser simple para CSV con separador ';' y soporte básico de comillas dobles.
+   * Si tu CSV contiene comas dentro de campos y comillas, esto es suficiente. Para casos
+   * más complejos, considera usar una librería (OpenCSV) y adaptar este importador.
+   */
+  private List<String> parseLine(String line, char sep) {
+    if (line == null) return List.of();
+    List<String> out = new ArrayList<>();
+    StringBuilder cur = new StringBuilder();
+    boolean inQuotes = false;
+    for (int i = 0; i < line.length(); i++) {
+      char c = line.charAt(i);
+      if (c == '"') {
+        // toggle o escape de ""
+        if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+          cur.append('"');
+          i++; // saltar el segundo
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c == sep && !inQuotes) {
+        out.add(cur.toString());
+        cur.setLength(0);
+      } else {
+        cur.append(c);
+      }
     }
+    out.add(cur.toString());
+    // trim suave
+    return out.stream().map(s -> s == null ? null : s.trim()).collect(Collectors.toList());
+  }
 
-    LocalDate fechaCarga = LocalDate.now();
-
-    TipoFuente fuente = TipoFuente.LOCAL;
-    return new Hecho(
-        titulo,
-        descripcion,
-        categoria,
-        contenidoMultimedia.orElse(null),
-        latitud,
-        longitud,
-        fechaAcontecimiento,
-        fechaCarga,
-        idHecho,
-            fuente);
+  private String norm(String s) {
+    if (s == null) return "";
+    return s.trim().toLowerCase(Locale.ROOT);
   }
 }

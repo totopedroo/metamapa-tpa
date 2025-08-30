@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service;
 
 import ar.edu.utn.frba.Server.Enums.TipoFuente;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Server.Fuente_Estatica.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Server.Fuente_Proxy.Domain.ImportadorAPI;
 import ar.edu.utn.frba.Server.Fuente_Proxy.Domain.ImportadorMetaMapa;
@@ -78,7 +79,7 @@ public class ServicioAgregador {
     System.out.println(" Refresco automático finalizado.");
 
   }
-
+/*
   @Scheduled(cron = "0 0 3 * * *")
   public void ejecutarAlgoritmosDeConsenso() {
       System.out.println("Ejecutando algoritmos de consenso...");
@@ -106,5 +107,5 @@ public class ServicioAgregador {
       });
 
       System.out.println("Algoritmos de consenso finalizados.");
-    }
+    }*/
   }

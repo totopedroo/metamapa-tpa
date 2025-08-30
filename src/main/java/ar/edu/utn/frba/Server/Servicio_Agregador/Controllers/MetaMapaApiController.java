@@ -54,9 +54,9 @@ public class MetaMapaApiController {
     }
 
     @GetMapping("/colecciones")
-    public ResponseEntity<List<ColeccionOutputDto>> obtenerColecciones() {
+    public ResponseEntity<List<Coleccion>> obtenerColecciones() {
         try {
-            List<ColeccionOutputDto> colecciones = coleccionService.buscarTodos();
+            List<Coleccion> colecciones = coleccionService.findAll();
             return ResponseEntity.ok(colecciones);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

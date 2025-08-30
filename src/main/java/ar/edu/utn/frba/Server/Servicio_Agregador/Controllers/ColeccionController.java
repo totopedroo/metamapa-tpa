@@ -1,22 +1,19 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Controllers;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Service.HechosService;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.*;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Service.*;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.ColeccionRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.HechosRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso.*;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Service.IColeccionService;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ISeederService;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Coleccion;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ModoNavegacion.CuradaStrategy;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ModoNavegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ModoNavegacion.ModoNavegacionStrategy;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Service.SolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.Paths;
 import java.util.*;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
@@ -31,11 +28,11 @@ public class ColeccionController {
     private IColeccionService coleccionService;
     @Autowired
     private ISeederService seederService;
-    @Autowired
-    private ColeccionRepository coleccionRepository;
+
     @Autowired
     private IrrestrictaStrategy irrestrictaStrategy;
-
+    @Autowired
+    private final ar.edu.utn.frba.Server.Servicio_Agregador.Domain.ImportadorCSV importadorCSV;
     @Autowired
     private HechosRepository hechosRepository;
     @Autowired
@@ -43,10 +40,19 @@ public class ColeccionController {
     @Autowired
     private SolicitudService solicitudService;
 
+    public ColeccionController(ImportadorCSV importadorCSV, IColeccionService coleccionService) {
+        this.importadorCSV = importadorCSV;
+        this.coleccionService = coleccionService;
+    }
+
+
 
     @GetMapping("/colecciones")
-    public List<ColeccionOutputDto> getColecciones() {
-        return coleccionService.buscarTodos();
+    public ResponseEntity<List<ColeccionOutputDto>> listar() {
+        var out = coleccionService.findAll().stream()
+                .map(ColeccionOutputDto::fromModel)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(out);
     }
 
     @GetMapping("/{id}/hechos")
@@ -59,11 +65,13 @@ public class ColeccionController {
         return coleccionService.setColeccionApi();
     }
 
-    @GetMapping("/createColeccionCSV")
-        public Coleccion crearColeccionPruebaCSV() {
-            return coleccionService.setColeccionCsv();
-        }
-
+    //TODO
+    @PostMapping("/crearDesdeCSV")
+    public ResponseEntity<ColeccionOutputDto> crearDesdeCSV(@RequestParam String path) {
+        var creada = coleccionService.setColeccionCsv(path);
+        return ResponseEntity.ok(ColeccionOutputDto.fromModel(creada));
+    }
+    //TODO
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
         try {
@@ -77,26 +85,29 @@ public class ColeccionController {
     }
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
-    public ResponseEntity<List<Hecho>> navegarHechos(
+    public ResponseEntity<?> navegarHechos(
             @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") String modo) {
+            @RequestParam(defaultValue = "irrestricta") ModoNavegacionStrategy modo) {
         try {
-            Coleccion coleccion = coleccionRepository.findById(id);
-            if (coleccion == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
-            }
-            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
-                case "curada" -> new CuradaStrategy();
-                case "irrestricta" -> new IrrestrictaStrategy();
-                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
-            };
+            // ahora el service resuelve la estrategia
+            List<Hecho> hechos = coleccionService.navegarHechos(id, modo);
 
-            List<Hecho> hechos = coleccionService.navegarHechos(id, estrategia);
-            return ResponseEntity.ok(hechos);
+            // Devolver DTOs para evitar problemas de Optional/JSON
+            var dtos = hechos.stream()
+                    .map(ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto::fromModel)
+                    .toList();
 
+            return ResponseEntity.ok(dtos);
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Colección no encontrada: " + id);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage()); // "Modo de navegación inválido: ..."
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno: " + e.getMessage());
         }
     }
 
@@ -107,10 +118,10 @@ public class ColeccionController {
 
         try {
             AlgoritmoDeConsensoStrategy algoritmo = switch (tipo.toLowerCase()) {
-                case "mayoriasimple"       -> new MayoriaSimpleStrategy();
-                case "multiplesmenciones"  -> new MultiplesMencionesStrategy();
-                case "absoluta"            -> new AbsolutaStrategy();
-                case "defecto"              -> new ConsensoPorDefectoStrategy();
+                case "mayoriasimple" -> new MayoriaSimpleStrategy();
+                case "multiplesmenciones" -> new MultiplesMencionesStrategy();
+                case "absoluta" -> new AbsolutaStrategy();
+                case "defecto" -> new ConsensoPorDefectoStrategy();
                 default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
             };
 
@@ -125,29 +136,17 @@ public class ColeccionController {
     }
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
-    public ResponseEntity<String> consensuarHecho(
+    public ResponseEntity<?> consensuarHecho(
             @PathVariable String coleccionId,
-            @PathVariable String hechoId) {
-
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
-        if (coleccion == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Colección no encontrada.");
+            @PathVariable Long hechoId) {
+        try {
+            Hecho actualizado = coleccionService.consensuarHecho(coleccionId, hechoId);
+            return ResponseEntity.ok("Hecho " + actualizado.getIdHecho() + " marcado como consensuado.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
-
-        Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
-                .filter(h -> String.valueOf(h.getIdHecho()).equals(hechoId))
-                .findFirst();
-
-        if (hechoOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado.");
-        }
-
-        Hecho hecho = hechoOpt.get();
-        hecho.setConsensuado(Optional.of(true));
-
-
-        coleccionRepository.save(coleccion);
-        return ResponseEntity.ok("Hecho marcado como consensuado.");
     }
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente")
@@ -155,22 +154,17 @@ public class ColeccionController {
             @PathVariable String coleccionId,
             @PathVariable Long hechoId,
             @RequestParam TipoFuente tipoFuente) {
-
         try {
-            Coleccion coleccion = coleccionRepository.findById(coleccionId);
-            if (coleccion == null) return ResponseEntity.notFound().build();
+            Hecho actualizado = coleccionService.agregarFuenteAHecho(coleccionId, hechoId, tipoFuente);
 
-            Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
-                    .filter(h -> h.getIdHecho().equals(hechoId))
-                    .findFirst();
+            // devolver DTO para evitar problemas de serialización (Optional, etc.)
+            var dto = ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto.fromModel(actualizado);
+            return ResponseEntity.ok(dto);
 
-            if (hechoOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-            Hecho hecho = hechoOpt.get();
-            hecho.setTipoFuente(tipoFuente);
-            coleccionRepository.save(coleccion);
-            return ResponseEntity.ok("Fuente agregada correctamente al hecho.");
-
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
@@ -180,48 +174,40 @@ public class ColeccionController {
     public ResponseEntity<?> quitarFuenteDeHecho(
             @PathVariable String coleccionId,
             @PathVariable Long hechoId) {
-
         try {
-            Coleccion coleccion = coleccionRepository.findById(coleccionId);
-            if (coleccion == null) return ResponseEntity.notFound().build();
+            Hecho actualizado = coleccionService.quitarFuenteDeHecho(coleccionId, hechoId);
 
-            Optional<Hecho> hechoOpt = coleccion.getHechos().stream()
-                    .filter(h -> h.getIdHecho().equals(hechoId))
-                    .findFirst();
+            // Devolver DTO para no chocar con Optional/JSON
+            var dto = ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto.fromModel(actualizado);
+            return ResponseEntity.ok(dto);
 
-            if (hechoOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-            Hecho hecho = hechoOpt.get();
-            hecho.setTipoFuente(null);
-
-            coleccionRepository.save(coleccion);
-            return ResponseEntity.ok("Fuente quitada del hecho.");
-
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
-    public ResponseEntity<List<Hecho>> filtrarHechosPorColeccion(
+    public ResponseEntity<?> filtrarHechosPorColeccion(
             @PathVariable String coleccionId,
             @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String categoria
-    ) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+            @RequestParam(required = false) String categoria) {
+        try {
+            List<Hecho> hechos = coleccionService.filtrarHechosPorColeccion(coleccionId, titulo, categoria);
 
-        if (coleccion == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.emptyList());
+            // Evita problemas de Optional/serialización devolviendo DTOs
+            var dtos = hechos.stream()
+                    .map(ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto::fromModel)
+                    .toList();
+
+            return ResponseEntity.ok(dtos);
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
-
-
-        List<Hecho> hechosFiltrados = coleccion.getHechos().stream()
-                .filter(h -> (titulo == null || h.getTitulo().toLowerCase().contains(titulo.toLowerCase())))
-                .filter(h -> (categoria == null || h.getCategoria().equalsIgnoreCase(categoria)))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(hechosFiltrados);
     }
 
     @PostMapping("/solicitudes/{id}/aprobar")
@@ -249,5 +235,21 @@ public class ColeccionController {
         }
     }
 
+    @GetMapping("/debug/csv")
+    public ResponseEntity<?> debugCsv(@RequestParam String archivo) {
+        try {
+            boolean fs = java.nio.file.Files.exists(java.nio.file.Path.of(archivo));
+            boolean res = new org.springframework.core.io.ClassPathResource(archivo).exists();
+            return ResponseEntity.ok("CSV encontrado? filesystem=" + fs + " | resources=" + res + " | valor='" + archivo + "'");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("debug error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/crearDesdeCSVHardcoded", produces = "application/json")
+    public ResponseEntity<ColeccionOutputDto> crearDesdeCSVHardcoded() {
+        Coleccion c = coleccionService.crearColeccionDesdeCSVHardcoded("Colección CSV (hardcoded)");
+        return ResponseEntity.ok(ColeccionOutputDto.fromModel(c));
+    }
 }
 
