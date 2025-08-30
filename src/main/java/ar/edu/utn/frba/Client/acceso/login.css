@@ -153,7 +153,7 @@ body::before {
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -171,7 +171,7 @@ body::before {
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .btn-invitado:hover {
