@@ -36,9 +36,7 @@ function cardColeccion({titulo, descripcion, handle, fuentes=0, hechos=0}){
       <div class="card-body">
         <p>${descripcion}</p>
       </div>
-      <div class="card-actions">
-        <a class="btn btn-primary" href="/visualizacion?coleccion=${encodeURIComponent(handle)}">Explorar</a>
-      </div>
+      
     </article>`;
 }
 function cardHecho({titulo, descripcion, categoria, lugar, fecha}){
