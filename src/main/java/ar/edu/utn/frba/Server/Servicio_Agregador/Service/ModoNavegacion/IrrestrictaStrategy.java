@@ -1,10 +1,13 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service.ModoNavegacion;
 
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Component("irrestricta")
 @Service
 public class IrrestrictaStrategy implements ModoNavegacionStrategy {
         @Override

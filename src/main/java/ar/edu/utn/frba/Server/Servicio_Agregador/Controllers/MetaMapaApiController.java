@@ -73,7 +73,7 @@ public class MetaMapaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+/*
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<List<Hecho>> navegarHechos(
             @PathVariable String id,
@@ -97,7 +97,8 @@ public class MetaMapaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
     }
-
+*/
+    //todo
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDto> crearSolicitudEliminacion(
             @RequestBody SolicitudInputDto solicitudInputDto) {
