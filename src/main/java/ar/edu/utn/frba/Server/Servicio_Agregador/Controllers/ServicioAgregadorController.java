@@ -1,9 +1,12 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Controllers;
 
 import ar.edu.utn.frba.Server.Fuente_Dinamica.Service.FuenteDinamicaService;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosInputDto;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ServicioAgregador;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -34,10 +37,9 @@ public class ServicioAgregadorController {
     public ResponseEntity<String> refrescarManual() {
         servicioAgregador.refrescarHechosPeriodicamente();
         return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
-    }
+    }*/
 
-    /*
-
+/*
     @PostMapping("/crear")
     public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
 
