@@ -30,11 +30,6 @@ public class HechosRepository implements IHechosRepository {
     }
 
     @Override
-    public Hecho findById(long id) {
-        return null;
-    }
-
-    @Override
     public void saveList(List<Hecho> listaHechos) {
 
     }
@@ -44,9 +39,12 @@ public class HechosRepository implements IHechosRepository {
         return null;
     }
 
-
-    public Optional<Hecho> findById(Long id) {
-        return hechos.stream().filter(h -> Objects.equals(h.getIdHecho(), id)).findFirst();
+    @Override
+    public Hecho findById(Long id) {
+        return hechos.stream()
+                .filter(h -> Objects.equals(h.getIdHecho(), id))
+                .findFirst()
+                .orElse(null);
     }
 
 

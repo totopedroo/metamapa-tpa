@@ -25,7 +25,6 @@ public class SolicitudService implements ISolicitudService {
     @Qualifier("detectorSpamAgregador")
     private IDetectorDeSpam detectorDeSpam;
 
-    @SuppressWarnings("checkstyle:Indentation")
     @Override
     public SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto) {
         Hecho hecho = hechosRepository.findById(inputDto.getIdHecho());
@@ -96,6 +95,7 @@ public class SolicitudService implements ISolicitudService {
         if (hecho != null) {
             hecho.verificarEliminacion();
         }
+        hecho.setEliminado(true);
     }
 
     @Override
