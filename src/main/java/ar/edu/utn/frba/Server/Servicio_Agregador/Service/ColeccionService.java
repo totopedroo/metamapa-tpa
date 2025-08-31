@@ -6,6 +6,7 @@ import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.ColeccionRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
@@ -23,19 +24,41 @@ import java.util.stream.Collectors;
 
 @Service("coleccionService")
 public class ColeccionService implements IColeccionService {
-
     @Autowired
     @Qualifier("coleccionRepository")
-    private IColeccionRepository coleccionRepository;
+    private final ColeccionRepository coleccionRepository;
+    private final IHechosRepository hechosRepository;
+
+
+    // Importador CSV (nombrado para evitar conflictos con otros importadores)
+    private final ImportadorCSV importadorCSV;
+
+
+    // Estrategias de navegación (inyectadas por nombre de bean)
+    private final ModoNavegacionStrategy irrestricta;
+    private final ModoNavegacionStrategy curada;
+
+
+    @Autowired
+    public ColeccionService(ColeccionRepository coleccionRepository,
+                            IHechosRepository hechosRepository,
+                            @Qualifier("importadorColeccionesCsv") ImportadorCSV importadorCSV,
+                            @Qualifier("irrestricta") ModoNavegacionStrategy irrestricta,
+                            @Qualifier("curada") ModoNavegacionStrategy curada) {
+        this.coleccionRepository = coleccionRepository;
+        this.hechosRepository = hechosRepository;
+        this.importadorCSV = importadorCSV;
+        this.irrestricta = irrestricta;
+        this.curada = curada;
+    }
+
 
     @Autowired
     private ImportadorAPI importadorAPI;
 
-    @Autowired
-    private ImportadorCSV importadorCSV;
 
-    @Autowired
-    private IHechosRepository hechosRepository;
+
+
 
     @Autowired
     private CuradaStrategy curadaStrategy;
@@ -54,18 +77,32 @@ public class ColeccionService implements IColeccionService {
     public ColeccionOutputDto coleccionOutputDto(Coleccion coleccion) {
         var dto = new ColeccionOutputDto();
         dto.setId(coleccion.getId());
+        dto.setTitulo(coleccion.getTitulo());
+        dto.setDescripcion(coleccion.getDescripcion());
+
         dto.setHechos(
-                coleccion.getHechos().stream()
+                coleccion.getHechos() == null ? List.of()
+                        : coleccion.getHechos().stream()
                         .map(HechosOutputDto::fromModel)
                         .collect(Collectors.toList())
         );
-        dto.setTitulo(coleccion.getTitulo());
-        dto.setDescripcion(coleccion.getDescripcion());
-        //dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
-        dto.setAlgoritmoDeConsenso(coleccion.getAlgoritmoDeConsenso());
+
+        // puedes usar el adaptador para no tocar más código:
+        dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
+
+        dto.setAlgoritmoDeConsenso(
+                coleccion.getAlgoritmoDeConsenso() == null ? null
+                        : coleccion.getAlgoritmoDeConsenso().getClass().getSimpleName()
+        );
+
         return dto;
     }
-
+    @Override
+    public Coleccion findByIdOrThrow(String id) {
+        Coleccion c = coleccionRepository.findById(id);
+        if (c == null) throw new NoSuchElementException("Colección no encontrada: " + id);
+        return c;
+    }
     @Override
     public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
@@ -87,21 +124,22 @@ public class ColeccionService implements IColeccionService {
         return ColeccionOutputDto.fromModel(coleccion);
     }
 
-    public List<Hecho> navegarHechos(String coleccionId, String modo) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
-        if (coleccion == null) {
-            throw new NoSuchElementException("Colección no encontrada con ID: " + coleccionId);
-        }
+    // --- Navegación de hechos mediante estrategia seleccionada por String ---
+    @Override
+    public List<Hecho> navegarHechos(String id, String modo) {
+        Coleccion coleccion = findByIdOrThrow(id);
 
-        // elegimos la estrategia sin crear objetos nuevos
-        ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
-            case "curada"      -> curadaStrategy;
-            case "irrestricta" -> irrestrictaStrategy;
+
+        String key = (modo == null) ? "irrestricta" : modo.trim().toLowerCase();
+        ModoNavegacionStrategy strategy = switch (key) {
+            case "curada" -> curada;
+            case "irrestricta", "" -> irrestricta;
             default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
         };
 
-        List<Hecho> hechos = new ArrayList<>(coleccion.getHechos());
-        return estrategia.filtrar(hechos);
+
+        List<Hecho> base = (coleccion.getHechos() == null) ? List.of() : coleccion.getHechos();
+        return strategy.filtrar(base);
     }
 
     /*public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
@@ -177,14 +215,6 @@ public class ColeccionService implements IColeccionService {
         }
     }
 
-    @Override
-    public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion) {
-
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
-        List<Hecho> hechos = this.obtenerHechosPorColeccion(coleccionId);
-        List<Hecho> hechosFiltrados = modoNavegacion.filtrar(hechos);
-        return hechosFiltrados;
-    }
 
     public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
         Coleccion coleccion = coleccionRepository.findById(idColeccion);

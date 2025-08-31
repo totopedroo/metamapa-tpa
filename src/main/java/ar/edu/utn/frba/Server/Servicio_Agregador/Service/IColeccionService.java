@@ -22,7 +22,7 @@ public interface IColeccionService {
     public Coleccion setColeccionApi();
    // public Coleccion setColeccionCsv();
     public void actualizarHechos(List<Hecho> nuevosHechos);
-    public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion);
+    public List<Hecho> navegarHechos(String coleccionId, String modoNavegacion);
     public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
     public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion);
     public Coleccion setColeccionCsv(String archivoCsvStream);
@@ -30,4 +30,5 @@ public interface IColeccionService {
     public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente);
     public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId);
     public List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria);
+    public Coleccion findByIdOrThrow(String id);
 }

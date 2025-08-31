@@ -1,11 +1,12 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service.ModoNavegacion;
 
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Component("curada")
 @Service
 public class CuradaStrategy implements ModoNavegacionStrategy {
     @Override

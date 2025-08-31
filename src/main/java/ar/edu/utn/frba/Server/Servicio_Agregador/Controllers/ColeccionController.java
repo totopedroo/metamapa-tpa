@@ -87,28 +87,12 @@ public class ColeccionController {
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<?> navegarHechos(
             @PathVariable String id,
-            @RequestParam(defaultValue = "irrestricta") ModoNavegacionStrategy modo) {
-        try {
-            // ahora el service resuelve la estrategia
-            List<Hecho> hechos = coleccionService.navegarHechos(id, modo);
-
-            // Devolver DTOs para evitar problemas de Optional/JSON
-            var dtos = hechos.stream()
-                    .map(ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto::fromModel)
-                    .toList();
-
-            return ResponseEntity.ok(dtos);
-
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Colección no encontrada: " + id);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage()); // "Modo de navegación inválido: ..."
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno: " + e.getMessage());
-        }
+            @RequestParam(defaultValue = "irrestricta") String modo) {   // <-- String, no Strategy
+        var hechos = coleccionService.navegarHechos(id, modo);
+        var dtos = hechos.stream()
+                .map(ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto::fromModel)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PutMapping("/colecciones/{id}/algoritmo")
