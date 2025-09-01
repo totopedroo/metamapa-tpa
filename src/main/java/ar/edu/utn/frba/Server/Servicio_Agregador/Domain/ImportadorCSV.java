@@ -49,28 +49,28 @@ public class ImportadorCSV {
    * @return lista de Hecho nunca null (vacía si nada válido)
    */
   public List<Hecho> importar(String pathOrResource) {
-    if (pathOrResource == null || pathOrResource.isBlank()) {
-      log.warn("[CSV] Path nulo o vacío");
+    if (pathOrResource == null) {
+      log.warn("[CSV] Path nulo");
       return List.of();
     }
 
-    // 1) Intentar classpath
+    // limpiar espacios y comillas al inicio/fin
+    String path = pathOrResource.trim().replaceAll("^\"|\"$", "");
+
+    // 1) classpath
     try {
-      Resource res = new ClassPathResource(pathOrResource.strip());
+      Resource res = new ClassPathResource(path);
       if (res.exists()) {
-        log.info("[CSV] Leyendo desde classpath: {}", pathOrResource);
+        log.info("[CSV] Leyendo desde classpath: {}", path);
         return leer(res.getInputStream());
       }
     } catch (IOException e) {
-      log.debug("[CSV] Error leyendo desde classpath {}: {}", pathOrResource, e.toString());
+      log.debug("[CSV] Error leyendo desde classpath {}: {}", path, e.toString());
     }
 
-    // 2) Intentar filesystem
-    File f = new File(pathOrResource);
-    if (!f.exists()) {
-      // probar relativo al working dir
-      f = new File("./" + pathOrResource);
-    }
+    // 2) filesystem
+    File f = new File(path);
+    if (!f.exists()) f = new File("./" + path);
     if (f.exists() && f.isFile()) {
       log.info("[CSV] Leyendo desde filesystem: {}", f.getAbsolutePath());
       for (Charset cs : CHARSETS_TRY) {
@@ -81,7 +81,7 @@ public class ImportadorCSV {
         }
       }
     } else {
-      log.warn("[CSV] No se encontró el archivo en classpath ni filesystem: {}", pathOrResource);
+      log.warn("[CSV] No se encontró el archivo en classpath ni filesystem: {}", path);
     }
     return List.of();
   }
