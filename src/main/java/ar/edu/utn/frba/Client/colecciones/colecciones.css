@@ -8,6 +8,18 @@
   --text: #333333;
 }
 
+/* Container */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--background) !important;
+  color: #333333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* ocupa toda la altura de la ventana */
+}
+
+
 /* HEADER */
 .header {
   background: #688549;
@@ -33,28 +45,36 @@
   height: 50px;
 }
 
-.brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.header h1 {
-  font-size: 1.3rem;
-  margin: 0;
-  font-weight: 400;
-}
-
+/* NAV LINKS MODERNOS */
 nav a {
-  margin-left: 1.5rem;
-  text-decoration: none;
   color: white;
+  text-decoration: none;
   font-size: 1rem;
+  position: relative;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
+nav a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+nav a.logout-btn i {
+  transition: transform 0.3s ease;
+}
+
+nav a.logout-btn:hover i {
+  transform: rotate(-20deg);
+}
+
+/* RESPONSIVE */
 @media(max-width:600px){
   nav a { margin-left: 0.5rem; font-size: 0.9rem; }
 }
+
 
 
 .btn-volver {
@@ -70,12 +90,7 @@ nav a {
 }
 
 
-/* Container */
-body {
-  background: var(--background);
-  font-family: Arial, sans-serif;
-  color: var(--text);
-}
+
 
 /* Título + botón */
 .title-section {
@@ -84,9 +99,7 @@ body {
   align-items: center;
   margin-top: 2rem;
 }
-.title-section h2 {
-  font-weight: bold;
-}
+
 
 /* Botones */
 .btn-primary {
