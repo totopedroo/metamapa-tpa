@@ -12,11 +12,9 @@ body {
   font-family: Arial, sans-serif;
 }
 
-
-
 /* HEADER */
 .header {
-  background: #688549; 
+  background: #688549;
   color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
@@ -39,53 +37,32 @@ body {
   height: 50px;
 }
 
-.brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.header h1 {
-  font-size: 1.3rem;
-  margin: 0;
-  font-weight: 400;
-}
-
+/* NAV LINKS MODERNOS */
 nav a {
-  margin-left: 1.5rem;
-  text-decoration: none;
   color: white;
+  text-decoration: none;
   font-size: 1rem;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1rem;
-  background-color: rgba(255,255,255,0.1);
+  position: relative;
+  padding: 0.7rem 0.9rem;
   border-radius: 8px;
-  transition: background-color 0.3s, transform 0.2s;
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.logout-btn:hover {
-  background-color: rgba(255,255,255,0.25);
-  transform: scale(1.05);
+nav a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: translateY(-2px);
 }
 
-.logout-btn i {
-  font-size: 1.2rem;
-  transition: transform 0.3s;
+nav a.logout-btn i {
+  transition: transform 0.3s ease;
 }
 
-.logout-btn:hover i {
+nav a.logout-btn:hover i {
   transform: rotate(-20deg);
 }
 
-
+/* RESPONSIVE */
 @media(max-width:600px){
   nav a { margin-left: 0.5rem; font-size: 0.9rem; }
 }

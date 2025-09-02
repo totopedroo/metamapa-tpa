@@ -185,3 +185,10 @@ document.getElementById("solicitudesEliminacion").addEventListener("click", () =
 document.getElementById("administrarColecciones").addEventListener("click", () => {
   window.location.href = "../colecciones/colecciones.html";
 });
+
+// -------------------------------
+// Navegación a hechos admin
+// -------------------------------
+document.getElementById("administrarHechos").addEventListener("click", () => {
+  window.location.href = "hechos-admin/hechos-admin.html";
+});

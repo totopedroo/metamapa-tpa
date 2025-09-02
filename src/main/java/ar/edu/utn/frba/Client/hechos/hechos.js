@@ -1,19 +1,34 @@
 let modal = document.getElementById("modalMapa");
     let ubicacionInput = document.getElementById("ubicacion");
-    let map, marker, coords;
+    let map, marker, coords, circle;
 
     function abrirMapa(){
       modal.style.display = "flex";
+
       if(!map){
         map = L.map('map').setView([-34.6037, -58.3816], 10); // Buenos Aires default
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap'
         }).addTo(map);
 
         map.on('click', function(e){
+          // Eliminar marcador anterior
           if(marker) map.removeLayer(marker);
+          // Eliminar círculo anterior
+          if(circle) map.removeLayer(circle);
+
+          // Agregar nuevo marcador
           marker = L.marker(e.latlng).addTo(map);
           coords = e.latlng;
+
+          // Agregar círculo de 500 metros (por ejemplo)
+          circle = L.circle(e.latlng, {
+            color: 'blue',
+            fillColor: '#blue',
+            fillOpacity: 0.2,
+            radius: 10000 // radio en metros
+          }).addTo(map);
         });
       }
     }
