@@ -12,47 +12,136 @@ body {
   font-family: Arial, sans-serif;
 }
 
+
+
 /* HEADER */
 .header {
-  background-color: var(--primary);
+  background: #688549; 
   color: white;
-  height: 70px;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.header .logo {
-  font-size: 1.8rem;
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 50px;
+}
+
+.brand {
+  font-size: 1.5rem;
   font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.header h1 {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+nav a {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+.logout-btn i {
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+
+.logout-btn:hover i {
+  transform: rotate(-20deg);
+}
+
+
+@media(max-width:600px){
+  nav a { margin-left: 0.5rem; font-size: 0.9rem; }
 }
 
 /* CARDS ADMIN */
 .admin-card {
   background-color: white;
   border-radius: 20px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 160px; /* más cuadrada */
+  padding: 1rem 0.5rem;
+  height: 180px;
+  width: 100%;
   text-align: center;
-  padding: 3rem;
+  transition: transform 0.4s, box-shadow 0.4s, background 0.3s;
+  cursor: pointer;
+
+  /* Sombra inicial más suave */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+
 .admin-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  background: linear-gradient(145deg, #688549, #84a36f);
+  color: white;
+}
+
+.admin-card:hover .card-subtitle {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .admin-card .card-title {
   font-weight: bold;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .admin-card .card-subtitle {
   color: #555;
   font-size: 0.9rem;
 }
+
+/* Iconos en las cards */
+.card-icon {
+  font-size: 35px;
+  color: var(--primary);
+  transition: transform 0.4s ease, color 0.4s ease;
+  margin: 0px 10px 0 0px;
+}
+
+/* Hover: rotar icono y cambiar color */
+.admin-card:hover .card-icon {
+  transform: rotate(15deg);
+  color: #fff;
+}
+
+
 
 /* BADGE */
 .badge-notification {
@@ -126,4 +215,26 @@ select:invalid ~ .invalid-feedback {
 .badge-confirm.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Progreso CSV */
+.progress {
+  height: 25px;
+  border-radius: 10px;
+}
+
+.progress-bar {
+  background-color: var(--primary);
+  font-weight: bold;
+}
+
+/* Evitar que los botones primary queden celestes al estar disabled o active */
+.btn-primary:disabled,
+.btn-primary.disabled,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #68854967 !important; /* verde Bootstrap */
+  border-color: #68854967 !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
