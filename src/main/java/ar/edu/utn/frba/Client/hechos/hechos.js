@@ -1,3 +1,27 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const rol = localStorage.getItem("rol");
+
+  const logoutBtn = document.querySelector(".logout-btn");
+  const invitadosBtn = document.querySelector(".btn-invitado-header");
+  const hechosSubidos = document.querySelector("#subidos"); 
+  const btnAgregar = document.querySelector(".title-section button");
+
+  if (rol === "invitado") {
+    if (logoutBtn) logoutBtn.style.display = "none";
+    if (hechosSubidos) hechosSubidos.style.display = "none";
+    if (btnAgregar) btnAgregar.style.display = "none";
+    if (invitadosBtn) invitadosBtn.style.display = "inline-block"; // mostrar botón
+  } else {
+    // usuario normal
+    if (invitadosBtn) invitadosBtn.style.display = "none";
+  }
+});
+
+
+function cerrarSesion() {
+  localStorage.removeItem("rol");
+}
+
 let modal = document.getElementById("modalMapa");
     let ubicacionInput = document.getElementById("ubicacion");
     let map, marker, coords, circle;

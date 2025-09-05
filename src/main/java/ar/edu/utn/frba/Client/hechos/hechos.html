@@ -26,8 +26,11 @@
         <nav>
           <a href="../hechos/hechos.html">Hechos</a>
           <a href="../colecciones/colecciones.html">Colecciones</a>
-          <a href="../acceso/login.html" class="logout-btn">
+          <a href="../acceso/login.html" class="logout-btn" onclick="cerrarSesion()">
             <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+          </a>
+          <a href="../acceso/login.html" class="logout-btn btn-invitado-header" style="display:none;">
+            <i class="bi bi-box-arrow-in-right"></i> Entrar como Usuario
           </a>
         </nav>
     </div>
@@ -153,7 +156,7 @@
     </div>
 
     <!-- Subidos -->
-    <div class="results" id="resultados">
+    <div class="results" id="subidos">
       <h3>Hechos subidos:</h3>
 
       <div class="table-responsive">

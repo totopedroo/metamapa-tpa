@@ -31,13 +31,13 @@
       <label for="password">Contraseña</label>
       <input type="password" id="password" placeholder="Contraseña" required />
 
-      <button type="submit" class="btn-login">Iniciar Sesión</button>
+      <button type="submit" class="btn-login" onclick="entrarUsuario()">Iniciar Sesión</button>
 
       <p class="register-text">
         ¿No tienes una cuenta? <a href="../acceso/registro.html">REGÍSTRATE</a>
       </p>
 
-      <button type="button" class="btn-invitado"> <a href="../hechos/hechos.html" style="color: white !important;text-decoration: none !important;">Entrar como INVITADO</a></button>
+      <button type="button" class="btn-invitado"> <a href="../hechos/hechos.html" onclick="entrarInvitado()" style="color: white !important;text-decoration: none !important;">Entrar como INVITADO</a></button>
     </form>
   </main>
 
@@ -51,6 +51,6 @@
     </footer>
 
 
-
+  <script src="login.js" defer></script>
 </body>
 </html>

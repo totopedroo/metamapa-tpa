@@ -1,3 +1,28 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const rol = localStorage.getItem("rol");
+const invitadosBtn = document.querySelector(".btn-invitado-header");
+  if (rol === "invitado") {
+    // Ocultar botón Volver al Panel
+    const btnVolver = document.querySelector(".btn-volver");
+    if (btnVolver) btnVolver.style.display = "none";
+
+    // Ocultar botón Agregar Colección
+    const btnAgregar = document.querySelector(".title-section button");
+    if (btnAgregar) btnAgregar.style.display = "none";
+
+    // Ocultar Cerrar Sesión en header
+    const logoutBtn = document.querySelector(".logout-btn");
+    if (logoutBtn) logoutBtn.style.display = "none";
+
+    if (invitadosBtn) invitadosBtn.style.display = "inline-block"; // mostrar botón
+  }else {
+    // usuario normal
+    if (invitadosBtn) invitadosBtn.style.display = "none";
+  }
+});
+
+
+
 // Colecciones hardcodeadas
 let colecciones = [
   {
@@ -27,34 +52,45 @@ let editIndex = null;
 
 // Renderizar tabla
 function renderTabla() {
+  const rol = localStorage.getItem("rol"); // <-- obtenemos el rol aquí
   const tbody = document.querySelector("#tablaColecciones tbody");
   tbody.innerHTML = "";
 
   colecciones.forEach((c, i) => {
-    const row = `
-      <tr>
-        <td>${c.titulo}</td>
-        <td>${c.descripcion}</td>
-        <td>${c.hechos}</td>
-        <td>${c.fuentes}</td>
-        <td>${c.tag}</td>
-        <td>
-          <button class="btn btn-sm btn-success me-1" style="background-color: var(--primary); border: none;" 
-            onclick="window.location.href='../hechos/hechos.html'">
-            VER HECHOS
-          </button>
-          <button class="btn btn-sm btn-warning me-1" onclick="editarColeccion(${i})">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarColeccion(${i})">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${c.titulo}</td>
+      <td>${c.descripcion}</td>
+      <td>${c.hechos}</td>
+      <td>${c.fuentes}</td>
+      <td>${c.tag}</td>
+      <td>
+        <button class="btn btn-sm btn-success me-1" style="background-color: var(--primary); border: none;" 
+          onclick="window.location.href='../hechos/hechos.html'">
+          VER HECHOS
+        </button>
+        <button class="btn btn-sm btn-warning me-1" onclick="editarColeccion(${i})">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarColeccion(${i})">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>
     `;
-    tbody.insertAdjacentHTML("beforeend", row);
+
+    // Ocultar botones editar/borrar si es invitado
+    if (rol === "invitado") {
+      const editBtn = row.querySelector(".btn-warning");
+      const deleteBtn = row.querySelector(".btn-danger");
+      if (editBtn) editBtn.style.display = "none";
+      if (deleteBtn) deleteBtn.style.display = "none";
+    }
+
+    tbody.appendChild(row);
   });
 }
+
 
 // Modal Crear/Editar
 function abrirModalColeccion() {
