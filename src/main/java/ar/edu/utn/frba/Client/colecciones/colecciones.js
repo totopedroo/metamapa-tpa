@@ -1,26 +1,93 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const rol = localStorage.getItem("rol");
-const invitadosBtn = document.querySelector(".btn-invitado-header");
+  const rol = (localStorage.getItem("rol") || "usuario").toLowerCase();
+
+  const btnVolver = document.querySelector(".btn-volver");
+  const btnAgregar = document.querySelector(".title-section button");
+  const logoutBtn = document.querySelector("a.logout-btn:not(.btn-invitado-header)");
+  const invitadosBtn = document.querySelector(".btn-invitado-header");
+
+  // Enlaces del header
+  const linkHechos = document.querySelector("nav a[href*='hechos.html']");
+  const linkColecciones = document.querySelector("nav a[href*='colecciones.html']");
+
   if (rol === "invitado") {
-    // Ocultar botón Volver al Panel
-    const btnVolver = document.querySelector(".btn-volver");
     if (btnVolver) btnVolver.style.display = "none";
-
-    // Ocultar botón Agregar Colección
-    const btnAgregar = document.querySelector(".title-section button");
     if (btnAgregar) btnAgregar.style.display = "none";
-
-    // Ocultar Cerrar Sesión en header
-    const logoutBtn = document.querySelector(".logout-btn");
     if (logoutBtn) logoutBtn.style.display = "none";
+    if (invitadosBtn) invitadosBtn.style.display = "inline-block";
+  } else if (rol === "admin") {
+    if (btnVolver) btnVolver.style.display = "inline-block";
+    if (btnAgregar) btnAgregar.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+    if (invitadosBtn) invitadosBtn.style.display = "none";
 
-    if (invitadosBtn) invitadosBtn.style.display = "inline-block"; // mostrar botón
-  }else {
-    // usuario normal
+    // Ocultar Hechos y Colecciones en el header
+    if (linkHechos) linkHechos.style.display = "none";
+    if (linkColecciones) linkColecciones.style.display = "none";
+  } else { // usuario normal
+    if (btnVolver) btnVolver.style.display = "none";
+    if (btnAgregar) btnAgregar.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
     if (invitadosBtn) invitadosBtn.style.display = "none";
   }
+
+  // Render tabla según rol
+  renderTabla();
 });
 
+function renderTabla() {
+  const rol = (localStorage.getItem("rol") || "usuario").toLowerCase();
+  const tbody = document.querySelector("#tablaColecciones tbody");
+  tbody.innerHTML = "";
+
+  colecciones.forEach((c, i) => {
+    const row = document.createElement("tr");
+
+    const verBtn = `
+      <button class="btn btn-sm btn-success me-1"
+        style="background-color: var(--primary); border: none;"
+        onclick="window.location.href='../hechos/hechos.html'">
+        VER HECHOS
+      </button>
+    `;
+
+    let adminBtns = "";
+    if (rol === "admin") {
+      adminBtns = `
+        <button class="btn btn-sm btn-warning me-1" onclick="editarColeccion(${i})">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarColeccion(${i})">
+          <i class="bi bi-trash"></i>
+        </button>
+      `;
+    }
+
+    row.innerHTML = `
+      <td>${escapeHtml(c.titulo)}</td>
+      <td>${escapeHtml(c.descripcion)}</td>
+      <td>${escapeHtml(c.hechos)}</td>
+      <td>${escapeHtml(c.fuentes)}</td>
+      <td>${escapeHtml(c.tag)}</td>
+      <td>
+        ${verBtn}
+        ${adminBtns}
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+function escapeHtml(text) {
+  if (text === null || text === undefined) return "";
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 
 // Colecciones hardcodeadas
@@ -49,47 +116,6 @@ let colecciones = [
 ];
 
 let editIndex = null;
-
-// Renderizar tabla
-function renderTabla() {
-  const rol = localStorage.getItem("rol"); // <-- obtenemos el rol aquí
-  const tbody = document.querySelector("#tablaColecciones tbody");
-  tbody.innerHTML = "";
-
-  colecciones.forEach((c, i) => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${c.titulo}</td>
-      <td>${c.descripcion}</td>
-      <td>${c.hechos}</td>
-      <td>${c.fuentes}</td>
-      <td>${c.tag}</td>
-      <td>
-        <button class="btn btn-sm btn-success me-1" style="background-color: var(--primary); border: none;" 
-          onclick="window.location.href='../hechos/hechos.html'">
-          VER HECHOS
-        </button>
-        <button class="btn btn-sm btn-warning me-1" onclick="editarColeccion(${i})">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="eliminarColeccion(${i})">
-          <i class="bi bi-trash"></i>
-        </button>
-      </td>
-    `;
-
-    // Ocultar botones editar/borrar si es invitado
-    if (rol === "invitado") {
-      const editBtn = row.querySelector(".btn-warning");
-      const deleteBtn = row.querySelector(".btn-danger");
-      if (editBtn) editBtn.style.display = "none";
-      if (deleteBtn) deleteBtn.style.display = "none";
-    }
-
-    tbody.appendChild(row);
-  });
-}
 
 
 // Modal Crear/Editar
