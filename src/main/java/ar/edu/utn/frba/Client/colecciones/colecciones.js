@@ -39,6 +39,10 @@ function renderTabla() {
         <td>${c.fuentes}</td>
         <td>${c.tag}</td>
         <td>
+          <button class="btn btn-sm btn-success me-1" style="background-color: var(--primary); border: none;" 
+            onclick="window.location.href='../hechos/hechos.html'">
+            VER HECHOS
+          </button>
           <button class="btn btn-sm btn-warning me-1" onclick="editarColeccion(${i})">
             <i class="bi bi-pencil"></i>
           </button>

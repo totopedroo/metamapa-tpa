@@ -117,6 +117,9 @@ nav a.logout-btn:hover i {
   background-color: #883b29;
 }
 
+
+
+
 /* Estilo más limpio para los chips */
   #tagContainer .badge {
     font-size: 0.9rem;
@@ -145,4 +148,25 @@ nav a.logout-btn:hover i {
 .badge-confirm.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+
+.btn-ver-hechos {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+}
+
+
+.btn-multimedia {
+  background: red;
+  border: none;
+  padding: 4px;
+}
+.btn-multimedia i {
+  font-size: 18px;
+  color: #0d6efd; /* Azul Bootstrap */
+}
+.btn-multimedia:hover i {
+  color: #084298; /* Azul más oscuro */
 }

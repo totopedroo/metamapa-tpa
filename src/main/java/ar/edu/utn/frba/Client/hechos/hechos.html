@@ -37,7 +37,7 @@
 
     <!-- Título + botón -->
     <div class="title-section">
-      <h2>Hechos</h2>
+      <h2>Hechos de la Coleccion XXX</h2>
       <button class="btn btn-primary">+ AGREGAR HECHO</button>
     </div>
 
@@ -97,6 +97,74 @@
               <th>Título</th>
               <th>Descripción</th>
               <th>Tags</th>
+              <th>Fuente</th>
+              <th>Ver Contenido</th> 
+              <th>Ver en Mapa</th>
+              <th>Solicitar eliminación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Derrame en arroyo local</td>
+              <td>Vecinos reportan manchas y olor fuerte.</td>
+              <td>Contaminación - Neuquén</td>
+              <td>Curada</td> 
+              <td>
+                <button class="btn btn-sm btn-primary">
+                  <i class="bi bi-camera"></i>
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-38.95,-68.06)">
+                  <i class="bi bi-geo-alt"></i>
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-secondary" onclick="abrirModalEliminacion('Derrame en arroyo local')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Vertido industrial no autorizado</td>
+              <td>Registro repetido por dos fuentes.</td>
+              <td>Contaminación - Chubut</td>
+              <td>Irrestricta</td> 
+              <td>
+                <button class="btn btn-sm btn-primary">
+                  <i class="bi bi-camera"></i>
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-43.52,-65.78)">
+                  <i class="bi bi-geo-alt"></i>
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-secondary" onclick="abrirModalEliminacion('Vertido industrial no autorizado')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Subidos -->
+    <div class="results" id="resultados">
+      <h3>Hechos subidos:</h3>
+
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Descripción</th>
+              <th>Tags</th>
+              <th>Fuente</th> 
+              <th>Ver Contenido</th> 
               <th>Ver en Mapa</th>
               <th>Solicitar eliminación</th>
               <th>Editar</th>
@@ -107,8 +175,14 @@
               <td>Foco activo en cordón serrano</td>
               <td>Columna de humo visible desde ruta provincial.</td>
               <td>Incendio forestal - Córdoba</td>
+              <td>Curada</td> 
               <td>
-                <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-31.0,-64.0)"> 
+                <button class="btn btn-sm btn-primary">
+                  <i class="bi bi-camera"></i>
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-31.0,-64.0)">
                   <i class="bi bi-geo-alt"></i>
                 </button>
               </td>
@@ -121,10 +195,17 @@
                 <button class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
               </td>
             </tr>
+
             <tr>
               <td>Derrame en arroyo local</td>
               <td>Vecinos reportan manchas y olor fuerte.</td>
               <td>Contaminación - Neuquén</td>
+              <td>Irrestricta</td> 
+              <td>
+                <button class="btn btn-sm btn-primary">
+                  <i class="bi bi-camera"></i>
+                </button>
+              </td>
               <td>
                 <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-38.95,-68.06)">
                   <i class="bi bi-geo-alt"></i>
@@ -136,29 +217,12 @@
                 </button>
               </td>
               <td>
-                <button class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>Vertido industrial no autorizado</td>
-              <td>Registro repetido por dos fuentes.</td>
-              <td>Contaminación - Chubut</td>
-              <td>
-                <button class="btn btn-sm btn-primary" onclick="abrirMapaResultado(-43.52,-65.78)">
-                  <i class="bi bi-geo-alt"></i>
-                </button>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-secondary" onclick="abrirModalEliminacion('Vertido industrial no autorizado')">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-warning" disabled><i class="bi bi-pencil"></i></button>
               </td>
             </tr>
           </tbody>
         </table>
+
       </div>
     </div>
 
