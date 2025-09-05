@@ -41,8 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     tbody.appendChild(tr);
   });
 
-  const badge = document.getElementById("badgeConfirm");
-
   // Eventos botones aceptar/rechazar
   tbody.addEventListener("click", (e) => {
     const index = e.target.dataset.index;
@@ -60,8 +58,20 @@ document.addEventListener("DOMContentLoaded", () => {
     chip.textContent = solicitudes[index].estado.toUpperCase();
     chip.className = `chip ${solicitudes[index].estado.toLowerCase()}`;
 
-    // Mostrar badge de confirmación
+    // Crear nuevo badge
+    const badge = document.createElement("div");
+    badge.className = "badge-confirm";
+    badge.textContent = `¡${solicitudes[index].estado}!`;
+    badgeContainer.appendChild(badge);
+
+    // Forzar reflow para activar transición
+    void badge.offsetWidth;
     badge.classList.add("show");
-    setTimeout(() => badge.classList.remove("show"), 2000);
+
+    // Quitar después de 2s
+    setTimeout(() => {
+      badge.classList.remove("show");
+      setTimeout(() => badge.remove(), 300); // esperar transición
+    }, 2000);
   });
 });

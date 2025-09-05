@@ -307,10 +307,10 @@
           <div class="form-group">
             <label>Ubicación:</label>
             <div class="ubicacion-wrapper">
-              <input type="text" id="ubicacion-hecho" placeholder="Seleccionar en el mapa" readonly>
+              <input type="text" id="ubicacion-hecho" placeholder="Seleccionar en el mapa" readonly onclick="toggleMapaHecho()">
               <span class="toggle-map" onclick="toggleMapaHecho()">&#9660;</span> <!-- ▼ -->
             </div>
-            <div id="map-hecho"></div>
+            <div id="map-hecho" style="display: none;"></div>
           </div>
 
 

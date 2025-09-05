@@ -126,21 +126,35 @@ font-weight: bold;
   background-color: #87352b;
 }
 
-/* Badge de confirmación inferior */
-.badge-confirm {
+.badge-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: var(--primary);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  z-index: 1055;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  z-index: 2000;
 }
+
+.badge-confirm {
+  background: var(--primary);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 .badge-confirm.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+.badge-confirm.rechazada {
+  background: #dc3545; /* rojo */
+}
+
+.badge-confirm.aprobada {
+  background: #28a745; /* verde */
 }
