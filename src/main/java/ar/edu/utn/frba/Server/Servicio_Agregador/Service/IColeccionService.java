@@ -16,18 +16,18 @@ import java.util.List;
 public interface IColeccionService {
 
     public List<Coleccion> findAll();
-    ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId);
-    public List<Hecho> obtenerHechosPorColeccion(String idColeccion);
+    ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId);
+    public List<Hecho> obtenerHechosPorColeccion(Long idColeccion);
     //public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId);
     public Coleccion setColeccionApi();
    // public Coleccion setColeccionCsv();
     public void actualizarHechos(List<Hecho> nuevosHechos);
-    public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion);
-    public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
+    public List<Hecho> navegarHechos(Long coleccionId, ModoNavegacionStrategy modoNavegacion);
+    public void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
     public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion);
     public Coleccion setColeccionCsv(String archivoCsvStream);
-    public Hecho consensuarHecho(String coleccionId, Long hechoId);
-    public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente);
-    public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId);
-    public List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria);
+    public Hecho consensuarHecho(Long coleccionId, Long hechoId);
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente);
+    public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId);
+    public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
 }

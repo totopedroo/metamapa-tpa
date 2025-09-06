@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ColeccionOutputDto {
-    private String id;
+    private long id;
     private String titulo;
     private String descripcion;
     private List<HechosOutputDto> hechos = new ArrayList<>();

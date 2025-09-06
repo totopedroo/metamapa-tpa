@@ -2,15 +2,29 @@ package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
 
 
 import ar.edu.utn.frba.Server.Enums.EstadoDeSolicitud;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name="solicitud_eliminacion")
 public class SolicitudEliminacion {
-    private String justificacion;
-    private EstadoDeSolicitud estado;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long idSolicitud;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String justificacion;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private EstadoDeSolicitud estado;
+@Column
+
     private long idHechoAsociado;
 
     public SolicitudEliminacion(String justificacion, long idHechoAsociado) {

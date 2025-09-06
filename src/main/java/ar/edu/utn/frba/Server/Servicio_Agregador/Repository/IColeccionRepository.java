@@ -9,7 +9,7 @@ public interface IColeccionRepository {
     public List<Coleccion> findAll();
     public Coleccion save(Coleccion coleccion);
     public void delete(Coleccion coleccion);
-    public Coleccion findById(String id);
+    public Coleccion findById(Long id);
     Coleccion create(ColeccionInputDto coleccionInputDto); 
 
 }

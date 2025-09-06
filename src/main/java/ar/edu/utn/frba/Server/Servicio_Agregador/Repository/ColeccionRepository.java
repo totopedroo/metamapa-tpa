@@ -26,7 +26,7 @@ public class ColeccionRepository implements IColeccionRepository {
         if (coleccionInputDto == null) {
             throw new IllegalArgumentException("no puede ser null");
         }
-        String newId = UUID.randomUUID().toString();
+        Long newId = UUID.randomUUID().getMostSignificantBits();
         Coleccion nuevaColeccion = new Coleccion(
                 newId,
                 coleccionInputDto.getTitulo(),
@@ -44,8 +44,8 @@ public class ColeccionRepository implements IColeccionRepository {
     }
 
     @Override
-    public Coleccion findById(String id) {
-        return this.colecciones.stream().filter(g -> g.getId().equals(id)).findFirst().orElse(null);
+    public Coleccion findById(Long id) {
+        return this.colecciones.stream().filter(g -> g.getId()==id).findFirst().orElse(null);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ColeccionRepository implements IColeccionRepository {
 
     @Override
     public Coleccion save(Coleccion coleccion) {
-        colecciones.removeIf(c -> c.getId().equals(coleccion.getId())); // evita duplicados/estados viejos
+        colecciones.removeIf(c -> c.getId()==(coleccion.getId())); // evita duplicados/estados viejos
         colecciones.add(coleccion);
         return coleccion;
     }

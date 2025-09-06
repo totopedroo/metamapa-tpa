@@ -49,7 +49,7 @@ public class MetaMapaApiController {
 
 
     @GetMapping("/{id}/hechos")
-    public List<Hecho> obtenerHechosColeccion(@PathVariable String id) {
+    public List<Hecho> obtenerHechosColeccion(@PathVariable Long id) {
         return coleccionService.obtenerHechosPorColeccion(id);
     }
 
@@ -65,7 +65,7 @@ public class MetaMapaApiController {
 
 
     @GetMapping("/colecciones/{identificador}/hechos")
-    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String identificador) {
+    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable Long identificador) {
         try {
             List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(identificador);
             return ResponseEntity.ok(hechos);
@@ -76,7 +76,7 @@ public class MetaMapaApiController {
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<List<Hecho>> navegarHechos(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam(defaultValue = "irrestricta") String modo) {
         try {
             Coleccion coleccion = coleccionRepository.findById(id);
@@ -113,7 +113,7 @@ public class MetaMapaApiController {
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
     public ResponseEntity<List<Hecho>> filtrarHechosPorColeccion(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String categoria
     ) {

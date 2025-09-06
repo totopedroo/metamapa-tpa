@@ -67,7 +67,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
+    public ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
@@ -87,7 +87,7 @@ public class ColeccionService implements IColeccionService {
         return ColeccionOutputDto.fromModel(coleccion);
     }
 
-    public List<Hecho> navegarHechos(String coleccionId, String modo) {
+    public List<Hecho> navegarHechos(Long coleccionId, String modo) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada con ID: " + coleccionId);
@@ -113,7 +113,7 @@ public class ColeccionService implements IColeccionService {
                 .map(Hecho::fromModel)
                 .collect(Collectors.toList());
     }*/
-    public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
+    public List<Hecho> obtenerHechosPorColeccion(Long idColeccion) {
       Coleccion coleccion = (coleccionRepository.findById(idColeccion));
 
   /*      if (coleccionOpt.isEmpty()) {
@@ -139,7 +139,7 @@ public class ColeccionService implements IColeccionService {
         hechosImportados = this.importadorAPI.importar(fuente);
 
         Coleccion coleccion = new Coleccion(
-                UUID.randomUUID().toString(),
+                UUID.randomUUID().getMostSignificantBits(),
                 "COLECCION API",
                 "Colección creada a partir de datos de API",
                 new ArrayList<>()
@@ -178,7 +178,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<Hecho> navegarHechos(String coleccionId, ModoNavegacionStrategy modoNavegacion) {
+    public List<Hecho> navegarHechos(Long coleccionId, ModoNavegacionStrategy modoNavegacion) {
 
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         List<Hecho> hechos = this.obtenerHechosPorColeccion(coleccionId);
@@ -186,7 +186,7 @@ public class ColeccionService implements IColeccionService {
         return hechosFiltrados;
     }
 
-    public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
+    public void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
         Coleccion coleccion = coleccionRepository.findById(idColeccion);
         coleccion.setAlgoritmoDeConsenso(algoritmo);
         coleccionRepository.save(coleccion);
@@ -204,7 +204,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
     }
 
     Coleccion coleccionCSV = new Coleccion(
-            UUID.randomUUID().toString(),
+            UUID.randomUUID().getMostSignificantBits(),
             "COLECCION CSV",
             "Colección creada a partir de datos de CSV",
             new ArrayList<>()
@@ -236,7 +236,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         }
 
         Coleccion c = new Coleccion();
-        c.setId(UUID.randomUUID().toString()); // UUID String
+        c.setId(UUID.randomUUID().getMostSignificantBits()); // UUID String
         c.setTitulo(nombreColeccion);
         c.setDescripcion("Colección creada desde CSV (classpath hardcoded)");
         c.setHechos(new ArrayList<>(hechos));
@@ -244,7 +244,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         coleccionRepository.save(c);
         return c;
     }
-    public Hecho consensuarHecho(String coleccionId, Long hechoId) {
+    public Hecho consensuarHecho(Long coleccionId, Long hechoId) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
 
@@ -257,7 +257,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         coleccionRepository.save(coleccion); // upsert (removeIf + add)
         return hecho;
     }
-    public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente) {
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
@@ -283,7 +283,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
 
         return hecho;
     }
-    public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId) {
+    public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
@@ -308,7 +308,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
 
         return hecho;
     }
-    public List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria) {
+    public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);

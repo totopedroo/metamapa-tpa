@@ -56,7 +56,7 @@ public class ColeccionController {
     }
 
     @GetMapping("/{id}/hechos")
-    public List<Hecho> obtenerHechosDeColeccion(@PathVariable String id) {
+    public List<Hecho> obtenerHechosDeColeccion(@PathVariable long id) {
         return coleccionService.obtenerHechosPorColeccion(id);
     }
 
@@ -73,7 +73,7 @@ public class ColeccionController {
     }
     //TODO
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
-    public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
+    public ResponseEntity<?> agregarHechoAColeccion(@PathVariable Long coleccionId, @PathVariable Long hechoId) {
         try {
             ColeccionOutputDto coleccionActualizada = coleccionService.agregarHechoAColeccion(coleccionId, hechoId);
             return ResponseEntity.ok(coleccionActualizada);
@@ -86,7 +86,7 @@ public class ColeccionController {
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<?> navegarHechos(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam(defaultValue = "irrestricta") ModoNavegacionStrategy modo) {
         try {
             // ahora el service resuelve la estrategia
@@ -113,7 +113,7 @@ public class ColeccionController {
 
     @PutMapping("/colecciones/{id}/algoritmo")
     public ResponseEntity<Void> setearAlgoritmoPorNombre(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam String tipo) {
 
         try {
@@ -137,7 +137,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
     public ResponseEntity<?> consensuarHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId) {
         try {
             Hecho actualizado = coleccionService.consensuarHecho(coleccionId, hechoId);
@@ -151,7 +151,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente")
     public ResponseEntity<?> agregarFuenteAHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId,
             @RequestParam TipoFuente tipoFuente) {
         try {
@@ -172,7 +172,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/quitar-fuente")
     public ResponseEntity<?> quitarFuenteDeHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId) {
         try {
             Hecho actualizado = coleccionService.quitarFuenteDeHecho(coleccionId, hechoId);
@@ -190,7 +190,7 @@ public class ColeccionController {
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
     public ResponseEntity<?> filtrarHechosPorColeccion(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String categoria) {
         try {
