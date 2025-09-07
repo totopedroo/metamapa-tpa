@@ -27,8 +27,9 @@ public class Hecho {
     private String descripcion;
     @Column(name="categoria", columnDefinition = "varchar(60)")
     private String categoria;
-    @Column(name="contenido_multimedia", nullable = true)
-    private Optional<ContenidoMultimedia> contenidoMultimedia;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contenido_multimedia_id", referencedColumnName = "id", nullable = true)
+    private ContenidoMultimedia contenidoMultimedia;
     @Column(name ="latitud", columnDefinition = "POINT")
     private Double latitud;
     @Column(name ="latitud", columnDefinition = "POINT")
@@ -51,7 +52,7 @@ public class Hecho {
     @Column(name="eliminado")
     private boolean eliminado = false;
     @Column(name="consensuado", nullable = true)
-    private Optional<Boolean> consensuado = Optional.of(false);
+    private Boolean consensuado = false;
     @ManyToMany
     @JoinTable(
             name = "hecho_fuente", // nombre de la tabla intermedia
@@ -64,7 +65,7 @@ public class Hecho {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
-        this.contenidoMultimedia = Optional.ofNullable(contenidoMultimedia);
+        this.contenidoMultimedia = contenidoMultimedia;
         this.latitud = latitud;
         this.longitud = longitud;
         this.fechaAcontecimiento = fechaAcontecimiento;
@@ -119,13 +120,13 @@ public class Hecho {
         this.categoria = categoria;
     }
 
-    public Optional<ContenidoMultimedia> getContenidoMultimedia() {
-        return contenidoMultimedia == null ? Optional.empty() : contenidoMultimedia;
+    public ContenidoMultimedia getContenidoMultimedia() {
+        return contenidoMultimedia;
     }
 
     // setter null-safe
-    public void setContenidoMultimedia(Optional<ContenidoMultimedia> contenidoMultimedia) {
-        this.contenidoMultimedia = (contenidoMultimedia == null) ? Optional.empty() : contenidoMultimedia;
+    public void setContenidoMultimedia(ContenidoMultimedia contenidoMultimedia) {
+        this.contenidoMultimedia = contenidoMultimedia;
     }
 
     public Double getLatitud() {

@@ -257,12 +257,12 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         coleccionRepository.save(coleccion); // upsert (removeIf + add)
         return hecho;
     }
-    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente) {
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente fuente) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
-        if (tipoFuente == null) {
+        if (fuente == null) {
             throw new IllegalArgumentException("tipoFuente es obligatorio.");
         }
 
@@ -271,7 +271,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
-        hecho.setTipoFuente(tipoFuente);
+        hecho.setTipoFuente(fuente);
 
         // Persistir cambios de la colección (upsert)
         coleccionRepository.save(coleccion);

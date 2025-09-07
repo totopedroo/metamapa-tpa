@@ -59,7 +59,7 @@ public class ImportadorAPI implements Importador {
                 dto.getFecha(),
                 LocalDate.now(),
                 dto.getId(),
-                dto.getTipo());
+                dto.getFuente());
 
 
     }

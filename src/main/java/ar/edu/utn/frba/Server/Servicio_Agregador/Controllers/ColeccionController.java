@@ -153,9 +153,9 @@ public class ColeccionController {
     public ResponseEntity<?> agregarFuenteAHecho(
             @PathVariable Long coleccionId,
             @PathVariable Long hechoId,
-            @RequestParam TipoFuente tipoFuente) {
+            @RequestParam Fuente fuente) {
         try {
-            Hecho actualizado = coleccionService.agregarFuenteAHecho(coleccionId, hechoId, tipoFuente);
+            Hecho actualizado = coleccionService.agregarFuenteAHecho(coleccionId, hechoId, fuente);
 
             // devolver DTO para evitar problemas de serialización (Optional, etc.)
             var dto = ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto.fromModel(actualizado);

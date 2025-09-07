@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("hechosAgregadorService")
@@ -65,7 +66,7 @@ public class HechosService implements IHechosService {
                                 inputDto.getTitulo(),
                                 inputDto.getDescripcion(),
                                 inputDto.getCategoria(),
-                                inputDto.getContenidoMultimedia().orElse(null),
+                                inputDto.getContenidoMultimedia(),
                                 inputDto.getLatitud(),
                                 inputDto.getLongitud(),
                                 inputDto.getFechaAcontecimiento(),

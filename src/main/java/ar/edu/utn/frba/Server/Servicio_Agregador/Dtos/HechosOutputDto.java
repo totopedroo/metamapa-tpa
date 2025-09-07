@@ -1,10 +1,7 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Dtos;
 
 
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.ContenidoMultimedia;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Contribuyente;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.SolicitudEliminacion;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -24,10 +21,10 @@ public class HechosOutputDto {
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
-    private List<String> etiquetas;
-    private Optional<Boolean> consensuado;
+    private List<Etiqueta> etiquetas;
+    private Boolean consensuado;
 
-    public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria, Optional<ContenidoMultimedia> contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, List<String> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
+    public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia, Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, List<Etiqueta> etiquetas, List<SolicitudEliminacion> solicitudes, Contribuyente contribuyente) {
     }
 
     public HechosOutputDto() {

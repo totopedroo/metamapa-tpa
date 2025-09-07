@@ -3,6 +3,7 @@ package ar.edu.utn.frba.Server.Servicio_Agregador.Service;
 
 
 
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Coleccion;
@@ -27,7 +28,7 @@ public interface IColeccionService {
     public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion);
     public Coleccion setColeccionCsv(String archivoCsvStream);
     public Hecho consensuarHecho(Long coleccionId, Long hechoId);
-    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente);
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente fuente);
     public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId);
     public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
 }

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.Server.Fuente_Proxy.Dtos;
 
+import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Fuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -20,6 +21,6 @@ public class DesastreDto {
     private double longitud;
     @JsonProperty("fecha_hecho")
     private LocalDate fecha;
-    private TipoFuente tipo = TipoFuente.PROXY;
+    private Fuente fuente;
 
 }
