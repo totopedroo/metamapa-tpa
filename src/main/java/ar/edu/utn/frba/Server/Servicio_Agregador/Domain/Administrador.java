@@ -23,8 +23,7 @@ public class Administrador {
     @Column(name="email", columnDefinition = "varchar(60)")
     private String email;
     @Column(name="coleccion_id")
-    @OneToMany
-    @JoinColumn(name="id")
+    @OneToMany(mappedBy = "administrador")
     public List<Coleccion> coleccionesCreadas;
 
     public Administrador(String nombre, String email) {

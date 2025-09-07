@@ -1,13 +1,32 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-public class CriterioDePertenencia {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name="criterio_de_pertenencia")
+public class CriterioDePertenencia{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_criterio;
+    @Column(name="atributo", columnDefinition = "Varchar(40)")
     public String columna; // nombre de la columna en el CSV
+    @Column
     public String tipo;    // "texto" o "fecha"
-    public String valor;   // para tipo texto
+    @Column
+    public String valor;
+    @Column(name="fecha_desde")// para tipo texto
     public LocalDate desde; // para tipo fecha
+    @Column(name="fecha_hasta")
     public LocalDate hasta;
 
     // Criterio por texto

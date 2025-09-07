@@ -1,5 +1,8 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,26 +13,54 @@ import java.util.Optional;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
 public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHecho;
+    @Column(name="titulo",columnDefinition = "varchar(50)")
     private String titulo;
+    @Column(name="descripcion", columnDefinition = "TEXT")
     private String descripcion;
+    @Column(name="categoria", columnDefinition = "varchar(60)")
     private String categoria;
+    @Column(name="contenido_multimedia", nullable = true)
     private Optional<ContenidoMultimedia> contenidoMultimedia;
+    @Column(name ="latitud", columnDefinition = "POINT")
     private Double latitud;
+    @Column(name ="latitud", columnDefinition = "POINT")
     private Double longitud;
+    @Column(name="fecha_acontecimiento")
     private LocalDate fechaAcontecimiento;
+    @Column(name="fecha_carga")
     private LocalDate fechaCarga;
-    private List<String> etiquetas = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "hecho_fuente", // nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "hecho_id"), // FK hacia Hecho
+            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")) // FK hacia Fuente
+    private List<Etiqueta> etiquetas = new ArrayList<>();
+    @OneToMany
+    @JoinTable()
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
+    @Transient
     private Contribuyente contribuyente;
+    @Column(name="eliminado")
     private boolean eliminado = false;
+    @Column(name="consensuado", nullable = true)
     private Optional<Boolean> consensuado = Optional.of(false);
-
-    private TipoFuente fuente;
+    @ManyToMany
+    @JoinTable(
+            name = "hecho_fuente", // nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "hecho_id"), // FK hacia Hecho
+            inverseJoinColumns = @JoinColumn(name = "fuente_id")) // FK hacia Fuente
+    private List<Fuente> fuente = new ArrayList<>();
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, TipoFuente fuente) {
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, Fuente fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -39,11 +70,7 @@ public class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
         this.idHecho = idHecho;
-        this.fuente = fuente;
-
-    }
-
-    public Hecho() {
+        this.fuente.add(fuente);
 
     }
 
@@ -64,7 +91,7 @@ public class Hecho {
         return eliminado;
     }
 
-    public void agregarEtiqueta(String etiqueta) {
+    public void agregarEtiqueta(Etiqueta etiqueta) {
         this.etiquetas.add(etiqueta);
     }
 
@@ -141,11 +168,11 @@ public class Hecho {
         this.idHecho = idHecho;
     }
 
-    public TipoFuente getTipoFuente() {
+    public List<Fuente> getTipoFuente() {
         return fuente;
     }
 
-    public void setTipoFuente(TipoFuente fuente) {this.fuente = fuente;}
+    public void setTipoFuente(Fuente fuente) {this.fuente.add(fuente);}
 
     public boolean esIgualA(Hecho otro) {
         return this.titulo.equalsIgnoreCase(otro.titulo)

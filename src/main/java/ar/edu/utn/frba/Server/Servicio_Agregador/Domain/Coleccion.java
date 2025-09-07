@@ -28,6 +28,9 @@ public class Coleccion {
     public String titulo;
     @Column(name="descripcion", columnDefinition = "TEXT")
     public String descripcion;
+    @ManyToOne
+    @JoinColumn(name = "administrador_id")
+    private Administrador administrador;
     @Transient
     public  List<CriterioDePertenencia> criterioDePertenencia;
     @Transient

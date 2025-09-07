@@ -19,4 +19,5 @@ public class Etiqueta
     private int id;
     @Column
     public String etiqueta;
+
 }
