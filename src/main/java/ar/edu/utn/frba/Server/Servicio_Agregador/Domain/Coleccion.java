@@ -22,7 +22,8 @@ public class Coleccion {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     public long id;
-    @Transient
+    @ManyToMany
+    @JoinTable(name = "coleccion_por_hecho", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "hecho_id"))
     private List<Hecho> hechos;
     @Column(name="Titulo", columnDefinition = "Char(50)")
     public String titulo;
@@ -31,7 +32,7 @@ public class Coleccion {
     @ManyToOne
     @JoinColumn(name = "administrador_id")
     private Administrador administrador;
-    @Transient
+    @ManyToMany@JoinTable(name = "criterios_por_coleccion", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "criterio_id"))
     public  List<CriterioDePertenencia> criterioDePertenencia;
     @Transient
     private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;

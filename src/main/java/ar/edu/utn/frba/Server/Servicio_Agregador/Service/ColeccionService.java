@@ -253,7 +253,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
-        hecho.setConsensuado(Optional.of(true));
+        hecho.setConsensuado(true);
         coleccionRepository.save(coleccion); // upsert (removeIf + add)
         return hecho;
     }

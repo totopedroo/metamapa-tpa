@@ -13,7 +13,7 @@ public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
   public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     long mencionesDelMismoHecho = todosLosHechos.stream()
             .filter(h -> h.esIgualA(hechoAProcesar))
-            .map(Hecho::getTipoFuente)
+            .map(Hecho::getFuente)
             .distinct()
             .count();
 
@@ -21,6 +21,6 @@ public class MultiplesMencionesStrategy implements AlgoritmoDeConsensoStrategy {
             .anyMatch(h -> h.getTitulo().equalsIgnoreCase(hechoAProcesar.getTitulo()) && !h.esIgualA(hechoAProcesar));
 
     boolean esConsensuado = mencionesDelMismoHecho >= 2 && !hayConflicto;
-    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
+    hechoAProcesar.setConsensuado(esConsensuado);
   }
 }

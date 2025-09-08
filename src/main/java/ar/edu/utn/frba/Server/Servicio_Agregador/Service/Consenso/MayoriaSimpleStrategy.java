@@ -11,12 +11,12 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     long totalFuentes = todosLosHechos.stream()
-            .map(Hecho::getTipoFuente)
+            .map(Hecho::getFuente)
             .distinct()
             .count();
 
     if (totalFuentes == 0) {
-      hechoAProcesar.setConsensuado(Optional.of(false));
+      hechoAProcesar.setConsensuado(false);
       return;
     }
 
@@ -27,6 +27,6 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
             .count();
 
     boolean esConsensuado = (double) fuentesCoincidentes / totalFuentes >= 0.5;
-    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
+    hechoAProcesar.setConsensuado(esConsensuado);
   }
 }

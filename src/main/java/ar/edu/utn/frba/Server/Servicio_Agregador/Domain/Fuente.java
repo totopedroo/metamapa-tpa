@@ -17,6 +17,8 @@ import java.util.List;
 public class Fuente {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @Column(name="path")
   private String path;
   @Transient
   private Importador importador;
@@ -27,8 +29,6 @@ public class Fuente {
 
   public Fuente(String url, ImportadorAPI importadorAPI, ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente tipoFuente) {
   }
-
-  //public boolean esFuenteProxy() { return tipo == TipoFuente.PROXY;}
 
   public List<Hecho> obtenerHechos() {
     return importador.importar(this);

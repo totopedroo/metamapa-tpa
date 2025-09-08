@@ -13,7 +13,7 @@ public class CuradaStrategy implements ModoNavegacionStrategy {
         List<Hecho> consensuados = new ArrayList<>();
 
         for (Hecho hecho : hechos) {
-            if (hecho.getConsensuado().isPresent() && hecho.getConsensuado().get()) {
+            if (hecho.getConsensuado() == true) {
                 consensuados.add(hecho);
             }
         }

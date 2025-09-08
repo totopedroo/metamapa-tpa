@@ -32,20 +32,16 @@ public class Hecho {
     private ContenidoMultimedia contenidoMultimedia;
     @Column(name ="latitud", columnDefinition = "POINT")
     private Double latitud;
-    @Column(name ="latitud", columnDefinition = "POINT")
+    @Column(name ="longitud", columnDefinition = "POINT")
     private Double longitud;
     @Column(name="fecha_acontecimiento")
     private LocalDate fechaAcontecimiento;
     @Column(name="fecha_carga")
     private LocalDate fechaCarga;
     @ManyToMany
-    @JoinTable(
-            name = "hecho_fuente", // nombre de la tabla intermedia
-            joinColumns = @JoinColumn(name = "hecho_id"), // FK hacia Hecho
-            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")) // FK hacia Fuente
+    @JoinTable(name = "hecho_etiquetado", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private List<Etiqueta> etiquetas = new ArrayList<>();
-    @OneToMany
-    @JoinTable()
+    @OneToMany(mappedBy = "idHechoAsociado")
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     @Transient
     private Contribuyente contribuyente;
@@ -54,12 +50,10 @@ public class Hecho {
     @Column(name="consensuado", nullable = true)
     private Boolean consensuado = false;
     @ManyToMany
-    @JoinTable(
-            name = "hecho_fuente", // nombre de la tabla intermedia
-            joinColumns = @JoinColumn(name = "hecho_id"), // FK hacia Hecho
-            inverseJoinColumns = @JoinColumn(name = "fuente_id")) // FK hacia Fuente
+    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
     private List<Fuente> fuente = new ArrayList<>();
-
+    @ManyToMany(mappedBy = "hechos")
+private List<Coleccion> colecciones;
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
                  Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, Fuente fuente) {
         this.titulo = titulo;

@@ -18,11 +18,11 @@ public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
             .collect(Collectors.toSet());
 
     if (fuentesTotales.isEmpty()) {
-      hechoAProcesar.setConsensuado(Optional.of(false));
+      hechoAProcesar.setConsensuado(false);
       return;
     }
     boolean esConsensuado = hechoAProcesar.getFuente().equals(fuentesTotales);
-    hechoAProcesar.setConsensuado(Optional.of(esConsensuado));
+    hechoAProcesar.setConsensuado(esConsensuado);
   }
 }
 

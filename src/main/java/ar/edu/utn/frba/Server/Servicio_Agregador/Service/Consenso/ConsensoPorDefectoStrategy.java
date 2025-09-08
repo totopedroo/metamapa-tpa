@@ -12,6 +12,6 @@ public class ConsensoPorDefectoStrategy implements AlgoritmoDeConsensoStrategy {
     @Override
     public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
         // Por defecto, siempre hay consenso.
-        hechoAProcesar.setConsensuado(Optional.of(true));
+        hechoAProcesar.setConsensuado(true);
     }
 }

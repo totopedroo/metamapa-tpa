@@ -23,8 +23,8 @@ public class SolicitudEliminacion {
     @Column
     @Enumerated(EnumType.STRING)
     private EstadoDeSolicitud estado;
-@Column
-
+    @Column(name="id_hecho_asociado")
+@JoinColumn
     private long idHechoAsociado;
 
     public SolicitudEliminacion(String justificacion, long idHechoAsociado) {

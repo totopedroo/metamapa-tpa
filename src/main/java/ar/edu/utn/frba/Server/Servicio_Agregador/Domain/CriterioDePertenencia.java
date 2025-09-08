@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,6 +30,8 @@ public class CriterioDePertenencia{
     public LocalDate desde; // para tipo fecha
     @Column(name="fecha_hasta")
     public LocalDate hasta;
+    @ManyToMany(mappedBy = "criterioDePertenencia")
+    private List<Coleccion> colecciones;
 
     // Criterio por texto
     public CriterioDePertenencia(String columna, String valor) {
