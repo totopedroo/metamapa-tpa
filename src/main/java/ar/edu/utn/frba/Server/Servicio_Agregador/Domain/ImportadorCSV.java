@@ -16,17 +16,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Importador CSV robusto para crear Hechos a partir de un archivo con separador ';'.
- *
- * Reglas admitidas:
- *  - Encabezados tolerantes a espacios y mayúsculas/minúsculas.
- *  - Columnas esperadas: "Titulo", "Descripcion" (o "Descripción"), "Categoria",
- *    "latitud", "longitud", "fecha del hecho" (o "fecha").
- *  - Formatos de fecha admitidos: dd/MM/yyyy, yyyy-MM-dd.
- *  - Manejo por-fila con logs: errores en una fila NO abortan todo el import.
- *  - Búsqueda del archivo: primero classpath (resources), luego filesystem absoluto/relativo.
- */
 @Component("importadorColeccionesCsv")
 public class ImportadorCSV {
 
@@ -43,11 +32,7 @@ public class ImportadorCSV {
           DateTimeFormatter.ISO_LOCAL_DATE // yyyy-MM-dd
   );
 
-  /**
-   * Importa hechos desde un archivo CSV ubicado en classpath o filesystem.
-   * @param pathOrResource nombre en resources o ruta en disco
-   * @return lista de Hecho nunca null (vacía si nada válido)
-   */
+
   public List<Hecho> importar(String pathOrResource) {
     if (pathOrResource == null) {
       log.warn("[CSV] Path nulo");
@@ -246,6 +231,5 @@ public class ImportadorCSV {
 
   private String norm(String s) {
     if (s == null) return "";
-    return s.trim().toLowerCase(Locale.ROOT);
-  }
+    return s.trim().toLowerCase(Locale.ROOT);}
 }
