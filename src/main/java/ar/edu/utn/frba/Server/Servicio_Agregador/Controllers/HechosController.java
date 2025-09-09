@@ -1,11 +1,13 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Controllers;
 
+import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosInputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.HechosRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.IHechosService;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.ISeederService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,7 +25,14 @@ public class HechosController {
     @Autowired
     private ISeederService seederService;
 
-
+    @PostMapping(
+            path = "/crear",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public void crearHecho(@RequestBody HechosInputDto inputDto) {
+        hechosService.crearHecho(inputDto);
+    }
     @GetMapping("/hechos")
     public List<HechosOutputDto> filtrarHechos(
             @RequestParam(required = false) String categoria,

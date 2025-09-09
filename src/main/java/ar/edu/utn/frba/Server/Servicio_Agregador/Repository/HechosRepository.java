@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository("hechosRepository")   // nombre explícito del bean
-public class HechosRepository implements IHechosRepository {
+public class HechosRepository {
     private final List<Hecho> hechos = new ArrayList<>();
     private final AtomicLong sec = new AtomicLong(1);
 
@@ -24,22 +24,22 @@ public class HechosRepository implements IHechosRepository {
         return h;
     }
 
-    @Override
+   
     public void delete(Hecho hecho) {
 
     }
 
-    @Override
+
     public Hecho findById(long id) {
         return null;
     }
 
-    @Override
+
     public void saveList(List<Hecho> listaHechos) {
 
     }
 
-    @Override
+
     public Hecho create(Hecho hecho) {
         return null;
     }

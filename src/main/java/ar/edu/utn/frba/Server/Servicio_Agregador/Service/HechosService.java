@@ -92,7 +92,7 @@ public class HechosService implements IHechosService {
         }
 
         public HechosOutputDto obtenerHecho(Long id) {
-                Hecho hecho = hechosRepository.findById(id);
+                Hecho hecho = hechosRepository.findById(id).orElse(null);
                 if (hecho == null) {
                         return null;
                 }

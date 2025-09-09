@@ -23,7 +23,6 @@ public class ServicioAgregadorController {
     public ResponseEntity<List<Hecho>> obtenerHechos() {
         return ResponseEntity.ok(servicioAgregador.agregarHechosDesdeTodasLasFuentes());
     }
-
    /* @GetMapping("/sincronizar")
     public String sincronizarHechos() {
         servicioAgregador.sincronizarConRepositorio();
@@ -36,7 +35,7 @@ public class ServicioAgregadorController {
         return ResponseEntity.ok("✔️ Refresco manual ejecutado correctamente");
     }
 
-    /*
+
 
     @PostMapping("/crear")
     public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
@@ -53,7 +52,7 @@ public class ServicioAgregadorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HechosOutputDto(null, "Error interno del servidor: " + e.getMessage(), null, null, null, null, null, null, null, null, null, null));
         }
     }
-*/
+
  /*   @PatchMapping("/editar/{hechoId}")
     public ResponseEntity<HechosOutputDto> editarHecho(@RequestBody HechosOutputDto hechosOutputDto,@PathVariable Long hechoId)
     {

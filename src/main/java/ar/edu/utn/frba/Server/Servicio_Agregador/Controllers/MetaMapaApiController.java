@@ -136,7 +136,7 @@ public class MetaMapaApiController {
 
     @PostMapping("/hechos/{id}/crearSolicitud")
     public ResponseEntity<String> solicitarEliminacion(@PathVariable Long id, @RequestBody String motivo) {
-        Hecho hecho = hechosRepository.findById(id);
+        Hecho hecho = hechosRepository.findById(id).orElse(null);
         if (hecho == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
         }

@@ -28,7 +28,7 @@ public class SolicitudService implements ISolicitudService {
     @SuppressWarnings("checkstyle:Indentation")
     @Override
     public SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto) {
-        Hecho hecho = hechosRepository.findById(inputDto.getIdHecho());
+        Hecho hecho = hechosRepository.findById(inputDto.getIdHecho()).orElse(null);
         if (hecho == null) {
             throw new RuntimeException("No se encontró el hecho con ID: " + inputDto.getIdHecho());
         }
@@ -92,7 +92,7 @@ public class SolicitudService implements ISolicitudService {
 
         solicitud.aceptarSolicitud();
 
-        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
+        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado()).orElse(null);
         if (hecho != null) {
             hecho.verificarEliminacion();
         }
@@ -113,7 +113,7 @@ public class SolicitudService implements ISolicitudService {
 
         solicitud.rechazarSolicitud();
 
-        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
+        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado()).orElse(null);
         if (hecho != null) {
             hecho.verificarEliminacion();
         }

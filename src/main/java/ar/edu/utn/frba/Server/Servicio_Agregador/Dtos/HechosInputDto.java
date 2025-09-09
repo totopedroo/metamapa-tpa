@@ -23,8 +23,5 @@ public class HechosInputDto {
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
-    private List<String> etiquetas = new ArrayList();
-    private Contribuyente contribuyente;
-    private boolean eliminado = false;
     private Fuente fuente;
 }

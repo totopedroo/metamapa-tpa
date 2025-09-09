@@ -73,7 +73,7 @@ public class ColeccionService implements IColeccionService {
             throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
         }
 
-        Hecho hecho = hechosRepository.findById(hechoId);
+        Hecho hecho = hechosRepository.findById(hechoId).orElse(null);
         if (hecho == null) {
             throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
         }
