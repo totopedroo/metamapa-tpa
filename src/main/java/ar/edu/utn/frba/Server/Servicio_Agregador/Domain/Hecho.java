@@ -3,6 +3,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +28,8 @@ public class Hecho {
     private Optional<Boolean> consensuado = Optional.of(false);
 
     private TipoFuente fuente;
+    private String provincia;  // Nombre legible de la provincia
+    private Integer hora;
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
                  Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, TipoFuente fuente) {
@@ -42,6 +45,22 @@ public class Hecho {
         this.fuente = fuente;
 
     }
+    public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
+                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, TipoFuente fuente, String provincia, Integer hora) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.contenidoMultimedia = Optional.ofNullable(contenidoMultimedia);
+        this.latitud = latitud;
+        this.longitud = longitud;
+        this.fechaAcontecimiento = fechaAcontecimiento;
+        this.fechaCarga = fechaCarga;
+        this.idHecho = idHecho;
+        this.fuente = fuente;
+        this.provincia = provincia;
+        this.hora = hora;
+
+    }
 
     public Hecho() {
 
@@ -55,7 +74,7 @@ public class Hecho {
         boolean tieneAceptada = solicitudes.stream().anyMatch(s -> s.getEstado().equals("Aceptado"));
         this.eliminado = tieneAceptada;
     }
-
+    public boolean getEliminado() {return eliminado;}
     public void marcarComoEliminado() {
         this.eliminado = true;
     }
@@ -170,5 +189,27 @@ public class Hecho {
     @Override
     public int hashCode() {
         return Objects.hash(idHecho);
+    }
+
+    public String getProvincia() { return provincia; }
+    public void setProvincia(String provincia) { this.provincia = provincia; }
+
+    public Integer getHora() { return hora; }
+    public void setHora(Integer hora) {
+        if (hora == null) { this.hora = null; return; }
+        // clamp 0..23
+        this.hora = Math.max(0, Math.min(23, hora));
+    }
+
+
+    public LocalDateTime getFechaHora() {
+        if (fechaAcontecimiento == null) return null;
+        int h = (hora == null) ? 0 : Math.max(0, Math.min(23, hora));
+        return fechaAcontecimiento.atTime(h, 0);
+    }
+
+
+    public boolean isEliminado() {
+        return eliminado;
     }
 }

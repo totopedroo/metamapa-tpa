@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -241,12 +242,13 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
     );
 
     if (hechosImportadosCSV != null && !hechosImportadosCSV.isEmpty()) {
-        // **CORRECCIÓN CLAVE**
-        // Usa el mismo bucle y método de guardado que en tu método de la API
+
         for (Hecho hecho : hechosImportadosCSV) {
             if (hecho != null) {
-                coleccionCSV.setHecho(hecho); // Añade el hecho a la colección
-                hechosRepository.save(hecho);  // Guarda el hecho en el repositorio
+                coleccionCSV.setHecho(hecho);
+                hecho.setFuente(TipoFuente.LOCAL);
+                hecho.setFechaCarga(LocalDate.now());
+                hechosRepository.save(hecho);
             }
         }
     }

@@ -33,7 +33,8 @@ public class HechosService implements IHechosService {
                                 hecho.getFechaCarga(),
                                 hecho.getEtiquetas(),
                                 hecho.getSolicitudes(),
-                                hecho.getContribuyente());
+                                hecho.getProvincia(),
+                                hecho.getHora());
                 return hechosOutputDto;
 
         }
