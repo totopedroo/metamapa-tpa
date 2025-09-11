@@ -1,0 +1,15 @@
+proxy:
+  desastres:
+    enabled: true
+    base-url: https://api-ddsi.disilab.ar/public
+    email: ddsi@gmail.com
+    password: ddsi2025*
+    per-page: 100               # paginado (1..100)
+  metamapa:
+    enabled: true
+    base-url: http://otra-instancia.com
+
+fuente:
+  estatica:
+    csv:
+      path: archivodefinitivo.csv   #el CSV debe estar en src/main/resources
