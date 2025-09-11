@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
 
-
 import ar.edu.utn.frba.Server.Enums.EstadoDeSolicitud;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="solicitud_eliminacion")
+@Table(name = "solicitud_eliminacion")
 public class SolicitudEliminacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +22,11 @@ public class SolicitudEliminacion {
     @Column
     @Enumerated(EnumType.STRING)
     private EstadoDeSolicitud estado;
-    @Column(name="id_hecho_asociado")
-@JoinColumn
+    @Column(name = "id_hecho_asociado")
+    @JoinColumn
     private long idHechoAsociado;
+    @Column(name = "es_spam")
+    private boolean esSpam = false;
 
     public SolicitudEliminacion(String justificacion, long idHechoAsociado) {
         if (justificacion.length() < 500) {
@@ -41,17 +42,38 @@ public class SolicitudEliminacion {
     }
 
     public void rechazarSolicitud() {
-        estado =EstadoDeSolicitud.RECHAZADA;
+        estado = EstadoDeSolicitud.RECHAZADA;
     }
 
-    public String getJustificacion() { return justificacion; }
-    public EstadoDeSolicitud getEstado() { return estado; }
-    public long getIdSolicitud() { return idSolicitud; }
-    public long getIdHechoAsociado() { return idHechoAsociado; }
+    public String getJustificacion() {
+        return justificacion;
+    }
+
+    public EstadoDeSolicitud getEstado() {
+        return estado;
+    }
+
+    public long getIdSolicitud() {
+        return idSolicitud;
+    }
+
+    public long getIdHechoAsociado() {
+        return idHechoAsociado;
+    }
 
     public void setEstado(EstadoDeSolicitud estado) {
         this.estado = estado;
     }
 
-    public void setId(long idSolicitud) { this.idSolicitud = idSolicitud; }
+    public void setId(long idSolicitud) {
+        this.idSolicitud = idSolicitud;
+    }
+
+    public boolean isEsSpam() {
+        return esSpam;
+    }
+
+    public void setEsSpam(boolean esSpam) {
+        this.esSpam = esSpam;
+    }
 }

@@ -1,4 +1,5 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Domain;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,23 +23,27 @@ public class Hecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHecho;
-    @Column(name="titulo",columnDefinition = "varchar(50)")
+    @Column(name = "titulo", columnDefinition = "varchar(255)")
     private String titulo;
-    @Column(name="descripcion", columnDefinition = "TEXT")
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
-    @Column(name="categoria", columnDefinition = "varchar(60)")
+    @Column(name = "categoria", columnDefinition = "varchar(100)")
     private String categoria;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "contenido_multimedia_id", referencedColumnName = "id", nullable = true)
     private ContenidoMultimedia contenidoMultimedia;
-    @Column(name ="latitud", columnDefinition = "POINT")
+    @Column(name = "latitud")
     private Double latitud;
-    @Column(name ="longitud", columnDefinition = "POINT")
+    @Column(name = "longitud")
     private Double longitud;
-    @Column(name="fecha_acontecimiento")
+    @Column(name = "fecha_acontecimiento")
     private LocalDate fechaAcontecimiento;
-    @Column(name="fecha_carga")
+    @Column(name = "fecha_carga")
     private LocalDate fechaCarga;
+    @Column(name = "provincia", columnDefinition = "varchar(100)")
+    private String provincia;
+    @Column(name = "hora_acontecimiento")
+    private LocalTime horaAcontecimiento;
     @ManyToMany
     @JoinTable(name = "hecho_etiquetado", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private List<Etiqueta> etiquetas = new ArrayList<>();
@@ -45,17 +51,19 @@ public class Hecho {
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     @Transient
     private Contribuyente contribuyente;
-    @Column(name="eliminado")
+    @Column(name = "eliminado")
     private boolean eliminado = false;
-    @Column(name="consensuado", nullable = true)
+    @Column(name = "consensuado", nullable = true)
     private Boolean consensuado = false;
     @ManyToMany
     @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
     private List<Fuente> fuente = new ArrayList<>();
     @ManyToMany(mappedBy = "hechos")
-private List<Coleccion> colecciones;
+    private List<Coleccion> colecciones;
+
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
-                 Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga, long idHecho, Fuente fuente) {
+            Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga,
+            String provincia, LocalTime horaAcontecimiento, long idHecho, Fuente fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -64,9 +72,10 @@ private List<Coleccion> colecciones;
         this.longitud = longitud;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = fechaCarga;
+        this.provincia = provincia;
+        this.horaAcontecimiento = horaAcontecimiento;
         this.idHecho = idHecho;
         this.fuente.add(fuente);
-
     }
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) {
@@ -155,6 +164,22 @@ private List<Coleccion> colecciones;
         this.fechaCarga = fechaCarga;
     }
 
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
+    }
+
+    public LocalTime getHoraAcontecimiento() {
+        return horaAcontecimiento;
+    }
+
+    public void setHoraAcontecimiento(LocalTime horaAcontecimiento) {
+        this.horaAcontecimiento = horaAcontecimiento;
+    }
+
     public Long getIdHecho() {
         return idHecho;
     }
@@ -167,7 +192,9 @@ private List<Coleccion> colecciones;
         return fuente;
     }
 
-    public void setTipoFuente(Fuente fuente) {this.fuente.add(fuente);}
+    public void setTipoFuente(Fuente fuente) {
+        this.fuente.add(fuente);
+    }
 
     public boolean esIgualA(Hecho otro) {
         return this.titulo.equalsIgnoreCase(otro.titulo)
@@ -175,16 +202,21 @@ private List<Coleccion> colecciones;
                 && this.latitud == otro.latitud
                 && this.longitud == otro.longitud
                 && Objects.equals(this.categoria, otro.categoria)
-                && Objects.equals(this.fechaAcontecimiento, otro.fechaAcontecimiento);
+                && Objects.equals(this.fechaAcontecimiento, otro.fechaAcontecimiento)
+                && Objects.equals(this.provincia, otro.provincia)
+                && Objects.equals(this.horaAcontecimiento, otro.horaAcontecimiento);
     }
 
-    public long getId(){
+    public long getId() {
         return idHecho;
     }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Hecho hecho = (Hecho) o;
         return Objects.equals(idHecho, hecho.idHecho);
     }

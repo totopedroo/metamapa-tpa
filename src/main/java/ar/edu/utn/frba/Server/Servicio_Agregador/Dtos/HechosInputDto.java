@@ -9,9 +9,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 @Getter
 @Setter
 @Data
@@ -23,5 +25,7 @@ public class HechosInputDto {
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
+    private LocalTime horaAcontecimiento;
+    private String provincia;
     private Fuente fuente;
 }

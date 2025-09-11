@@ -25,14 +25,11 @@ public class HechosController {
     @Autowired
     private ISeederService seederService;
 
-    @PostMapping(
-            path = "/crear",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public void crearHecho(@RequestBody HechosInputDto inputDto) {
-        hechosService.crearHecho(inputDto);
+    @PostMapping(path = "/crear", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HechosOutputDto crearHecho(@RequestBody HechosInputDto inputDto) {
+        return hechosService.crearHecho(inputDto);
     }
+
     @GetMapping("/hechos")
     public List<HechosOutputDto> filtrarHechos(
             @RequestParam(required = false) String categoria,
@@ -41,18 +38,15 @@ public class HechosController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
             @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud
-    ) {
+            @RequestParam(required = false) Double longitud) {
         return hechosService.filtrarHechos(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, latitud, longitud);
     }
+
     @GetMapping("/inicializar")
     public Boolean inicializar() {
         this.seederService.inicializar();
         return true;
     }
 
-
-
 }
-

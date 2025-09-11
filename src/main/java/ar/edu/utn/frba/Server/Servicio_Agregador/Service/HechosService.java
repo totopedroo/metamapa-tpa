@@ -2,10 +2,10 @@ package ar.edu.utn.frba.Server.Servicio_Agregador.Service;
 
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosInputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
-import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IHechosRepository;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.HechoJpaRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Service.NormalizadorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +18,10 @@ import java.util.stream.Collectors;
 public class HechosService implements IHechosService {
 
         @Autowired
-        private IHechosRepository hechosRepository;
+        private HechoJpaRepository hechosRepository;
+
+        @Autowired
+        private NormalizadorService normalizadorService;
 
         @Override
         public HechosOutputDto convertirDto(Hecho hecho) {
@@ -39,12 +42,11 @@ public class HechosService implements IHechosService {
 
         }
 
-
         public List<HechosOutputDto> filtrarHechos(String categoria,
                         LocalDate fechaReporteDesde, LocalDate fechaReporteHasta,
                         LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta,
                         Double latitud, Double longitud) {
-                List<Hecho> hechos = hechosRepository.findAll();
+                List<Hecho> hechos = hechosRepository.findByEliminadoFalse();
 
                 return hechos.stream()
                                 .filter(h -> categoria == null || h.getCategoria().equalsIgnoreCase(categoria))
@@ -57,38 +59,35 @@ public class HechosService implements IHechosService {
                                                 || !h.getFechaAcontecimiento().isAfter(fechaAcontecimientoHasta))
                                 .filter(h -> latitud == null || Objects.equals(h.getLatitud(), latitud))
                                 .filter(h -> longitud == null || Objects.equals(h.getLongitud(), longitud))
-                                .map(h -> convertirDto(h)).collect(Collectors.toList());
+                                .map(h -> HechosOutputDto.fromModel(h)).collect(Collectors.toList());
 
         }
 
         public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-                Hecho hecho = new Hecho(
-                                inputDto.getTitulo(),
-                                inputDto.getDescripcion(),
-                                inputDto.getCategoria(),
-                                inputDto.getContenidoMultimedia(),
-                                inputDto.getLatitud(),
-                                inputDto.getLongitud(),
-                                inputDto.getFechaAcontecimiento(),
-                                LocalDate.now(),
-                                System.currentTimeMillis(),
-                                inputDto.getFuente());
+                // Normalizar datos de entrada
+                String tituloNormalizado = normalizadorService.normalizarTitulo(inputDto.getTitulo());
+                String descripcionNormalizada = normalizadorService.normalizarDescripcion(inputDto.getDescripcion());
+                String categoriaNormalizada = normalizadorService.normalizarCategoria(inputDto.getCategoria());
+                String provinciaNormalizada = normalizadorService.normalizarProvincia(inputDto.getProvincia());
+                Double latitudNormalizada = normalizadorService.normalizarLatitud(inputDto.getLatitud());
+                Double longitudNormalizada = normalizadorService.normalizarLongitud(inputDto.getLongitud());
 
-                hechosRepository.save(hecho);
+                Hecho hecho = new Hecho();
+                hecho.setTitulo(tituloNormalizado);
+                hecho.setDescripcion(descripcionNormalizada);
+                hecho.setCategoria(categoriaNormalizada);
+                hecho.setContenidoMultimedia(inputDto.getContenidoMultimedia());
+                hecho.setLatitud(latitudNormalizada);
+                hecho.setLongitud(longitudNormalizada);
+                hecho.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
+                hecho.setHoraAcontecimiento(inputDto.getHoraAcontecimiento());
+                hecho.setProvincia(provinciaNormalizada);
+                hecho.setFechaCarga(LocalDate.now());
+                hecho.setEliminado(false);
+                hecho.setConsensuado(false);
 
-                return new HechosOutputDto(
-                                hecho.getIdHecho(),
-                                hecho.getTitulo(),
-                                hecho.getDescripcion(),
-                                hecho.getCategoria(),
-                                hecho.getContenidoMultimedia(),
-                                hecho.getLatitud(),
-                                hecho.getLongitud(),
-                                hecho.getFechaAcontecimiento(),
-                                hecho.getFechaCarga(),
-                                hecho.getEtiquetas(),
-                                hecho.getSolicitudes(),
-                                hecho.getContribuyente());
+                Hecho hechoGuardado = hechosRepository.save(hecho);
+                return HechosOutputDto.fromModel(hechoGuardado);
         }
 
         public HechosOutputDto obtenerHecho(Long id) {
@@ -96,26 +95,15 @@ public class HechosService implements IHechosService {
                 if (hecho == null) {
                         return null;
                 }
-
-                return new HechosOutputDto(
-                                hecho.getIdHecho(),
-                                hecho.getTitulo(),
-                                hecho.getDescripcion(),
-                                hecho.getCategoria(),
-                                hecho.getContenidoMultimedia(),
-                                hecho.getLatitud(),
-                                hecho.getLongitud(),
-                                hecho.getFechaAcontecimiento(),
-                                hecho.getFechaCarga(),
-                                hecho.getEtiquetas(),
-                                hecho.getSolicitudes(),
-                                hecho.getContribuyente());
+                return HechosOutputDto.fromModel(hecho);
         }
 
-
-       public void  setConsensuado(Hecho hecho) {
-                hechosRepository.findById(hecho.getIdHecho());
-                setConsensuado(hecho);
-                hechosRepository.save(hecho);
-       }
+        public void setConsensuado(Hecho hecho) {
+                Optional<Hecho> hechoExistente = hechosRepository.findById(hecho.getIdHecho());
+                if (hechoExistente.isPresent()) {
+                        Hecho h = hechoExistente.get();
+                        h.setConsensuado(true);
+                        hechosRepository.save(h);
+                }
+        }
 }

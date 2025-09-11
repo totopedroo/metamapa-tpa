@@ -49,19 +49,17 @@ public class ImportadorAPI implements Importador {
     }
 
     private Hecho mapearAHecho(DesastreDto dto) {
-        return new Hecho(
-                dto.getTitulo(),
-                dto.getDescripcion(),
-                dto.getCategoria(),
-                null,
-                dto.getLatitud(),
-                dto.getLongitud(),
-                dto.getFecha(),
-                LocalDate.now(),
-                dto.getId(),
-                dto.getFuente());
-
-
+        Hecho hecho = new Hecho();
+        hecho.setTitulo(dto.getTitulo());
+        hecho.setDescripcion(dto.getDescripcion());
+        hecho.setCategoria(dto.getCategoria());
+        hecho.setLatitud(dto.getLatitud());
+        hecho.setLongitud(dto.getLongitud());
+        hecho.setFechaAcontecimiento(dto.getFecha());
+        hecho.setFechaCarga(LocalDate.now());
+        hecho.setEliminado(false);
+        hecho.setConsensuado(false);
+        return hecho;
     }
 
 }
