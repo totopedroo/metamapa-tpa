@@ -111,6 +111,22 @@ public class NormalizadorController {
     }
 
     /**
+     * Normaliza formato de coordenada (comas a puntos)
+     */
+    @PostMapping("/coordenada-formato")
+    public ResponseEntity<Map<String, Object>> normalizarFormatoCoordenada(@RequestBody Map<String, String> request) {
+        String coordenadaStr = request.get("coordenada");
+        Double coordenadaNormalizada = normalizadorService.normalizarFormatoCoordenada(coordenadaStr);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("original", coordenadaStr);
+        response.put("normalizada", coordenadaNormalizada);
+        response.put("valida", coordenadaNormalizada != null);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Normaliza coordenadas
      */
     @PostMapping("/coordenadas")

@@ -1,4 +1,5 @@
 package ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso;
+
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.Hecho;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,9 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     long totalFuentes = todosLosHechos.stream()
-            .map(Hecho::getFuente)
-            .distinct()
-            .count();
+        .map(Hecho::getFuente)
+        .distinct()
+        .count();
 
     if (totalFuentes == 0) {
       hechoAProcesar.setConsensuado(false);
@@ -21,10 +22,10 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
     }
 
     long fuentesCoincidentes = todosLosHechos.stream()
-            .filter(h -> h.esIgualA(hechoAProcesar))
-            .map(Hecho::getTipoFuente)
-            .distinct()
-            .count();
+        .filter(h -> h.esIgualA(hechoAProcesar))
+        .map(Hecho::getTipoFuente)
+        .distinct()
+        .count();
 
     boolean esConsensuado = (double) fuentesCoincidentes / totalFuentes >= 0.5;
     hechoAProcesar.setConsensuado(esConsensuado);

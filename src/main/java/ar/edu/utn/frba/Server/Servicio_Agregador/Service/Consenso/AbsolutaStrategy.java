@@ -8,14 +8,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Component
 public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public void procesarYEstablecerConsenso(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
 
     Set<Fuente> fuentesTotales = todosLosHechos.stream()
-            .flatMap(hecho -> hecho.getFuente().stream())
-            .collect(Collectors.toSet());
+        .flatMap(hecho -> hecho.getFuente().stream())
+        .collect(Collectors.toSet());
 
     if (fuentesTotales.isEmpty()) {
       hechoAProcesar.setConsensuado(false);
@@ -25,4 +26,3 @@ public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
     hechoAProcesar.setConsensuado(esConsensuado);
   }
 }
-

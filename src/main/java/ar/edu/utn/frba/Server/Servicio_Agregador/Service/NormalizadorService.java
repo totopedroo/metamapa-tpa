@@ -210,20 +210,53 @@ public class NormalizadorService {
     }
 
     /**
-     * Normaliza coordenadas (latitud debe estar entre -90 y 90, longitud entre -180
-     * y 180) - SOLO PARA COMPATIBILIDAD
+     * Normaliza formato de coordenada (comas a puntos)
+     */
+    public Double normalizarFormatoCoordenada(String coordenadaStr) {
+        if (coordenadaStr == null || coordenadaStr.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            // Reemplazar comas por puntos para formato decimal
+            String coordenadaNormalizada = coordenadaStr.trim().replace(",", ".");
+            return Double.parseDouble(coordenadaNormalizada);
+        } catch (NumberFormatException e) {
+            return null; // Formato inválido
+        }
+    }
+
+    /**
+     * Normaliza latitud (rechaza null realmente)
      */
     public Double normalizarLatitud(Double latitud) {
+        // Rechazar null realmente
+        if (latitud == null) {
+            return null;
+        }
+
+        // Validar rango
         if (!validarLatitud(latitud)) {
             return null;
         }
+
         return latitud;
     }
 
+    /**
+     * Normaliza longitud (rechaza null realmente)
+     */
     public Double normalizarLongitud(Double longitud) {
+        // Rechazar null realmente
+        if (longitud == null) {
+            return null;
+        }
+
+        // Validar rango
         if (!validarLongitud(longitud)) {
             return null;
         }
+
         return longitud;
     }
 }
