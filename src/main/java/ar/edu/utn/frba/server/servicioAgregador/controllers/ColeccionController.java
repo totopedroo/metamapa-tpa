@@ -95,9 +95,21 @@ public class ColeccionController {
     @GetMapping("/debug/csv")
     public ResponseEntity<?> debugCsv(@RequestParam String archivo) {
         try {
-            boolean fs = java.nio.file.Files.exists(java.nio.file.Path.of(archivo));
-            boolean res = new org.springframework.core.io.ClassPathResource(archivo).exists();
-            return ResponseEntity.ok("CSV encontrado? filesystem=" + fs + " | resources=" + res + " | valor='" + archivo + "'");
+            boolean fs = false;
+            boolean res = false;
+            String valor = archivo;
+
+            if (archivo != null && archivo.startsWith("classpath:")) {
+                String cp = archivo.substring("classpath:".length()); // "archivodefinitivo.csv"
+                res = new org.springframework.core.io.ClassPathResource(cp).exists();
+            } else if (archivo != null && !archivo.isBlank()) {
+                java.nio.file.Path p = java.nio.file.Path.of(archivo);
+                fs = java.nio.file.Files.exists(p);
+            }
+
+            return ResponseEntity.ok(
+                    "CSV encontrado? filesystem=" + fs + " | resources=" + res + " | valor='" + valor + "'"
+            );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("debug error: " + e.getMessage());
         }
