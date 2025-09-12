@@ -229,6 +229,82 @@
       </div>
     </div>
 
+    <!-- Modal Editar Hecho -->
+    <div class="modal fade" id="modalEditarHecho" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar hecho</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <form id="formEditarHecho">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="editar-titulo" class="form-label">Título:</label>
+                <input type="text" class="form-control" id="editar-titulo" required>
+              </div>
+              <div class="mb-3">
+                <label for="editar-descripcion" class="form-label">Descripción:</label>
+                <textarea class="form-control" id="editar-descripcion" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tags:</label>
+                <input type="text" class="form-control" id="editar-tags">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Fuente:</label>
+                <select class="form-select" id="editar-fuente">
+                  <option value="Curada">Curada</option>
+                  <option value="Irrestricta">Irrestricta</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Fecha:</label>
+                <input type="date" class="form-control" id="editar-fecha">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Ubicación:</label>
+                <input type="text" class="form-control" id="editar-ubicacion" readonly>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Imágenes/Videos:</label>
+                <input type="file" class="form-control" id="editar-media" accept="image/*,video/*" multiple>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Aceptar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Simulación: abrir modal al hacer click en editar
+      document.querySelectorAll('#subidos .btn-warning:not([disabled])').forEach(btn => {
+        btn.onclick = function() {
+          // Simular cargar datos de la fila
+          const row = btn.closest('tr');
+          document.getElementById('editar-titulo').value = row.children[0].textContent;
+          document.getElementById('editar-descripcion').value = row.children[1].textContent;
+          document.getElementById('editar-tags').value = row.children[2].textContent;
+          document.getElementById('editar-fuente').value = row.children[3].textContent;
+          document.getElementById('editar-fecha').value = ""; // Simulación, agregar si hay fecha
+          document.getElementById('editar-ubicacion').value = ""; // Simulación, agregar si hay ubicación
+          document.getElementById('editar-media').value = ""; // Simulación, no se puede precargar archivos
+          var modal = new bootstrap.Modal(document.getElementById('modalEditarHecho'));
+          modal.show();
+        };
+      });
+      // Simulación: aceptar edición
+      document.getElementById('formEditarHecho').onsubmit = function(e) {
+        e.preventDefault();
+        // Aquí iría la lógica para guardar cambios
+        bootstrap.Modal.getInstance(document.getElementById('modalEditarHecho')).hide();
+        alert('Hecho editado (simulado)');
+      };
+    </script>
+
     <!--Modal Ver en Mapa --> 
     <div class="modal fade" id="modalMapaResultado" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width: 600px;">
@@ -243,6 +319,50 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Ver Contenido -->
+    <div class="modal fade" id="modalVerContenido" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Contenido multimedia</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="carouselContenido" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="https://prensa.cba.gov.ar/wp-content/uploads/2019/06/Incendios25.jpg" class="d-block w-100" alt="Incendio Córdoba 1">
+            </div>
+            <div class="carousel-item">
+              <img src="https://fotos.perfil.com/2020/08/24/trim/987/555/incendio-en-cordoba-20200824-1006125.jpg" class="d-block w-100" alt="Incendio Córdoba 2">
+            </div>
+            <div class="carousel-item">
+              <img src="https://www.lavoz.com.ar/resizer/v2/CLF2243P5RBVXPO3DPXIG7U5EQ.jfif?auth=32d5ceb2336d79e97c015843bbad34c634c86784b47718bd986419d8a9aab1d8&quality=75&smart=true&width=345&height=258" class="d-block w-100" alt="Incendio Córdoba 3">
+            </div>
+            <div class="carousel-item">
+              <img src="https://prensa.cba.gov.ar/wp-content/uploads/2019/06/Incendios_3699.jpg" class="d-block w-100" alt="Incendio Córdoba 4">
+            </div>
+          </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselContenido" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselContenido" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+        </div>
+            </div>
+        </div>
+        <script>
+            // Abrir modal al hacer click en "Ver Contenido"
+            document.querySelectorAll('button .bi-camera').forEach(btn => {
+        btn.parentElement.onclick = function() {
+          var modal = new bootstrap.Modal(document.getElementById('modalVerContenido'));
+          modal.show();
+        };
+            });
+        </script>
 
     <!-- Modal Solicitar Eliminacion -->
 

@@ -138,9 +138,47 @@ function editarColeccion(i) {
 }
 
 function eliminarColeccion(i) {
-  colecciones.splice(i, 1);
-  renderTabla();
-  mostrarBadge("Colección eliminada");
+  // Crear modal de confirmación si no existe
+  let confirmModal = document.getElementById("modalConfirmEliminar");
+  if (!confirmModal) {
+    confirmModal = document.createElement("div");
+    confirmModal.id = "modalConfirmEliminar";
+    confirmModal.className = "modal fade";
+    confirmModal.tabIndex = -1;
+    confirmModal.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar eliminación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            ¿Está seguro que desea eliminar esta colección?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" style="background-color: var(--secondary); border: none;" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" style="background-color: var(--primary); border: none;" id="btnConfirmEliminar">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(confirmModal);
+  }
+
+  const modal = new bootstrap.Modal(confirmModal);
+  modal.show();
+
+  // Remover cualquier listener previo
+  const btnConfirm = confirmModal.querySelector("#btnConfirmEliminar");
+  btnConfirm.replaceWith(btnConfirm.cloneNode(true));
+  const btnConfirmNew = confirmModal.querySelector("#btnConfirmEliminar");
+
+  btnConfirmNew.addEventListener("click", () => {
+    colecciones.splice(i, 1);
+    renderTabla();
+    mostrarBadge("Colección eliminada");
+    modal.hide();
+  });
 }
 
 // Guardar
