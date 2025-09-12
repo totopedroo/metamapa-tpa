@@ -5,6 +5,7 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoService;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

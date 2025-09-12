@@ -40,6 +40,6 @@ public class FuenteEstaticaAdapter implements FuentePort {
         return (h.getTitulo() != null && h.getTitulo().toLowerCase().contains(c))
                 || (h.getDescripcion() != null && h.getDescripcion().toLowerCase().contains(c))
                 || (h.getCategoria() != null && h.getCategoria().toLowerCase().contains(c))
-                || (h.getEtiquetas() != null && h.getEtiquetas().stream().anyMatch(e -> e != null && e.toLowerCase().contains(c)));
+                || (h.getEtiquetas() != null && h.getEtiquetas().stream().anyMatch(e -> e != null && e.getEtiqueta().toLowerCase().contains(c)));
     }
 }

@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.services;
 
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
+import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.MetaMapaHechoDto;
 import org.springframework.stereotype.Component;
@@ -68,9 +69,9 @@ public class ProxyMapper {
     // MetaMapa (otra instancia) -> HechoDto
     public HechoDto toHechoDtoMeta(MetaMapaHechoDto m) {
         LocalDate fecha = toLocalDate(m.getFechaAcontecimiento());
-        List<String> tags = m.getEtiquetas() == null ? List.of()
-                : m.getEtiquetas().stream().filter(s -> s != null && !s.isBlank())
-                .map(String::trim).distinct().toList();
+        List<Etiqueta> tags = m.getEtiquetas() == null ? List.of()
+                : m.getEtiquetas().stream().filter(s -> s != null && !s.getEtiqueta().isBlank())
+                .distinct().toList();
 
         return new HechoDto(
                 m.getId(),

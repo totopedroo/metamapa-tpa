@@ -8,29 +8,72 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.*;
 
-@Setter @Getter
-@Builder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Hecho {
-    private Long idHecho;
-    private String titulo;
-    private String descripcion;
-    private String categoria;
-    private ContenidoMultimedia contenidoMultimedia;
-    private Double latitud;
-    private Double longitud;
-    private LocalDate fechaAcontecimiento;
-    private LocalDate fechaCarga;
-    @Builder.Default private List<String> etiquetas = new ArrayList<>();
-    @Builder.Default private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
-    private Contribuyente contribuyente;
-    private boolean eliminado = false;
-    private TipoFuente tipoFuente;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table
+@Builder
+public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idHecho;
+    @Column(name = "titulo", columnDefinition = "varchar(255)")
+    private String titulo;
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+    @Column(name = "categoria", columnDefinition = "varchar(100)")
+    private String categoria;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contenido_multimedia_id", referencedColumnName = "id", nullable = true)
+    private ContenidoMultimedia contenidoMultimedia;
+    @Column(name = "latitud")
+    private Double latitud;
+    @Column(name = "longitud")
+    private Double longitud;
+    @Column(name = "fecha_acontecimiento")
+    private LocalDate fechaAcontecimiento;
+    @Column(name = "fecha_carga")
+    private LocalDate fechaCarga;
+    @Column(name = "provincia", columnDefinition = "varchar(100)")
+    private String provincia;
+    @Column(name = "hora_acontecimiento")
+    private LocalTime horaAcontecimiento;
+    @ManyToMany
+    @JoinTable(name = "hecho_etiquetado", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
+    private List<Etiqueta> etiquetas = new ArrayList<>();
+    @OneToMany(mappedBy = "idHechoAsociado")
+    private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
+    @Transient
+    private Contribuyente contribuyente;
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+    @Column(name = "consensuado", nullable = true)
+    private Boolean consensuado = false;
+    @ManyToMany
+    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
+    private List<Fuente> fuente = new ArrayList<>();
+    @ManyToMany(mappedBy = "hechos")
+    private List<Coleccion> colecciones;
     // NUEVO: estado del consenso para navegación curada
     @Builder.Default
     private EstadoConsenso estadoConsenso = EstadoConsenso.CONSENSUADO;
+
 
 
     // === utilidades ===
@@ -38,9 +81,9 @@ public class Hecho {
         return Optional.ofNullable(contenidoMultimedia);
     }
 
-    public List<String> getEtiquetas() { return Collections.unmodifiableList(etiquetas); }
+    public List<Etiqueta> getEtiquetas() { return Collections.unmodifiableList(etiquetas); }
 
-    public void agregarEtiqueta(String etiqueta) { this.etiquetas.add(etiqueta); }
+    public void agregarEtiqueta(Etiqueta etiqueta) { this.etiquetas.add(etiqueta); }
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) { solicitudes.add(solicitud); }
 

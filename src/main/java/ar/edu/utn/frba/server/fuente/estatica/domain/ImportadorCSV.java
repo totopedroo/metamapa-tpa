@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.fuente.estatica.domain;
 
+import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -268,9 +269,9 @@ public class ImportadorCSV {
       fechaAcontecimiento = java.time.LocalDate.parse(values[6].trim(), java.time.format.DateTimeFormatter.ofPattern("d/M/yyyy"));
     }
 
-    java.util.List<String> etiquetas = new java.util.ArrayList<>();
+    List<ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta> etiquetas = new ArrayList<>();
     if (values.length > 7 && !values[7].trim().isEmpty() && !"null".equalsIgnoreCase(values[7].trim())) {
-      for (String e : values[7].trim().split(",")) etiquetas.add(e.trim());
+      for (String e : values[7].trim().split(",")) etiquetas.add(new Etiqueta(e.trim()));
     }
 
     // id aleatorio positivo

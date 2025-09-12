@@ -1,10 +1,7 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
-import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.servicioAgregador.domain.SolicitudEliminacion;
+import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoResult;
 import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,7 +25,7 @@ public class HechosOutputDto {
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
-    private List<String> etiquetas;
+    private List<Etiqueta> etiquetas;
     private List<HechoConsensoDto> consensos;   // múltiples algoritmos
     private HechoConsensoDto consensoActivo;    // opcional: el de navegación curada
 
@@ -50,7 +47,7 @@ public class HechosOutputDto {
         dto.setTitulo(h.getTitulo());
         dto.setDescripcion(h.getDescripcion());
         dto.setCategoria(h.getCategoria());
-        dto.setFuente(h.getTipoFuente());
+        dto.setFuente(null);
         dto.setLatitud(h.getLatitud());
         dto.setLongitud(h.getLongitud());
         dto.setFechaAcontecimiento(h.getFechaAcontecimiento());

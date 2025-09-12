@@ -20,7 +20,6 @@ public class ColeccionMapper {
                 .toList();
 
         return new Coleccion(
-                java.util.UUID.randomUUID().toString(),
                 dto.getTitulo(),
                 dto.getDescripcion(),
                 criterios

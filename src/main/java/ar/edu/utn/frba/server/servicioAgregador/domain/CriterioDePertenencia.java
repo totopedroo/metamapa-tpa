@@ -1,14 +1,36 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-public class CriterioDePertenencia {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name="criterio_de_pertenencia")
+public class CriterioDePertenencia{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_criterio;
+    @Column(name="atributo", columnDefinition = "Varchar(40)")
     public String columna; // nombre de la columna en el CSV
+    @Column
     public String tipo;    // "texto" o "fecha"
-    public String valor;   // para tipo texto
+    @Column
+    public String valor;
+    @Column(name="fecha_desde")// para tipo texto
     public LocalDate desde; // para tipo fecha
+    @Column(name="fecha_hasta")
     public LocalDate hasta;
+    @ManyToMany(mappedBy = "criterioDePertenencia")
+    private List<Coleccion> colecciones;
 
     // Criterio por texto
     public CriterioDePertenencia(String columna, String valor) {
@@ -33,7 +55,7 @@ public class CriterioDePertenencia {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
                 LocalDate fecha = LocalDate.parse(valorEnFila, formatter);
                 return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
-                    (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+                        (fecha.isEqual(hasta) || fecha.isBefore(hasta));
             } catch (Exception e) {
                 System.out.println("No se pudo parsear la fecha: " + valorEnFila);
                 return false;
@@ -52,7 +74,7 @@ public class CriterioDePertenencia {
         } else if (tipo.equals("fecha")) {
             LocalDate fecha = hecho.getFechaAcontecimiento();
             return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
-                (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+                    (fecha.isEqual(hasta) || fecha.isBefore(hasta));
         }
         return false;
     }

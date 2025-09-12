@@ -1,12 +1,14 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
+import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
-import ar.edu.utn.frba.server.servicioAgregador.repositories.ColeccionRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoService;
@@ -21,8 +23,10 @@ import java.util.*;
 
 @Service("coleccionService")
 public class ColeccionService implements IColeccionService {
-    private final ColeccionRepository coleccionRepository;
+    private final IColeccionRepository coleccionRepository;
     private final IHechosRepository hechosRepository;
+    @Autowired
+    private ImportadorCSV importadorCSV;
     private final ModoNavegacionStrategy irrestricta; // Estrategia de navegación (inyectadas por nombre de bean)
     private final ModoNavegacionStrategy curada; // Estrategia de navegación (inyectadas por nombre de bean)
     private final ConsensoService consensoService;
@@ -35,7 +39,7 @@ public class ColeccionService implements IColeccionService {
     private String algoritmoActivoCodigo; // "mayoriaSimple" | "multiplesMenciones" | "absoluta" | "defecto"
 
     @Autowired
-    public ColeccionService(ColeccionRepository coleccionRepository,
+    public ColeccionService(IColeccionRepository coleccionRepository,
                             IHechosRepository hechosRepository,
                             ConsensoService consensoService,
                             @Qualifier("irrestricta") ModoNavegacionStrategy irrestricta,
@@ -57,7 +61,7 @@ public class ColeccionService implements IColeccionService {
 
         if (dto.getIdsHechos() != null) {
             for (Long id : dto.getIdsHechos()) {
-                var h = hechosRepository.findById(id);
+                var h = hechosRepository.findById(id).orElse(null);
                 if (h != null) c.setHecho(h);
             }
         }
@@ -106,20 +110,20 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Coleccion findByIdOrThrow(String id) {
-        Coleccion c = coleccionRepository.findById(id);
+    public Coleccion findByIdOrThrow(Long id) {
+        Coleccion c = coleccionRepository.findById(id).orElse(null);
         if (c == null) throw new NoSuchElementException("Colección no encontrada: " + id);
         return c;
     }
 
     @Override
-    public ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+    public ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
         }
 
-        Hecho hecho = hechosRepository.findById(hechoId);
+        Hecho hecho = hechosRepository.findById(hechoId).orElse(null);
         if (hecho == null) {
             throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
         }
@@ -141,7 +145,7 @@ public class ColeccionService implements IColeccionService {
 
     // --- Navegación de hechos mediante estrategia seleccionada por String ---
     @Override
-    public List<Hecho> navegarHechos(String id, String modo) {
+    public List<Hecho> navegarHechos(Long id, String modo) {
         Coleccion coleccion = findByIdOrThrow(id);
 
         String key = normModo(modo);  // <--- normalizamos
@@ -158,8 +162,8 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<Hecho> obtenerHechosPorColeccion(String idColeccion) {
-        Coleccion coleccion = coleccionRepository.findById(idColeccion);
+    public List<Hecho> obtenerHechosPorColeccion(Long idColeccion) {
+        Coleccion coleccion = coleccionRepository.findById(idColeccion).orElse(null);
         if (coleccion == null) throw new NoSuchElementException("Colección no encontrada: " + idColeccion);
 
         // base persistida
@@ -183,7 +187,6 @@ public class ColeccionService implements IColeccionService {
     @Override
     public Coleccion crearColeccionDesdeFuentes(String titulo, String criterio) {
         Coleccion coleccion = new Coleccion(
-                java.util.UUID.randomUUID().toString(),
                 (titulo == null || titulo.isBlank()) ? "Colección desde Fuentes" : titulo,
                 "Colección creada", // la ajustamos al final según orígenes detectados
                 new java.util.ArrayList<>()
@@ -289,16 +292,35 @@ public class ColeccionService implements IColeccionService {
         }
     }
 
+    public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion) {
+        // LEE SIEMPRE desde /archivodefinitivo.csv en resources
+
+        List<Hecho> hechos = importadorCSV.importar("/archivodefinitivo.csv");
+
+        // Persistir hechos en repo in-memory (asigna IDs si aplica)
+        for (Hecho h : hechos) {
+            if (h != null) hechosRepository.save(h);
+        }
+
+        Coleccion c = new Coleccion();
+        c.setTitulo(nombreColeccion);
+        c.setDescripcion("Colección creada desde CSV (classpath hardcoded)");
+        c.setHechos(new ArrayList<>(hechos));
+
+        coleccionRepository.save(c);
+        return c;
+    }
+
     @Override
-    public void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
-        Coleccion coleccion = coleccionRepository.findById(idColeccion);
+    public void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
+        Coleccion coleccion = coleccionRepository.findById(idColeccion).orElse(null);
         coleccion.setAlgoritmoDeConsenso(algoritmo);
         coleccionRepository.save(coleccion);
     }
 
     @Override
-    public HechosOutputDto consensuarHecho(String coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+    public HechosOutputDto consensuarHecho(Long coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
 
         var universo = (coleccion.getHechos() == null) ? List.<Hecho>of() : coleccion.getHechos();
@@ -327,8 +349,8 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
@@ -355,8 +377,8 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+    public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
@@ -382,8 +404,8 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+    public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria) {
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }

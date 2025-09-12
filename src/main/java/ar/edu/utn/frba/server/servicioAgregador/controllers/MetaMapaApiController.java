@@ -8,7 +8,7 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.IrrestrictaStr
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudOutputDto;
-import ar.edu.utn.frba.server.servicioAgregador.repositories.ColeccionRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.IColeccionService;
 import ar.edu.utn.frba.server.servicioAgregador.services.ISolicitudService;
@@ -44,11 +44,11 @@ public class MetaMapaApiController {
     @Qualifier("solicitudAgregadorService")
     private ISolicitudService solicitudService;
     @Autowired
-    private ColeccionRepository coleccionRepository;
+    private IColeccionRepository coleccionRepository;
 
 
     @GetMapping("/{id}/hechos")
-    public List<Hecho> obtenerHechosColeccion(@PathVariable String id) {
+    public List<Hecho> obtenerHechosColeccion(@PathVariable Long id) {
         return coleccionService.obtenerHechosPorColeccion(id);
     }
 
@@ -63,7 +63,7 @@ public class MetaMapaApiController {
     }
 
     @GetMapping("/colecciones/{identificador}/hechos")
-    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable String identificador) {
+    public ResponseEntity<List<Hecho>> obtenerHechosDeColeccion(@PathVariable Long identificador) {
         try {
             List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(identificador);
             return ResponseEntity.ok(hechos);
@@ -71,21 +71,31 @@ public class MetaMapaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+/*
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<List<Hecho>> navegarHechos(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam(defaultValue = "irrestricta") String modo) {
         try {
-            List<Hecho> hechos = coleccionService.navegarHechos(id, modo);
+            Coleccion coleccion = coleccionRepository.findById(id).orElse(null);
+            if (coleccion == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
+            }
+            ModoNavegacionStrategy estrategia = switch (modo.toLowerCase()) {
+                case "curada" -> new CuradaStrategy();
+                case "irrestricta" -> new IrrestrictaStrategy();
+                default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
+            };
+
+            List<Hecho> hechos = coleccionService.navegarHechos(id, (String) estrategia);
             return ResponseEntity.ok(hechos);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
     }
-
+*/
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDto> crearSolicitudEliminacion(
             @RequestBody SolicitudInputDto solicitudInputDto) {
@@ -101,11 +111,11 @@ public class MetaMapaApiController {
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
     public ResponseEntity<List<Hecho>> filtrarHechosPorColeccion(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String categoria
     ) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
 
         if (coleccion == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -123,7 +133,7 @@ public class MetaMapaApiController {
 
     @PostMapping("/hechos/{id}/crearSolicitud")
     public ResponseEntity<String> solicitarEliminacion(@PathVariable Long id, @RequestBody String motivo) {
-        Hecho hecho = hechosRepository.findById(id);
+        Hecho hecho = hechosRepository.findById(id).orElse(null);
         if (hecho == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
         }
@@ -137,6 +147,7 @@ public class MetaMapaApiController {
 
     @GetMapping("/estado")
     public ResponseEntity<String> obtenerEstado() {
+
         return ResponseEntity.ok("MetaMapa API operativa");
     }
 

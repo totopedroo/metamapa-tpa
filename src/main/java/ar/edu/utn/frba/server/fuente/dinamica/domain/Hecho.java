@@ -23,7 +23,7 @@ public class Hecho {
     private Double longitud;
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
-    @Builder.Default private List<String> etiquetas = new ArrayList<>();
+    @Builder.Default private List<Etiqueta> etiquetas = new ArrayList<>();
     @Builder.Default private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
@@ -37,23 +37,12 @@ public class Hecho {
         this.eliminado = tieneAceptada;
     }
 
-    public Optional<ContenidoMultimedia> getContenidoMultimediaOpt() {
-        return Optional.ofNullable(contenidoMultimedia);
-    }
-
-    public List<String> getEtiquetas() {
+    public List<Etiqueta> getEtiquetas() {
         return Collections.unmodifiableList(etiquetas);
     }
 
-    public void marcarComoEliminado() {
-        this.eliminado = true;
-    }
 
-    public boolean estaEliminado() {
-        return eliminado;
-    }
-
-    public void agregarEtiqueta(String etiqueta) {
+    public void agregarEtiqueta(Etiqueta etiqueta) {
         this.etiquetas.add(etiqueta);
     }
 }

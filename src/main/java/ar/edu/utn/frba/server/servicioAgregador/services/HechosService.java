@@ -20,6 +20,9 @@ public class HechosService implements IHechosService {
         @Autowired
         private IHechosRepository hechosRepository;
 
+        @Autowired
+        private NormalizadorService normalizadorService;
+
         // --- uso la factory centralizada ---
         @Override
         public HechosOutputDto convertirDto(Hecho hecho) {
@@ -51,26 +54,35 @@ public class HechosService implements IHechosService {
 
         @Override
         public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-                // Mapear DTO → dominio usando builder (null-safe)
-                Hecho hecho = Hecho.builder()
-                        .titulo(inputDto.getTitulo())
-                        .descripcion(inputDto.getDescripcion())
-                        .categoria(inputDto.getCategoria())
-                        .contenidoMultimedia(inputDto.getContenidoMultimedia().orElse(null))
-                        .latitud(inputDto.getLatitud())
-                        .longitud(inputDto.getLongitud())
-                        .fechaAcontecimiento(inputDto.getFechaAcontecimiento())
-                        .fechaCarga(LocalDate.now())
-                        .tipoFuente(inputDto.getFuente() != null ? inputDto.getFuente() : TipoFuente.DINAMICA)
-                        .build();
+                // Normalizar datos de entrada
+                String tituloNormalizado = normalizadorService.normalizarTitulo(inputDto.getTitulo());
+                String descripcionNormalizada = normalizadorService.normalizarDescripcion(inputDto.getDescripcion());
+                String categoriaNormalizada = normalizadorService.normalizarCategoria(inputDto.getCategoria());
+                String provinciaNormalizada = normalizadorService.normalizarProvincia(inputDto.getProvincia());
+                Double latitudNormalizada = normalizadorService.normalizarLatitud(inputDto.getLatitud());
+                Double longitudNormalizada = normalizadorService.normalizarLongitud(inputDto.getLongitud());
 
-                hechosRepository.save(hecho);
-                return HechosOutputDto.fromModel(hecho);
+                Hecho hecho = new Hecho();
+                hecho.setTitulo(tituloNormalizado);
+                hecho.setDescripcion(descripcionNormalizada);
+                hecho.setCategoria(categoriaNormalizada);
+                hecho.setContenidoMultimedia(inputDto.getContenidoMultimedia());
+                hecho.setLatitud(latitudNormalizada);
+                hecho.setLongitud(longitudNormalizada);
+                hecho.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
+                hecho.setHoraAcontecimiento(inputDto.getHoraAcontecimiento());
+                hecho.setProvincia(provinciaNormalizada);
+                hecho.setFechaCarga(LocalDate.now());
+                hecho.setEliminado(false);
+                hecho.setConsensuado(false);
+
+                Hecho hechoGuardado = hechosRepository.save(hecho);
+                return HechosOutputDto.fromModel(hechoGuardado);
         }
 
         @Override
         public HechosOutputDto obtenerHecho(Long id) {
-                Hecho hecho = hechosRepository.findById(id);
+                Hecho hecho = hechosRepository.findById(id).orElse(null);
                 if (hecho == null) return null;
                 return HechosOutputDto.fromModel(hecho);
         }

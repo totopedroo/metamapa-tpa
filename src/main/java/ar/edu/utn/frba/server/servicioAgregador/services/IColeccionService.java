@@ -17,16 +17,16 @@ public interface IColeccionService {
 
     ColeccionOutputDto crearColeccion(ColeccionInputDto dto);
     List<Coleccion> findAll();
-    ColeccionOutputDto agregarHechoAColeccion(String coleccionId, Long hechoId);
-    List<Hecho> obtenerHechosPorColeccion(String idColeccion);
+    ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId);
+    List<Hecho> obtenerHechosPorColeccion(Long idColeccion);
     ColeccionOutputDto coleccionOutputDto(Coleccion coleccion);
     Coleccion crearColeccionDesdeFuentes(String titulo, String criterio);
     void actualizarHechos(List<Hecho> nuevosHechos);
-    List<Hecho> navegarHechos(String coleccionId, String modoNavegacion);
-    void setAlgoritmoDeConsenso(String idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
-    HechosOutputDto consensuarHecho(String coleccionId, Long hechoId);
-    Hecho agregarFuenteAHecho(String coleccionId, Long hechoId, TipoFuente tipoFuente);
-    Hecho quitarFuenteDeHecho(String coleccionId, Long hechoId);
-    List<Hecho> filtrarHechosPorColeccion(String coleccionId, String titulo, String categoria);
-    Coleccion findByIdOrThrow(String id);
+    List<Hecho> navegarHechos(Long coleccionId, String modoNavegacion);
+    void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
+    HechosOutputDto consensuarHecho(Long coleccionId, Long hechoId);
+    Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente);
+    Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId);
+    List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
+    Coleccion findByIdOrThrow(Long id);
 }

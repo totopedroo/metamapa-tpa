@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ColeccionOutputDto {
-    private String id;
+    private Long id;
     private String titulo;
     private String descripcion;
 

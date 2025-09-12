@@ -2,6 +2,7 @@ package ar.edu.utn.frba.server.fuente.dinamica.dtos;
 
 import ar.edu.utn.frba.server.fuente.dinamica.domain.ContenidoMultimedia;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.Contribuyente;
+import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,6 +19,6 @@ public class HechosInputDto {
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
-    @Builder.Default private List<String> etiquetas = new ArrayList<>();
+    @Builder.Default private List<Etiqueta> etiquetas = new ArrayList<>();
     private ContribuyenteDto contribuyente;
 }

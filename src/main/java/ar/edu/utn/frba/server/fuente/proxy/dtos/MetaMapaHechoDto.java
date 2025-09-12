@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.fuente.proxy.dtos;
 
+import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,6 +16,6 @@ public class MetaMapaHechoDto {
     @JsonAlias({"fecha", "fecha_acontecimiento"})
     private String fechaAcontecimiento;
     //Opcional si las trae.
-    private List<String> etiquetas;
+    private List<Etiqueta> etiquetas;
 }
 

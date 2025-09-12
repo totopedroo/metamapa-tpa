@@ -18,7 +18,6 @@ public class SolicitudService implements ISolicitudService {
     private IHechosRepository hechosRepository;
 
     @Autowired
-    @Qualifier("solicitudAgregadorRepository")
     private ISolicitudRepository solicitudRepository;
 
     @Autowired
@@ -27,7 +26,7 @@ public class SolicitudService implements ISolicitudService {
 
     @Override
     public SolicitudOutputDto crearSolicitud(SolicitudInputDto inputDto) {
-        Hecho hecho = hechosRepository.findById(inputDto.getIdHecho());
+        Hecho hecho = hechosRepository.findById(inputDto.getIdHecho()).orElse(null);
         if (hecho == null) throw new RuntimeException("No se encontró el hecho con ID: " + inputDto.getIdHecho());
 
         String justif = inputDto.getJustificacion() == null ? "" : inputDto.getJustificacion().trim();
@@ -42,7 +41,7 @@ public class SolicitudService implements ISolicitudService {
         if (detectorDeSpam.esSpam(justif) || justificacionSpam) {
             SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(justif, inputDto.getIdHecho());
             solicitudSpam.rechazarPorSpam();
-            solicitudRepository.guardarSolicitud(solicitudSpam);
+            solicitudRepository.save(solicitudSpam);
 
             var dto = new SolicitudOutputDto();
             dto.setId(solicitudSpam.getIdSolicitud());
@@ -55,7 +54,7 @@ public class SolicitudService implements ISolicitudService {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(justif, inputDto.getIdHecho());
         hecho.agregarSolicitud(solicitud);
 
-        solicitudRepository.guardarSolicitud(solicitud);
+        solicitudRepository.save(solicitud);
         hechosRepository.save(hecho);
 
         var dto = new SolicitudOutputDto();
@@ -76,9 +75,9 @@ public class SolicitudService implements ISolicitudService {
             throw new RuntimeException("Solo se puede aceptar una solicitud PENDIENTE");
 
         solicitud.aceptarSolicitud();
-        solicitudRepository.guardarSolicitud(solicitud);
+        solicitudRepository.save(solicitud);
 
-        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado());
+        Hecho hecho = hechosRepository.findById(solicitud.getIdHechoAsociado()).orElse(null);
         if (hecho != null) {
             hecho.marcarComoEliminado();      // explícito
             hechosRepository.save(hecho);     // persistir cambio
@@ -96,6 +95,6 @@ public class SolicitudService implements ISolicitudService {
             throw new RuntimeException("Solo se puede rechazar una solicitud PENDIENTE");
 
         solicitud.rechazarSolicitud();
-        solicitudRepository.guardarSolicitud(solicitud);
+        solicitudRepository.save(solicitud);
     }
 }

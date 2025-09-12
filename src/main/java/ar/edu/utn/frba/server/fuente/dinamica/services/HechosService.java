@@ -31,7 +31,7 @@ public class HechosService implements IHechosService {
                                 (h.getDescripcion() != null && h.getDescripcion().toLowerCase().contains(c)) ||
                                 (h.getCategoria() != null && h.getCategoria().toLowerCase().contains(c)) ||
                                 (h.getEtiquetas() != null && h.getEtiquetas().stream()
-                                        .anyMatch(e -> e != null && e.toLowerCase().contains(c)))
+                                        .anyMatch(e -> e != null && e.getEtiqueta().toLowerCase().contains(c)))
                 ).toList();
         }
 

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +19,17 @@ public class HechosInputDto {
     private String titulo;
     private String descripcion;
     private String categoria;
-    private Optional<ContenidoMultimedia> contenidoMultimedia = Optional.empty();
+    private String provincia;
+    private ContenidoMultimedia contenidoMultimedia;
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
+    private LocalTime horaAcontecimiento;
     private List<String> etiquetas = new ArrayList();
     private Contribuyente contribuyente;
     private boolean eliminado = false;
     private TipoFuente fuente;
+
+
+
 }

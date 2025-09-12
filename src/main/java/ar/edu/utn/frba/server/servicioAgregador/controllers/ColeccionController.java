@@ -1,10 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.server.servicioAgregador.repositories.HechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class ColeccionController {
     @Autowired
     private IrrestrictaStrategy irrestrictaStrategy;
     @Autowired
-    private HechosRepository hechosRepository;
+    private IHechosRepository hechosRepository;
     @Autowired
     private HechosService hechosService;
     @Autowired
@@ -46,7 +45,7 @@ public class ColeccionController {
     }
 
     @GetMapping("/colecciones/{id}/hechos")
-    public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable String id) {
+    public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable Long id) {
         return coleccionService.obtenerHechosPorColeccion(id).stream()
                 .map(HechosOutputDto::fromModel)
                 .toList();
@@ -54,7 +53,7 @@ public class ColeccionController {
 
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<?> navegarHechos(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam(defaultValue = "irrestricta") String modo) {   // <-- String, no Strategy
         var hechos = coleccionService.navegarHechos(id, modo);
         var dtos = hechos.stream()
@@ -65,14 +64,14 @@ public class ColeccionController {
 
     @GetMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consenso")
     public ResponseEntity<HechosOutputDto> obtenerConsenso(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId) {
         return ResponseEntity.ok(coleccionService.consensuarHecho(coleccionId, hechoId));
     }
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
     public ResponseEntity<?> filtrarHechosPorColeccion(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String categoria) {
         try {
@@ -130,7 +129,7 @@ public class ColeccionController {
     }
 
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
-    public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
+    public ResponseEntity<?> agregarHechoAColeccion(@PathVariable Long coleccionId, @PathVariable Long hechoId) {
         try {
             ColeccionOutputDto coleccionActualizada = coleccionService.agregarHechoAColeccion(coleccionId, hechoId);
             return ResponseEntity.ok(coleccionActualizada);
@@ -167,7 +166,7 @@ public class ColeccionController {
 
     @PutMapping("/colecciones/{id}/algoritmo")
     public ResponseEntity<Void> setearAlgoritmoPorNombre(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam String tipo) {
         try {
             var t = ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso.fromCodigo(tipo);
@@ -191,7 +190,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
     public ResponseEntity<HechosOutputDto> consensuarHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId) {
         try {
             HechosOutputDto dto = coleccionService.consensuarHecho(coleccionId, hechoId);
@@ -205,7 +204,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente")
     public ResponseEntity<?> agregarFuenteAHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId,
             @RequestParam TipoFuente tipoFuente) {
         try {
@@ -226,7 +225,7 @@ public class ColeccionController {
 
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/quitar-fuente")
     public ResponseEntity<?> quitarFuenteDeHecho(
-            @PathVariable String coleccionId,
+            @PathVariable Long coleccionId,
             @PathVariable Long hechoId) {
         try {
             Hecho actualizado = coleccionService.quitarFuenteDeHecho(coleccionId, hechoId);
