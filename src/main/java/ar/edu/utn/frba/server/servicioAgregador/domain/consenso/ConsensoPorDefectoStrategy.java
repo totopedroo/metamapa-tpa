@@ -1,12 +1,12 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain.consenso;
 
-
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
+@Component
 public class ConsensoPorDefectoStrategy implements AlgoritmoDeConsensoStrategy {
 
     @Override public String codigo() { return "defecto"; }

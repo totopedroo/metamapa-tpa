@@ -8,14 +8,27 @@ public enum TipoAlgoritmoConsenso {
 
     private final String codigo;
 
-    TipoAlgoritmoConsenso(String codigo) { this.codigo = codigo; }
+    TipoAlgoritmoConsenso(String codigo) {
+        this.codigo = codigo;
+    }
 
-    public String codigo() { return codigo; }
+    public String codigo() {
+        return codigo;
+    }
 
     public static TipoAlgoritmoConsenso fromCodigo(String codigo) {
         if (codigo == null) throw new IllegalArgumentException("codigo nulo");
+
+        // normalizamos: minusculas, sin espacios, guiones bajos a camel-case base
+        String normalizado = codigo.trim().toLowerCase();
+
+        // aceptar variantes snake_case → convertir a camelCase base
+        normalizado = normalizado.replace("_", "");
+
         for (var t : values()) {
-            if (t.codigo.equalsIgnoreCase(codigo)) return t;
+            if (t.codigo.equalsIgnoreCase(normalizado)) {
+                return t;
+            }
         }
         throw new IllegalArgumentException("Código de algoritmo inválido: " + codigo);
     }

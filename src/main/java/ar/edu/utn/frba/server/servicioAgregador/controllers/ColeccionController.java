@@ -157,14 +157,14 @@ public class ColeccionController {
     public ResponseEntity<Void> setearAlgoritmoPorNombre(
             @PathVariable String id,
             @RequestParam String tipo) {
-
         try {
-            AlgoritmoDeConsensoStrategy algoritmo = switch (tipo.toLowerCase()) {
-                case "mayoriasimple" -> new MayoriaSimpleStrategy();
-                case "multiplesmenciones" -> new MultiplesMencionesStrategy();
-                case "absoluta" -> new AbsolutaStrategy();
-                case "defecto" -> new ConsensoPorDefectoStrategy();
-                default -> throw new IllegalArgumentException("Tipo de algoritmo desconocido: " + tipo);
+            var t = ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso.fromCodigo(tipo);
+
+            ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy algoritmo = switch (t) {
+                case MAYORIA_SIMPLE       -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.MayoriaSimpleStrategy();
+                case MULTIPLES_MENCIONES  -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.MultiplesMencionesStrategy();
+                case ABSOLUTA             -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AbsolutaStrategy();
+                case DEFECTO              -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoPorDefectoStrategy();
             };
 
             coleccionService.setAlgoritmoDeConsenso(id, algoritmo);
