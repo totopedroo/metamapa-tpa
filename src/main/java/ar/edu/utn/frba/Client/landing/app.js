@@ -52,9 +52,6 @@ function cardHecho({titulo, descripcion, categoria, lugar, fecha}){
       <div class="card-body">
         <p>${descripcion}</p>
       </div>
-      <div class="card-actions">
-        <a class="btn btn-secondary" href="/visualizacion">Ver en mapa</a>
-      </div>
     </article>`;
 }
 
