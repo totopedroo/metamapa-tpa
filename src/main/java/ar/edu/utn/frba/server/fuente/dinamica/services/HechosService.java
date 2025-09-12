@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class HechosService implements IHechosService {
 
         @Override
         public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-                var hecho = Hecho.builder()
+                Hecho hecho = Hecho.builder()
                         .titulo(inputDto.getTitulo())
                         .descripcion(inputDto.getDescripcion())
                         .categoria(inputDto.getCategoria())
@@ -66,11 +67,11 @@ public class HechosService implements IHechosService {
                         .longitud(inputDto.getLongitud())
                         .fechaAcontecimiento(inputDto.getFechaAcontecimiento())
                         .fechaCarga(java.time.LocalDate.now())
-                        .etiquetas(new java.util.ArrayList<>(inputDto.getEtiquetas()))
+                        .etiquetas(inputDto.getEtiquetas() == null ? new ArrayList<>() : new ArrayList<>(inputDto.getEtiquetas()))
                         .contribuyente(apiMapper.toContribuyente(inputDto.getContribuyente()))
                         .build();
 
-                hechosRepository.save(hecho);              // genera id si era null
+                hechosRepository.save(hecho);
                 return apiMapper.toOutput(hecho);
         }
 

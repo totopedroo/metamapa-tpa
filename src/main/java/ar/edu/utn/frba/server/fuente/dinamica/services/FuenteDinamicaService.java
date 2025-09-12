@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -43,42 +44,23 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     }
 
     @Override
-    public HechosOutputDto editarHecho(Long idHecho, HechosOutputDto patch) {
-        var hecho = hechosRepository.findById(idHecho);
-        if (hecho == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado");
+    public HechosOutputDto editarHecho(Long id, HechosOutputDto out) {
+        Hecho h = hechosRepository.findById(id);
+        if (h == null) throw new IllegalArgumentException("Hecho no encontrado: " + id);
 
-        // Campos simples (aplico solo si vienen con valor)
-        if (patch.getTitulo() != null && !patch.getTitulo().isBlank()) hecho.setTitulo(patch.getTitulo());
-        if (patch.getDescripcion() != null) hecho.setDescripcion(patch.getDescripcion());
-        if (patch.getCategoria() != null) hecho.setCategoria(patch.getCategoria());
-        if (patch.getLatitud() != null) hecho.setLatitud(patch.getLatitud());
-        if (patch.getLongitud() != null) hecho.setLongitud(patch.getLongitud());
-        if (patch.getFechaAcontecimiento() != null) hecho.setFechaAcontecimiento(patch.getFechaAcontecimiento());
+        if (out.getTitulo() != null) h.setTitulo(out.getTitulo());
+        if (out.getDescripcion() != null) h.setDescripcion(out.getDescripcion());
+        if (out.getCategoria() != null) h.setCategoria(out.getCategoria());
+        if (out.getLatitud() != null) h.setLatitud(out.getLatitud());
+        if (out.getLongitud() != null) h.setLongitud(out.getLongitud());
+        if (out.getFechaAcontecimiento() != null) h.setFechaAcontecimiento(out.getFechaAcontecimiento());
+        if (out.getEtiquetas() != null) h.setEtiquetas(new ArrayList<>(out.getEtiquetas()));
+        if (out.getContenidoMultimedia() != null)
+            h.setContenidoMultimedia(apiMapper.toContenidoMultimedia(out.getContenidoMultimedia()));
+        if (out.getContribuyente() != null)
+            h.setContribuyente(apiMapper.toContribuyente(out.getContribuyente()));
 
-        // Anidados
-        if (patch.getContenidoMultimedia() != null) {
-            hecho.setContenidoMultimedia(apiMapper.toContenidoMultimedia(patch.getContenidoMultimedia()));
-        }
-        if (patch.getContribuyente() != null) {
-            if (hecho.getContribuyente() == null) {
-                hecho.setContribuyente(apiMapper.toContribuyente(patch.getContribuyente()));
-            } else {
-                var c = hecho.getContribuyente();
-                var dto = patch.getContribuyente();
-                if (dto.getNombre() != null) c.setNombre(dto.getNombre());
-                if (dto.getApellido() != null) c.setApellido(dto.getApellido());
-                if (dto.getFechaNacimiento() != null) c.setFechaNacimiento(dto.getFechaNacimiento());
-            }
-        }
-
-        // Colecciones: reemplazo total
-        if (patch.getEtiquetas() != null) {
-            hecho.getEtiquetas().clear();
-            hecho.getEtiquetas().addAll(patch.getEtiquetas());
-        }
-
-        // Guardar y devolver DTO de salida
-        hechosRepository.save(hecho);
-        return apiMapper.toOutput(hecho);
+        hechosRepository.save(h);
+        return apiMapper.toOutput(h);
     }
 }

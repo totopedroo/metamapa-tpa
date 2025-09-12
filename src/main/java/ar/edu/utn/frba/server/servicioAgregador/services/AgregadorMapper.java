@@ -29,7 +29,7 @@ public class AgregadorMapper {
         String f = d.fuente() == null ? "" : d.fuente().toLowerCase();
         TipoFuente origen =
                 f.startsWith("proxy") ? TipoFuente.PROXY :
-                        f.contains("estatica") ? TipoFuente.LOCAL :
+                        f.contains("estatica") ? TipoFuente.ESTATICA :
                                 TipoFuente.DINAMICA;
 
         h.setTipoFuente(origen);

@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
@@ -23,6 +24,7 @@ public class HechosOutputDto {
     private String titulo;
     private String descripcion;
     private String categoria;
+    private TipoFuente fuente;
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
@@ -48,6 +50,7 @@ public class HechosOutputDto {
         dto.setTitulo(h.getTitulo());
         dto.setDescripcion(h.getDescripcion());
         dto.setCategoria(h.getCategoria());
+        dto.setFuente(h.getTipoFuente());
         dto.setLatitud(h.getLatitud());
         dto.setLongitud(h.getLongitud());
         dto.setFechaAcontecimiento(h.getFechaAcontecimiento());

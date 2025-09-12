@@ -142,19 +142,21 @@ public class ImportadorCSV {
     String lonStr = get(cols, idx, "longitud");
     String fechaStr = get(cols, idx, "fecha del hecho");
 
-    if (isAllBlank(titulo, descripcion, categoria, latStr, lonStr, fechaStr)) {
-      // fila vacía
-      return null;
-    }
+    if (isAllBlank(titulo, descripcion, categoria, latStr, lonStr, fechaStr)) return null;
 
     Hecho h = new Hecho();
-    // Si "Titulo" es un número tipo ID en tu archivo, podés prefijarlo para evitar colisiones
     h.setTitulo(titulo == null ? null : titulo.trim());
     h.setDescripcion(nullIfBlank(descripcion));
     h.setCategoria(nullIfBlank(categoria));
     h.setLatitud(parseDouble(latStr));
     h.setLongitud(parseDouble(lonStr));
     h.setFechaAcontecimiento(parseFecha(fechaStr));
+    h.setFechaCarga(java.time.LocalDate.now());
+
+    // ✅ ID positivo
+    long rnd = new java.security.SecureRandom().nextLong();
+    if (rnd <= 0) rnd = Math.abs(rnd) + 1;
+    h.setIdHecho(rnd);
 
     return h;
   }

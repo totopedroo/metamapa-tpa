@@ -133,19 +133,25 @@ public class ColeccionService implements IColeccionService {
         return coleccionOutputDto(coleccion);
     }
 
+    // helper
+    private static String normModo(String s) {
+        if (s == null) return "irrestricta";
+        return s.trim().toLowerCase().replace("_", "");
+    }
+
     // --- Navegación de hechos mediante estrategia seleccionada por String ---
     @Override
     public List<Hecho> navegarHechos(String id, String modo) {
         Coleccion coleccion = findByIdOrThrow(id);
 
+        String key = normModo(modo);  // <--- normalizamos
 
-        String key = (modo == null) ? "irrestricta" : modo.trim().toLowerCase();
+        // Acepta "curada", "CURADA", "cu_rada", "c", etc.
         ModoNavegacionStrategy strategy = switch (key) {
-            case "curada" -> curada;
-            case "irrestricta", "" -> irrestricta;
+            case "curada", "c" -> curada;
+            case "irrestricta", "i", "" -> irrestricta;
             default -> throw new IllegalArgumentException("Modo de navegación inválido: " + modo);
         };
-
 
         List<Hecho> base = (coleccion.getHechos() == null) ? List.of() : coleccion.getHechos();
         return strategy.filtrar(base);
@@ -176,20 +182,92 @@ public class ColeccionService implements IColeccionService {
 
     @Override
     public Coleccion crearColeccionDesdeFuentes(String titulo, String criterio) {
-        var externos = consultarHechosHandler.consultar(criterio); // TODAS las fuentes habilitadas
         Coleccion coleccion = new Coleccion(
                 java.util.UUID.randomUUID().toString(),
                 (titulo == null || titulo.isBlank()) ? "Colección desde Fuentes" : titulo,
-                "Colección creada a partir de fuentes (proxy/estática/dinámica)",
-                new java.util.ArrayList<>());
+                "Colección creada", // la ajustamos al final según orígenes detectados
+                new java.util.ArrayList<>()
+        );
 
-        for (var dto : externos) {
-            var h = agregadorMapper.toDomain(dto);
+        // iremos acumulando qué fuentes participaron
+        java.util.EnumSet<TipoFuente> fuentesUsadas = java.util.EnumSet.noneOf(TipoFuente.class);
+
+        java.util.List<Hecho> nuevosHechos;
+
+        // ----- RUTA CSV (estática)
+        if (criterio != null && (criterio.endsWith(".csv") || criterio.startsWith("classpath:"))) {
+
+            // 1) Leer CSV con el importador de la fuente estática
+            var importador = new ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV();
+            var path = criterio.startsWith("classpath:") ? criterio.substring("classpath:".length()) : criterio;
+            var hechosCsv = importador.importar(path); // -> List<ar...estatica.domain.Hecho>
+
+            // 2) Mapear: estática.domain.Hecho -> HechoDto -> dominio del agregador
+            var estMapper = new ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper();
+            nuevosHechos = hechosCsv.stream()
+                    .map(estMapper::toHechoDto)           // a DTO de contrato
+                    .map(agregadorMapper::toDomain)       // al dominio del agregador
+                    .peek(h -> {                           // marcar fuente si no vino
+                        if (h.getTipoFuente() == null) h.setTipoFuente(TipoFuente.ESTATICA /* o ESTATICA si la tenés */);
+                    })
+                    .toList();
+
+            fuentesUsadas.add(TipoFuente.ESTATICA /* o ESTATICA */);
+
+        } else {
+            // ----- CUALQUIER FUENTE CONFIGURADA (proxy/dinámica…)
+            var externos = consultarHechosHandler.consultar(criterio); // típicamente DTOs de contrato
+            nuevosHechos = externos.stream()
+                    .map(agregadorMapper::toDomain) // -> dominio agregador
+                    .peek(h -> {
+                        // si tu mapper ya setea tipoFuente, esto no hace falta;
+                        // por las dudas: inferir desde algún campo (ej: fuente)
+                        if (h.getTipoFuente() == null && h.getContribuyente() == null) {
+                            // si tenés algun indicio, ajustalo; si no, dejalo como PROXY por defecto
+                            h.setTipoFuente(TipoFuente.PROXY);
+                        }
+                    })
+                    .toList();
+
+            // Marcar conjunto de fuentes usadas según lo que traiga cada hecho
+            for (var h : nuevosHechos) {
+                if (h.getTipoFuente() != null) fuentesUsadas.add(h.getTipoFuente());
+            }
+            if (fuentesUsadas.isEmpty()) {
+                // fallback si nada vino marcado
+                fuentesUsadas.add(TipoFuente.PROXY);
+            }
+        }
+
+        // Persistir y asociar
+        for (var h : nuevosHechos) {
             hechosRepository.save(h);
             coleccion.setHecho(h);
         }
         coleccionRepository.save(coleccion);
+
+        // ----- Descripción linda según orígenes
+        coleccion.setDescripcion(descripcionPorFuentes(fuentesUsadas));
+        coleccionRepository.save(coleccion);
+
         return coleccion;
+    }
+
+    /** AUX: Construye una descripción consistente según las fuentes detectadas. */
+    private String descripcionPorFuentes(java.util.Set<TipoFuente> usadas) {
+        // orden fijo: proxy / estática / dinámica
+        java.util.List<String> partes = new java.util.ArrayList<>();
+
+        if (usadas.contains(TipoFuente.PROXY))    partes.add("proxy");
+        if (usadas.contains(TipoFuente.ESTATICA))  partes.add("estática");
+        if (usadas.contains(TipoFuente.DINAMICA)) partes.add("dinámica");
+
+        if (partes.isEmpty()) return "Colección creada a partir de fuentes";
+
+        if (partes.size() == 1) {
+            return "Colección creada a partir de fuente " + partes.get(0);
+        }
+        return "Colección creada a partir de fuentes: " + String.join("/", partes);
     }
 
     @Override
