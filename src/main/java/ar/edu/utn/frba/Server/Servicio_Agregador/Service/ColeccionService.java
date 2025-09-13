@@ -30,12 +30,9 @@ public class ColeccionService implements IColeccionService {
     private final ColeccionRepository coleccionRepository;
     private final IHechosRepository hechosRepository;
 
-
-    // Importador CSV (nombrado para evitar conflictos con otros importadores)
     private final ImportadorCSV importadorCSV;
 
 
-    // Estrategias de navegación (inyectadas por nombre de bean)
     private final ModoNavegacionStrategy irrestricta;
     private final ModoNavegacionStrategy curada;
 
@@ -125,7 +122,7 @@ public class ColeccionService implements IColeccionService {
         return ColeccionOutputDto.fromModel(coleccion);
     }
 
-    // --- Navegación de hechos mediante estrategia seleccionada por String ---
+
     @Override
     public List<Hecho> navegarHechos(String id, String modo) {
         Coleccion coleccion = findByIdOrThrow(id);

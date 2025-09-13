@@ -87,7 +87,7 @@ public class EstadisticasService {
             }
 
             Method m2 = solicitudesRepository.getClass().getMethod("findAll");
-            @SuppressWarnings("unchecked")
+
             List<Object> todas = (List<Object>) m2.invoke(solicitudesRepository);
             long cnt = 0;
             for (Object s : todas) {

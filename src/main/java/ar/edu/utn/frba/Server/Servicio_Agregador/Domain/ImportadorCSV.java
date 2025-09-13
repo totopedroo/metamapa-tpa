@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-/** Importador CSV: si no hay columna -> campo queda null. */
 @Component("importadorColeccionesCsv")
 public class ImportadorCSV {
 
@@ -51,7 +50,7 @@ public class ImportadorCSV {
       }
     }
 
-    // 3) fallback
+
     try {
       Resource res = new ClassPathResource("archivodefinitivo.csv");
       if (res.exists()) try (InputStream in = res.getInputStream()) { return leer(in, StandardCharsets.UTF_8); }
@@ -60,7 +59,6 @@ public class ImportadorCSV {
     return List.of();
   }
 
-  // ---------- lectura ----------
   private List<Hecho> leer(InputStream in, Charset cs) throws IOException {
     List<Hecho> hechos = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new InputStreamReader(in, cs))) {
@@ -96,24 +94,24 @@ public class ImportadorCSV {
     Map<String,Integer> map = new HashMap<>();
     for (int i=0;i<headers.size();i++) map.put(canon(headers.get(i)), i);
 
-    // básicos
+
     alias(map, "titulo", "title", "nombre");
     alias(map, "descripcion", "descripción", "description", "detalle");
     alias(map, "categoria", "categoría", "category");
 
-    // geo
+
     alias(map, "latitud", "lat", "latitude");
     alias(map, "longitud", "lon", "lng", "long", "longitude");
 
-    // fechas / hora
+
     alias(map, "fechaacontecimiento", "fecha", "fecha_del_hecho", "fechadelhecho", "fecha_hecho", "date");
     alias(map, "fechacarga", "fecha_carga", "fechadeingreso", "ingreso", "date_load");
     alias(map, "hora", "hour", "hora_del_dia", "time", "horadelhecho", "hs");
 
-    // provincia
+
     alias(map, "provincia", "province", "estado", "provincia_iso", "provincia(iso)");
 
-    // fuente (tipo)
+
     alias(map, "fuente", "source");
     alias(map, "tipofuente", "tipo_fuente", "source_type", "tipo");
 
@@ -143,7 +141,7 @@ public class ImportadorCSV {
     Integer hora        = parseHora(get(cols, idx, "hora"));
     String provincia    = get(cols, idx, "provincia");
     String fuenteStr    = get(cols, idx, "tipofuente");
-    if (fuenteStr == null) fuenteStr = get(cols, idx, "fuente"); // por si usan solo "fuente"
+    if (fuenteStr == null) fuenteStr = get(cols, idx, "fuente");
 
     boolean todoVacio =
             isBlank(titulo) && isBlank(descripcion) && isBlank(categoria) &&
@@ -159,11 +157,10 @@ public class ImportadorCSV {
     h.setLatitud(lat);
     h.setLongitud(lon);
     h.setFechaAcontecimiento(fecha);
-    // —— estos 4 son los que mencionaste —— //
-    h.setFechaCarga(fechaCarga);                      // null si no vino
-    h.setProvincia(nz(provincia));                    // null si no vino
-    h.setHora(hora);                                  // null si no vino
-    h.setFuente(parseTipoFuente(fuenteStr));          // null si no vino / no matchea
+    h.setFechaCarga(fechaCarga);
+    h.setProvincia(nz(provincia));
+    h.setHora(hora);
+    h.setFuente(parseTipoFuente(fuenteStr));
     return h;
   }
 

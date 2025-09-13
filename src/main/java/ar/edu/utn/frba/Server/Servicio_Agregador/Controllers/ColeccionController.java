@@ -65,13 +65,13 @@ public class ColeccionController {
         return coleccionService.setColeccionApi();
     }
 
-    //TODO
+
     @PostMapping("/crearDesdeCSV")
     public ResponseEntity<ColeccionOutputDto> crearDesdeCSV(@RequestParam String path) {
         var creada = coleccionService.setColeccionCsv(path);
         return ResponseEntity.ok(ColeccionOutputDto.fromModel(creada));
     }
-    //TODO
+
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
     public ResponseEntity<?> agregarHechoAColeccion(@PathVariable String coleccionId, @PathVariable Long hechoId) {
         try {
@@ -161,7 +161,7 @@ public class ColeccionController {
         try {
             Hecho actualizado = coleccionService.quitarFuenteDeHecho(coleccionId, hechoId);
 
-            // Devolver DTO para no chocar con Optional/JSON
+
             var dto = ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto.fromModel(actualizado);
             return ResponseEntity.ok(dto);
 
