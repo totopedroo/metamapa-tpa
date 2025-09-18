@@ -25,7 +25,7 @@ public class HechosController {
     @Autowired
     private ISeederService seederService;
 
-    @PostMapping(path = "/crear", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/agregador/crear", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HechosOutputDto crearHecho(@RequestBody HechosInputDto inputDto) {
         return hechosService.crearHecho(inputDto);
     }

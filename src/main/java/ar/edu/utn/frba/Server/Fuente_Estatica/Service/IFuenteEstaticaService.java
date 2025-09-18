@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.Server.Fuente_Estatica.Service;
 
 import ar.edu.utn.frba.Server.Fuente_Estatica.Domain.Hecho;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface IFuenteEstaticaService {
     public List<Hecho> importarDesdeArchivo(MultipartFile archivo);
 
     public List<Hecho> importarDesdeRuta(String rutaArchivo);
+
+    public List<Hecho> obtenerHechos();
 }

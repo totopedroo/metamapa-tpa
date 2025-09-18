@@ -33,6 +33,11 @@ public class FuenteEstaticaController {
         }
     }
 
+    @GetMapping("/hechosCargados")
+    public ResponseEntity<List<Hecho>> obtenerHecosCargados() {
+        return ResponseEntity.ok(fuenteEstaticaService.obtenerHechos());
+
+    }
     @PostMapping("/importar-csv")
     public ResponseEntity<String> importarDesdeCSV(@RequestParam("archivo") MultipartFile archivo) {
         try {
@@ -58,6 +63,16 @@ public class FuenteEstaticaController {
         try {
             List<Hecho> hechosImportados = fuenteEstaticaService.importarDesdeRuta(rutaArchivo);
             return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + rutaArchivo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al importar desde ruta: " + e.getMessage());
+        }
+    }
+    @PostMapping("/importar")
+    public ResponseEntity<String> importarDesdeRutaCSV() {
+        try {
+            List<Hecho> hechosImportados = fuenteEstaticaService.importarDesdeRuta("archivodefinitivo.csv");
+            return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + "src/main/resources/archivodefinitivo.csv");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al importar desde ruta: " + e.getMessage());

@@ -6,6 +6,7 @@ import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.TipoFuente;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Domain.ImportadorCSV;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Dtos.HechosOutputDto;
+import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.ColeccionJpaRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IColeccionRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Repository.IHechosRepository;
 import ar.edu.utn.frba.Server.Servicio_Agregador.Service.Consenso.AlgoritmoDeConsensoStrategy;
@@ -25,8 +26,7 @@ import java.util.stream.Collectors;
 public class ColeccionService implements IColeccionService {
 
     @Autowired
-    @Qualifier("coleccionRepository")
-    private IColeccionRepository coleccionRepository;
+    private ColeccionJpaRepository coleccionRepository;
 
     @Autowired
     private ImportadorAPI importadorAPI;
@@ -68,7 +68,7 @@ public class ColeccionService implements IColeccionService {
 
     @Override
     public ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
         }
@@ -88,7 +88,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     public List<Hecho> navegarHechos(Long coleccionId, String modo) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada con ID: " + coleccionId);
         }
@@ -114,7 +114,7 @@ public class ColeccionService implements IColeccionService {
                 .collect(Collectors.toList());
     }*/
     public List<Hecho> obtenerHechosPorColeccion(Long idColeccion) {
-      Coleccion coleccion = (coleccionRepository.findById(idColeccion));
+      Coleccion coleccion = (coleccionRepository.findById(idColeccion).orElse(null));
 
   /*      if (coleccionOpt.isEmpty()) {
             throw new NoSuchElementException("Colección no encontrada con ID: " + idColeccion);
@@ -139,7 +139,6 @@ public class ColeccionService implements IColeccionService {
         hechosImportados = this.importadorAPI.importar(fuente);
 
         Coleccion coleccion = new Coleccion(
-                UUID.randomUUID().getMostSignificantBits(),
                 "COLECCION API",
                 "Colección creada a partir de datos de API",
                 new ArrayList<>()
@@ -148,7 +147,8 @@ public class ColeccionService implements IColeccionService {
         if (hechosImportados != null) {
             for (Hecho hecho : hechosImportados) {
                 if (hecho != null) {
-                    coleccion.setHecho(hecho);
+                    hecho.agregarColeccion(coleccion);
+                    hecho.agregarFuente(fuente);
                     hechosRepository.save(hecho);
                 }
             }
@@ -180,14 +180,14 @@ public class ColeccionService implements IColeccionService {
     @Override
     public List<Hecho> navegarHechos(Long coleccionId, ModoNavegacionStrategy modoNavegacion) {
 
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         List<Hecho> hechos = this.obtenerHechosPorColeccion(coleccionId);
         List<Hecho> hechosFiltrados = modoNavegacion.filtrar(hechos);
         return hechosFiltrados;
     }
 
     public void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
-        Coleccion coleccion = coleccionRepository.findById(idColeccion);
+        Coleccion coleccion = coleccionRepository.findById(idColeccion).orElse(null);
         coleccion.setAlgoritmoDeConsenso(algoritmo);
         coleccionRepository.save(coleccion);
     }
@@ -245,7 +245,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         return c;
     }
     public Hecho consensuarHecho(Long coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
 
         Hecho hecho = coleccion.getHechos().stream()
@@ -258,7 +258,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         return hecho;
     }
     public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente fuente) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
@@ -284,7 +284,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         return hecho;
     }
     public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
@@ -309,7 +309,7 @@ public Coleccion setColeccionCsv(String archivoCsvStream) {
         return hecho;
     }
     public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }

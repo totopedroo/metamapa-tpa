@@ -44,7 +44,7 @@ public class Hecho {
     private String provincia;
     @Column(name = "hora_acontecimiento")
     private LocalTime horaAcontecimiento;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "hecho_etiquetado", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private List<Etiqueta> etiquetas = new ArrayList<>();
     @OneToMany(mappedBy = "idHechoAsociado")
@@ -55,11 +55,11 @@ public class Hecho {
     private boolean eliminado = false;
     @Column(name = "consensuado", nullable = true)
     private Boolean consensuado = false;
-    @ManyToMany
-    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos_id"), inverseJoinColumns = @JoinColumn(name = "fuente_id"))
     private List<Fuente> fuente = new ArrayList<>();
     @ManyToMany(mappedBy = "hechos")
-    private List<Coleccion> colecciones;
+    private List<Coleccion> colecciones = new ArrayList<>();
 
     public Hecho(String titulo, String descripcion, String categoria, ContenidoMultimedia contenidoMultimedia,
             Double latitud, Double longitud, LocalDate fechaAcontecimiento, LocalDate fechaCarga,
@@ -76,6 +76,14 @@ public class Hecho {
         this.horaAcontecimiento = horaAcontecimiento;
         this.idHecho = idHecho;
         this.fuente.add(fuente);
+    }
+
+    public void agregarFuente (Fuente fuente) {
+        this.fuente.add(fuente);
+    }
+
+    public void agregarColeccion (Coleccion coleccion) {
+        this.colecciones.add(coleccion);
     }
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) {

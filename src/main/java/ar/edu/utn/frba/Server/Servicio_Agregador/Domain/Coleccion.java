@@ -32,7 +32,8 @@ public class Coleccion {
     @ManyToOne
     @JoinColumn(name = "administrador_id")
     private Administrador administrador;
-    @ManyToMany@JoinTable(name = "criterios_por_coleccion", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "criterio_id"))
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "criterios_por_coleccion", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "criterio_id"))
     public  List<CriterioDePertenencia> criterioDePertenencia;
     @Transient
     private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
@@ -49,6 +50,13 @@ public class Coleccion {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.criterioDePertenencia = criterioDePertenencia;
+    }
+    public Coleccion(String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
+
+            this.hechos = new ArrayList<>();
+            this.titulo = titulo;
+            this.descripcion = descripcion;
+            this.criterioDePertenencia = criterioDePertenencia;
     }
 
     public List<Hecho> getHechosVisibles() {

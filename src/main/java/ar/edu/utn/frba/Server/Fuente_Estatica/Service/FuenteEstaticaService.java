@@ -23,7 +23,9 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
         this.repositorio = new HechosEstaticosRepository();
         this.importador = new ImportadorCSV();
     }
-
+    public List<Hecho> obtenerHechos(){
+        return repositorio.findAll();
+    }
     public void importarHechos(String path) {
         List<Hecho> nuevosHechos = new ArrayList<>();
         nuevosHechos = importador.importar(path);
