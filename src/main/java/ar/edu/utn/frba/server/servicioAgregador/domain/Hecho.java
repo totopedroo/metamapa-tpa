@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +137,9 @@ public class Hecho {
         return Math.abs(a - b) <= 0.001; // ~111m
     }
 
+    public void setFuente(Fuente fuente) {
+        this.fuente = (List<Fuente>) fuente;
+    }
 
     // identidad por id
     @Override public boolean equals(Object o) {

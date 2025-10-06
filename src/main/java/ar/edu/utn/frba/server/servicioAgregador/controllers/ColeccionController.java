@@ -206,7 +206,7 @@ public class ColeccionController {
     public ResponseEntity<?> agregarFuenteAHecho(
             @PathVariable Long coleccionId,
             @PathVariable Long hechoId,
-            @RequestParam TipoFuente tipoFuente) {
+            @RequestParam Fuente tipoFuente) {
         try {
             Hecho actualizado = coleccionService.agregarFuenteAHecho(coleccionId, hechoId, tipoFuente);
 

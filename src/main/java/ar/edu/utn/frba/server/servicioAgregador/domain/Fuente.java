@@ -25,4 +25,8 @@ public class Fuente {
 
     public Fuente(String url, TipoFuente tipoFuente) {
     }
+
+    public Fuente(TipoFuente tipo) {}
+
+
 }

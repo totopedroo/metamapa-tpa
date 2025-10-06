@@ -43,7 +43,9 @@ public class ImportadorCSV {
           DateTimeFormatter.ISO_LOCAL_DATE // yyyy-MM-dd
   );
 
-  /**Importa hechos desde un archivo CSV ubicado en classpath o filesystem.*/
+  /**
+   * Importa hechos desde un archivo CSV ubicado en classpath o filesystem.
+   */
 
   public List<Hecho> importar(String pathOrResource) {
     if (pathOrResource == null) { log.warn("[CSV] Path nulo"); return List.of(); }

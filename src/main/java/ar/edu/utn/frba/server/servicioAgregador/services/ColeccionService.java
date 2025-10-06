@@ -2,8 +2,10 @@ package ar.edu.utn.frba.server.servicioAgregador.services;
 
 import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
 import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
+import ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+//import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
@@ -20,6 +22,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static ar.edu.utn.frba.server.contratos.enums.TipoFuente.ESTATICA;
 
 @Service("coleccionService")
 public class ColeccionService implements IColeccionService {
@@ -189,33 +193,35 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = new Coleccion(
                 (titulo == null || titulo.isBlank()) ? "Colección desde Fuentes" : titulo,
                 "Colección creada", // la ajustamos al final según orígenes detectados
-                new java.util.ArrayList<>()
+                new ArrayList<>()
         );
 
         // iremos acumulando qué fuentes participaron
-        java.util.EnumSet<TipoFuente> fuentesUsadas = java.util.EnumSet.noneOf(TipoFuente.class);
+        EnumSet<TipoFuente> fuentesUsadas = EnumSet.noneOf(TipoFuente.class);
 
-        java.util.List<Hecho> nuevosHechos;
-
+        List<Hecho> nuevosHechos;
+        Fuente estatica = new Fuente(TipoFuente.ESTATICA);
+        Fuente proxy = new Fuente(TipoFuente.PROXY);
         // ----- RUTA CSV (estática)
         if (criterio != null && (criterio.endsWith(".csv") || criterio.startsWith("classpath:"))) {
 
-            // 1) Leer CSV con el importador de la fuente estática
-            var importador = new ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV();
-            var path = criterio.startsWith("classpath:") ? criterio.substring("classpath:".length()) : criterio;
-            var hechosCsv = importador.importar(path); // -> List<ar...estatica.domain.Hecho>
 
-            // 2) Mapear: estática.domain.Hecho -> HechoDto -> dominio del agregador
-            var estMapper = new ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper();
+            var importador = new ImportadorCSV();
+            var path = criterio.startsWith("classpath:") ? criterio.substring("classpath:".length()) : criterio;
+            var hechosCsv = importador.importar(path);
+
+
+
+            var estMapper = new EstaticaMapper();
             nuevosHechos = hechosCsv.stream()
-                    .map(estMapper::toHechoDto)           // a DTO de contrato
+                    .map(estMapper::toHechoDto)
                     .map(agregadorMapper::toDomain)       // al dominio del agregador
-                    .peek(h -> {                           // marcar fuente si no vino
-                        if (h.getTipoFuente() == null) h.setTipoFuente(TipoFuente.ESTATICA /* o ESTATICA si la tenés */);
+                    .peek(h -> {
+                        if (h.getFuente() == null) h.setFuente(estatica);
                     })
                     .toList();
 
-            fuentesUsadas.add(TipoFuente.ESTATICA /* o ESTATICA */);
+            fuentesUsadas.add(ESTATICA /* o ESTATICA */);
 
         } else {
             // ----- CUALQUIER FUENTE CONFIGURADA (proxy/dinámica…)
@@ -225,19 +231,19 @@ public class ColeccionService implements IColeccionService {
                     .peek(h -> {
                         // si tu mapper ya setea tipoFuente, esto no hace falta;
                         // por las dudas: inferir desde algún campo (ej: fuente)
-                        if (h.getTipoFuente() == null && h.getContribuyente() == null) {
+                        if (h.getFuente() == null && h.getContribuyente() == null) {
                             // si tenés algun indicio, ajustalo; si no, dejalo como PROXY por defecto
-                            h.setTipoFuente(TipoFuente.PROXY);
+                            h.setFuente(proxy);
                         }
                     })
                     .toList();
 
             // Marcar conjunto de fuentes usadas según lo que traiga cada hecho
             for (var h : nuevosHechos) {
-                if (h.getTipoFuente() != null) fuentesUsadas.add(h.getTipoFuente());
+             //   if (h.getFuente() != null) fuentesUsadas.add(h.getFuente());
             }
             if (fuentesUsadas.isEmpty()) {
-                // fallback si nada vino marcado
+
                 fuentesUsadas.add(TipoFuente.PROXY);
             }
         }
@@ -262,7 +268,7 @@ public class ColeccionService implements IColeccionService {
         java.util.List<String> partes = new java.util.ArrayList<>();
 
         if (usadas.contains(TipoFuente.PROXY))    partes.add("proxy");
-        if (usadas.contains(TipoFuente.ESTATICA))  partes.add("estática");
+        if (usadas.contains(ESTATICA))  partes.add("estática");
         if (usadas.contains(TipoFuente.DINAMICA)) partes.add("dinámica");
 
         if (partes.isEmpty()) return "Colección creada a partir de fuentes";
@@ -292,24 +298,6 @@ public class ColeccionService implements IColeccionService {
         }
     }
 
-    public Coleccion crearColeccionDesdeCSVHardcoded(String nombreColeccion) {
-        // LEE SIEMPRE desde /archivodefinitivo.csv en resources
-
-        List<Hecho> hechos = importadorCSV.importar("/archivodefinitivo.csv");
-
-        // Persistir hechos en repo in-memory (asigna IDs si aplica)
-        for (Hecho h : hechos) {
-            if (h != null) hechosRepository.save(h);
-        }
-
-        Coleccion c = new Coleccion();
-        c.setTitulo(nombreColeccion);
-        c.setDescripcion("Colección creada desde CSV (classpath hardcoded)");
-        c.setHechos(new ArrayList<>(hechos));
-
-        coleccionRepository.save(c);
-        return c;
-    }
 
     @Override
     public void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo) {
@@ -349,7 +337,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente) {
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente tipoFuente) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
@@ -363,7 +351,7 @@ public class ColeccionService implements IColeccionService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
-        hecho.setTipoFuente(tipoFuente);
+        hecho.setFuente(tipoFuente);
 
         // Persistir cambios de la colección (upsert)
         coleccionRepository.save(coleccion);
@@ -390,7 +378,7 @@ public class ColeccionService implements IColeccionService {
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
         // Quitar la fuente
-        hecho.setTipoFuente(null);
+        hecho.setFuente(null);
 
         // Guardar colección (upsert)
         coleccionRepository.save(coleccion);

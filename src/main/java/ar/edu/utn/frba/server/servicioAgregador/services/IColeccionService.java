@@ -4,6 +4,7 @@ package ar.edu.utn.frba.server.servicioAgregador.services;
 
 
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Coleccion;
@@ -25,7 +26,7 @@ public interface IColeccionService {
     List<Hecho> navegarHechos(Long coleccionId, String modoNavegacion);
     void setAlgoritmoDeConsenso(Long idColeccion, AlgoritmoDeConsensoStrategy algoritmo);
     HechosOutputDto consensuarHecho(Long coleccionId, Long hechoId);
-    Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, TipoFuente tipoFuente);
+    Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente tipoFuente);
     Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId);
     List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
     Coleccion findByIdOrThrow(Long id);
