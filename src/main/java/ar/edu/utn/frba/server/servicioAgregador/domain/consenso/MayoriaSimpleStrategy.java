@@ -1,7 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain.consenso;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public ConsensoResult evaluar(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     int totalFuentes = (int) todosLosHechos.stream()
-            .map(Hecho::getTipoFuente)
+            .map(Hecho::getFuente)
             .distinct()
             .count();
 
@@ -29,9 +31,9 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
               .build();
     }
 
-    List<TipoFuente> fuentesSoporte = todosLosHechos.stream()
+    @NotNull List<List<Fuente>> fuentesSoporte = todosLosHechos.stream()
             .filter(h -> h.esIgualA(hechoAProcesar))
-            .map(Hecho::getTipoFuente)
+            .map(Hecho::getFuente)
             .distinct()
             .collect(Collectors.toList());
 
@@ -41,7 +43,7 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
             .estado(ok ? EstadoConsenso.CONSENSUADO : EstadoConsenso.NO_CONSENSUADO)
             .soportes(fuentesSoporte.size())
             .totalFuentes(totalFuentes)
-            .fuentesSoporte(fuentesSoporte)
+            //.fuentesSoporte(fuentesSoporte)
             .conflictos(List.of())
             .build();
   }
