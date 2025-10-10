@@ -33,7 +33,7 @@ public class ServicioAgregador {
     this.coleccionService = coleccionService;
   }
 
-  @PostConstruct
+
   public List<Hecho> agregarHechosDesdeTodasLasFuentes() {
     var dtos = handler.consultar(null);
     var hechos = dtos.stream().map(mapper::toDomain).toList();
