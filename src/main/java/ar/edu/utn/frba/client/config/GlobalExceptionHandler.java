@@ -1,17 +1,20 @@
-package ar.edu.utn.frba.server.config;
+package ar.edu.utn.frba.client.config;
 
+import ar.edu.utn.frba.server.config.BadRequestException;
+import ar.edu.utn.frba.server.config.NotFoundException;
+import ar.edu.utn.frba.server.config.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler(ar.edu.utn.frba.server.config.BadRequestException.class)
     public ResponseEntity<ProblemDetail> handleBadRequest(BadRequestException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setTitle("Solicitud inválida");
