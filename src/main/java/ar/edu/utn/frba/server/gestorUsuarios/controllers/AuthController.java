@@ -1,10 +1,7 @@
 package ar.edu.utn.frba.server.gestorUsuarios.controllers;
 
 import ar.edu.utn.frba.server.config.NotFoundException;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.AuthResponseDTO;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.RefreshRequest;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.TokenResponse;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.UserRolesPermissionsDTO;
+import ar.edu.utn.frba.server.gestorUsuarios.dtos.*;
 import ar.edu.utn.frba.server.gestorUsuarios.services.LoginService;
 import ar.edu.utn.frba.server.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -13,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,42 +24,47 @@ public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final LoginService loginService;
+    private final JwtUtil jwtUtil;
+    private final org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder enc =
+            new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
 
-    @PostMapping
-    public ResponseEntity<AuthResponseDTO> loginApi(@RequestBody Map<String, String> credentials) {
+    @PostMapping(value="/login", consumes="application/json", produces="application/json")
+    public ResponseEntity<?> loginApi(@RequestBody Map<String,String> credentials) {
+        String username = credentials.get("username");
+        String password = credentials.get("password");
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "username y password son obligatorios"));
+        }
         try {
-            String username = credentials.get("username");
-            String password = credentials.get("password");
+            var usuario = loginService.autenticarUsuario(username, password);
 
-            // Validación básica de credenciales
-            if (username == null || username.trim().isEmpty() ||
-                    password == null || password.trim().isEmpty()) {
-                return ResponseEntity.badRequest().build();
-            }
+            String accessToken = jwtUtil.generarAccessToken(usuario.getNombreDeUsuario());
+            String refreshToken = jwtUtil.generarRefreshToken(usuario.getNombreDeUsuario());
 
-            // Autenticar usuario usando el LoginService
-            loginService.autenticarUsuario(username, password);
+            // Si tu DTO no tiene refresh, devolvé sólo los 3 campos o agregá refresh al DTO
+            AuthResponseDTO resp = new AuthResponseDTO("Bearer", accessToken, 3600);
+            return ResponseEntity.ok(resp);
 
-            // Generar tokens
-            String accessToken = loginService.generarAccessToken(username);
-            String refreshToken = loginService.generarRefreshToken(username);
-
-            AuthResponseDTO response = AuthResponseDTO.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-
-            log.info("El usuario {} está logueado. El token generado es {}", username, accessToken);
-
-            return ResponseEntity.ok(response);
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body(Map.of("error", "Error interno", "detail", e.getMessage()));
         }
     }
 
-    @PostMapping("/refresh")
+    @GetMapping("/check")
+    public Map<String,Object> check(@RequestParam String raw, @RequestParam String hash) {
+        boolean ok = enc.matches(raw, hash);
+        return Map.of("raw", raw, "hash_len", hash.length(), "matches", ok);
+    }
+
+    @GetMapping("/make")
+    public Map<String,String> make(@RequestParam String raw) {
+        return Map.of("hash", enc.encode(raw));
+    }
+}
+  /*
+  @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(@RequestBody RefreshRequest request) {
         try {
             String username = JwtUtil.validarToken(request.getRefreshToken());
@@ -85,7 +88,8 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
-
+*/
+/*
     @GetMapping("/user/roles-permisos")
     public ResponseEntity<UserRolesPermissionsDTO> getUserRolesAndPermissions(Authentication authentication) {
         try {
@@ -100,4 +104,5 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
-}
+
+*/

@@ -3,8 +3,10 @@ package ar.edu.utn.frba.server.gestorUsuarios.services;
 import ar.edu.utn.frba.server.gestorUsuarios.dtos.UserRolesPermissionsDTO;
 import ar.edu.utn.frba.server.config.NotFoundException;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
-//import ar.utn.ba.ddsi.gestionDeAlumnosServer.models.repositories.UsuariosRepository; ToDo ver para conexion con DB.
+import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
 import ar.edu.utn.frba.server.utils.JwtUtil;
+// Si lo pusiste en ar.edu.utn.frba.server.utils.JwtUtil, usa ese import en su lugar.
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,46 +17,41 @@ public class LoginService {
 
     private final UsuariosRepository usuariosRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;  // ← inyectamos JwtUtil
 
-    public LoginService(UsuariosRepository usuariosRepository) {
+    public LoginService(UsuariosRepository usuariosRepository, JwtUtil jwtUtil) {
         this.usuariosRepository = usuariosRepository;
+        this.jwtUtil = jwtUtil;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public Usuario autenticarUsuario(String username, String password) {
         Optional<Usuario> usuarioOpt = usuariosRepository.findByNombreDeUsuario(username);
-
         if (usuarioOpt.isEmpty()) {
             throw new NotFoundException("Usuario", username);
         }
 
         Usuario usuario = usuarioOpt.get();
-
-        // Verificar la contraseña usando BCrypt
         if (!passwordEncoder.matches(password, usuario.getContrasenia())) {
             throw new NotFoundException("Usuario", username);
         }
-
         return usuario;
     }
 
     public String generarAccessToken(String username) {
-        return JwtUtil.generarAccessToken(username);
+        return jwtUtil.generarAccessToken(username);   // ← instancia, no estático
     }
 
     public String generarRefreshToken(String username) {
-        return JwtUtil.generarRefreshToken(username);
+        return jwtUtil.generarRefreshToken(username);  // ← instancia, no estático
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
         Optional<Usuario> usuarioOpt = usuariosRepository.findByNombreDeUsuario(username);
-
         if (usuarioOpt.isEmpty()) {
             throw new NotFoundException("Usuario", username);
         }
-
         Usuario usuario = usuarioOpt.get();
-
         return UserRolesPermissionsDTO.builder()
                 .username(usuario.getNombreDeUsuario())
                 .rol(usuario.getRol())
