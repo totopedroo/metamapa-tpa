@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/api/estadisticas/**",
                                 "/api/export/**",
                                 "/api/busqueda/**"
-                        ).permitAll()
+                        ).hasAnyRole("ADMIN")
 
 
                         // Contribuyente: crear/editar hechos propios, crear solicitudes
@@ -64,8 +64,8 @@ public class SecurityConfig {
 
                         // Admin: gestión de colecciones, fuentes, normalizador, aprobaciones, import masivo
                         .requestMatchers(
-                                "/colecciones/admin/**",
-                                "/servicio-agregador/**",
+                                "/api/colecciones/admin/**",
+                                "/api/servicio-agregador/**",
                                 "/api/normalizador/**"
                         ).hasRole("ADMIN")
 
