@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**"  // login/refresh/register
                         ).permitAll()
-
+                        .requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll()
                         // Visualización anónima de hechos/colecciones/estadísticas/export
                         .requestMatchers(HttpMethod.GET,
                                 "/colecciones",
@@ -64,9 +64,9 @@ public class SecurityConfig {
 
                         // Admin: gestión de colecciones, fuentes, normalizador, aprobaciones, import masivo
                         .requestMatchers(
-                                "/api/colecciones/admin/**",
-                                "/api/servicio-agregador/**",
-                                "/api/normalizador/**"
+                                "/colecciones/admin/**",
+                                "/servicio-agregador/**",
+                                "/normalizador/**"
                         ).hasRole("ADMIN")
 
                         // cualquier otra cosa: autenticado
