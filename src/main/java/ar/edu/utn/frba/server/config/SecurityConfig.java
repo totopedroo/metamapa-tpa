@@ -41,18 +41,29 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**"  // login/refresh/register
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios/register",
+                                "/solicitudes").permitAll()
+
                         // Visualización anónima de hechos/colecciones/estadísticas/export
                         .requestMatchers(HttpMethod.GET,
-                                "/colecciones",
+
                                 "/hechos",
                                 "/api/estadisticas/**",
                                 "/api/export/**",
-                                "/api/busqueda/**"
-                        ).hasAnyRole("ADMIN")
-
+                                "/api/busqueda/**",
+                                "/colecciones/{coleccionId}/hechos/filtrados",
+                                "/colecciones/{id}/hechos/navegacion",
+                                "/texto-libre"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                        "/colecciones").hasAnyRole("ADMIN")
 
                         // Contribuyente: crear/editar hechos propios, crear solicitudes
+                        .requestMatchers(HttpMethod.POST,
+                                "/crear",
+                                "/fuente-dinamica/hechos/{hechoId}"
+                                )
+                                .hasAnyRole("CONTRIBUYENTE")
                         .requestMatchers(HttpMethod.POST,
                                 "/hechos/**",
                                 "/solicitudes/**"
@@ -68,6 +79,27 @@ public class SecurityConfig {
                                 "/servicio-agregador/**",
                                 "/normalizador/**"
                         ).hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT,
+                                "/colecciones/{id}/algoritmo"
+
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/colecciones/{coleccionId}/hechos/{hechoId}/quitar-fuente",
+                                "/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente",
+                                "/solicitudes/{id}"
+
+                        ).hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.POST,
+                                        "/fuente-estatica/importar-csv"
+
+
+                                ).hasRole("ADMIN")
+
+
+
 
                         // cualquier otra cosa: autenticado
                         .anyRequest().authenticated()
