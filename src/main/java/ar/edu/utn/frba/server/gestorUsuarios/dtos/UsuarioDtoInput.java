@@ -1,18 +1,24 @@
 package ar.edu.utn.frba.server.gestorUsuarios.dtos;
 
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Rol;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
+@Setter
+@Getter
 public class UsuarioDtoInput {
+    private String nombre;
+    private String email;
+    @NotBlank(message = "El username es obligatorio")
     private String username;
+    @NotBlank(message = "El password es obligatorio")
     private String password;
-    private String rol;               // ADMIN | CONTRIBUYENTE | VISUALIZADOR
+    @NotBlank(message = "El rol es obligatorio")
+    @Pattern(regexp = "ADMIN|CONTRIBUYENTE|VISUALIZADOR",
+            flags = Pattern.Flag.CASE_INSENSITIVE,
+            message = "El rol debe ser ADMIN, CONTRIBUYENTE o VISUALIZADOR")
+    private String rol;
 
-
-    // getters/setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getRol() { return rol; }
-    public void setRol(String rol) { this.rol = rol; }
 }
