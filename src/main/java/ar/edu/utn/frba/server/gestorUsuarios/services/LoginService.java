@@ -5,11 +5,8 @@ import ar.edu.utn.frba.server.config.NotFoundException;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
 import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
 import ar.edu.utn.frba.server.utils.JwtUtil;
-// Si lo pusiste en ar.edu.utn.frba.server.utils.JwtUtil, usa ese import en su lugar.
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -17,7 +14,7 @@ public class LoginService {
 
     private final UsuariosRepository usuariosRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;  // ← inyectamos JwtUtil
+    private final JwtUtil jwtUtil;  // inyectamos JwtUtil
 
     public LoginService(UsuariosRepository usuariosRepository, JwtUtil jwtUtil) {
         this.usuariosRepository = usuariosRepository;
@@ -39,11 +36,11 @@ public class LoginService {
     }
 
     public String generarAccessToken(String username) {
-        return jwtUtil.generarAccessToken(username);   // ← instancia, no estático
+        return jwtUtil.generarAccessToken(username);   // instancia, no estático
     }
 
     public String generarRefreshToken(String username) {
-        return jwtUtil.generarRefreshToken(username);  // ← instancia, no estático
+        return jwtUtil.generarRefreshToken(username);  // instancia, no estático
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {

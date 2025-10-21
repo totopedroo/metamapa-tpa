@@ -1,12 +1,10 @@
 package ar.edu.utn.frba.server.gestorUsuarios.domain;
 
-import ar.edu.utn.frba.server.gestorUsuarios.domain.Rol;      // <-- ajustá estos imports al paquete real de tus enums
-import ar.edu.utn.frba.server.gestorUsuarios.domain.Permiso;  // <-- si tus enums están en otro package, cambiá las rutas
-
+import ar.edu.utn.frba.server.gestorUsuarios.domain.Rol;
+import ar.edu.utn.frba.server.gestorUsuarios.domain.Permiso;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 
 @Entity
@@ -164,7 +162,7 @@ public class Usuario {
         }
     };
 
-    // flags opcionales para seguridad; si no los usás, podés quitarlos o dejarlos con default
+    // flags opcionales para seguridad
     @Column(name = "habilitado", nullable = false)
     @Builder.Default
     private boolean habilitado = true;
