@@ -18,7 +18,6 @@ public class HechosOutputDto {
     private Double longitud;
     private LocalDate fechaAcontecimiento;
     private LocalDate fechaCarga;
-    private List<Etiqueta> etiquetas;
     private List<SolicitudEliminacionDto> solicitudes;
     private ContribuyenteDto contribuyente;
     private boolean eliminado;

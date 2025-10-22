@@ -29,7 +29,8 @@ import static ar.edu.utn.frba.server.contratos.enums.TipoFuente.ESTATICA;
 public class ColeccionService implements IColeccionService {
     private final IColeccionRepository coleccionRepository;
     private final IHechosRepository hechosRepository;
-    @Autowired
+
+    @Qualifier("Importadorcsvagregador")
     private ImportadorCSV importadorCSV;
     private final ModoNavegacionStrategy irrestricta; // Estrategia de navegación (inyectadas por nombre de bean)
     private final ModoNavegacionStrategy curada; // Estrategia de navegación (inyectadas por nombre de bean)

@@ -1,4 +1,5 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
+import ar.edu.utn.frba.server.fuente.estatica.services.FuenteEstaticaService;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @RequestMapping
 @CrossOrigin("http://localhost:8080")
 public class ColeccionController {
-
+    private final ImportadorCSV importadorCSV;
     private final SecureRandom secureRandom = new SecureRandom();
     @Autowired
     private IColeccionService coleccionService;
@@ -31,8 +32,13 @@ public class ColeccionController {
     private HechosService hechosService;
     @Autowired
     private SolicitudService solicitudService;
+    @Autowired
+    private FuenteEstaticaService fuenteEstaticaService;
+    @Autowired
+    private ExportacionCSVService exportacionCSVService;
 
-    public ColeccionController(IColeccionService coleccionService) {
+    public ColeccionController(ImportadorCSV importadorCSV, IColeccionService coleccionService) {
+        this.importadorCSV = importadorCSV;
         this.coleccionService = coleccionService;
     }
 
@@ -44,6 +50,18 @@ public class ColeccionController {
         return ResponseEntity.ok(out);
     }
 
+
+    @PostMapping("/importar-csv-ruta")
+    public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {
+        try {
+
+            List<Hecho> hechosImportados = exportacionCSVService.importarDesdeRuta(rutaArchivo);
+            return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + rutaArchivo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al importar desde ruta: " + e.getMessage());
+        }
+    }
     @GetMapping("/colecciones/{id}/hechos")
     public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable Long id) {
         return coleccionService.obtenerHechosPorColeccion(id).stream()

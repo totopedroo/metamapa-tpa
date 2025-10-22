@@ -25,8 +25,7 @@ import java.util.Optional;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table
+@Entity(name = "hecho_sa")@Table
 @Builder
 public class Hecho {
     @Id

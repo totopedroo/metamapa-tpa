@@ -2,6 +2,7 @@ package ar.edu.utn.frba.server.fuente.estatica.controllers;
 
 import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.estatica.services.IFuenteEstaticaService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,39 +22,16 @@ public class FuenteEstaticaController {
     private IFuenteEstaticaService fuenteEstaticaService;
 
     @GetMapping("/hechos")
+    @Transactional
     public ResponseEntity<List<Hecho>> obtenerHechos() {
-        try {
-            List<Hecho> hechos = fuenteEstaticaService.sincronizar();
-            return ResponseEntity.ok(hechos);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<Hecho> hechos = fuenteEstaticaService.obtenerTodos();
+        return ResponseEntity.ok(hechos);
+
     }
-
-    @PostMapping("/importar-csv")
-    public ResponseEntity<String> importarDesdeCSV(@RequestParam("archivo") MultipartFile archivo) {
-        try {
-            if (archivo.isEmpty()) {
-                return ResponseEntity.badRequest().body("El archivo está vacío");
-            }
-
-            if (!archivo.getOriginalFilename().endsWith(".csv")) {
-                return ResponseEntity.badRequest().body("El archivo debe ser de tipo CSV");
-            }
-
-            List<Hecho> hechosImportados = fuenteEstaticaService.importarDesdeArchivo(archivo);
-            return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos exitosamente");
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al importar archivo: " + e.getMessage());
-        }
-    }
-
     @PostMapping("/importar-csv-ruta")
     public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {
         try {
-            List<Hecho> hechosImportados = fuenteEstaticaService.importarDesdeRuta(rutaArchivo);
+            List<Hecho> hechosImportados = fuenteEstaticaService.importarHechos(rutaArchivo);
             return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + rutaArchivo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

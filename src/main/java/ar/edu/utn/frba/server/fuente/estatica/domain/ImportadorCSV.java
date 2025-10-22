@@ -1,16 +1,18 @@
 package ar.edu.utn.frba.server.fuente.estatica.domain;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
  *  - Búsqueda del archivo: primero classpath (resources), luego filesystem absoluto/relativo.
  */
 
-@Service
+@Component("importadorCSVFuenteEstatica")
 public class ImportadorCSV {
   private static final Logger log = LoggerFactory.getLogger(ImportadorCSV.class);
   private static final char DEFAULT_SEPARATOR = ';';
@@ -47,40 +49,75 @@ public class ImportadorCSV {
    * Importa hechos desde un archivo CSV ubicado en classpath o filesystem.
    */
 
-  public List<Hecho> importar(String pathOrResource) {
-    if (pathOrResource == null) { log.warn("[CSV] Path nulo"); return List.of(); }
-
-    String path = pathOrResource.trim().replaceAll("^\"|\"$", "");
-    if (path.startsWith("classpath:")) path = path.substring("classpath:".length());
-
-    // 1) classpath
+  public List<Hecho> importar(String ruta) {
+    List<Hecho> res = new ArrayList<>();
     try {
-      Resource res = new ClassPathResource(path);
-      if (res.exists()) {
-        log.info("[CSV] Leyendo desde classpath: {}", path);
-        return leer(res.getInputStream());
+      List<String> lineas = Files.readAllLines(Path.of(ruta));
+      // si hay header:
+      if (!lineas.isEmpty() && lineas.get(0).toLowerCase().contains("titulo")) {
+        lineas = lineas.subList(1, lineas.size());
       }
-    } catch (IOException e) {
-      log.debug("[CSV] Error leyendo desde classpath {}: {}", path, e.toString());
-    }
 
-    // 2) filesystem
-    File f = new File(path);
-    if (!f.exists()) f = new File("./" + path);
-    if (f.exists() && f.isFile()) {
-      log.info("[CSV] Leyendo desde filesystem: {}", f.getAbsolutePath());
-      for (Charset cs : CHARSETS_TRY) {
-        try (InputStream in = new FileInputStream(f)) {
-          return leer(in, cs);
-        } catch (IOException ex) {
-          log.debug("[CSV] Error con charset {}: {}", cs, ex.toString());
+      for (String l : lineas) {
+        // ajustá el split a tu CSV real
+        String[] c = l.split(";", -1);
+
+        String titulo = safe(c, 0);
+        String descripcion = safe(c, 1);
+        String categoria = safe(c, 2);
+        String url = safe(c, 3);
+        Double latitud = parseDouble(safe(c, 4));
+        Double longitud = parseDouble(safe(c, 5));
+        String provincia = safe(c, 6);
+        LocalDate fechaAcontecimiento = parseDate(safe(c, 7));
+        LocalTime horaAcontecimiento = parseTime(safe(c, 8));
+        LocalDate fechaCarga = parseDate(safe(c, 9));
+
+        ContenidoMultimedia cm = null;
+        if (url != null && !url.isBlank()) {
+          cm = new ContenidoMultimedia();
+          // NO seteamos id acá
+          cm.setUrl(url.trim());
         }
+
+        Hecho h = Hecho.builder()
+                .titulo(titulo)
+                .descripcion(descripcion)
+                .categoria(categoria)
+                .contenidoMultimedia(cm) // sin id
+                .latitud(latitud)
+                .longitud(longitud)
+                .provincia(provincia)
+                .fechaAcontecimiento(fechaAcontecimiento)
+                .horaAcontecimiento(horaAcontecimiento)
+                .fechaCarga(fechaCarga)
+                .build();
+
+        // NO seteamos idHecho
+        res.add(h);
       }
-    } else {
-      log.warn("[CSV] No se encontró el archivo en classpath ni filesystem: {}", path);
+    } catch (Exception e) {
+      throw new RuntimeException("Error leyendo CSV: " + e.getMessage(), e);
     }
-    return List.of();
+    return res;
   }
+
+  private static String safe(String[] a, int i) {
+    return i < a.length ? a[i].trim() : null;
+  }
+  private static Double parseDouble(String s) {
+    try { return (s == null || s.isBlank()) ? null : Double.valueOf(s.replace(",", ".")); }
+    catch (Exception e) { return null; }
+  }
+  private static LocalDate parseDate(String s) {
+    try { return (s == null || s.isBlank()) ? null : LocalDate.parse(s); }
+    catch (Exception e) { return null; }
+  }
+  private static LocalTime parseTime(String s) {
+    try { return (s == null || s.isBlank()) ? null : LocalTime.parse(s); }
+    catch (Exception e) { return null; }
+  }
+
 
   /** --- Implementación --- */
 
@@ -180,17 +217,8 @@ public class ImportadorCSV {
     return (s == null || s.isBlank()) ? null : s.trim();
   }
 
-  private Double parseDouble(String s) {
-    if (s == null || s.isBlank()) return null;
-    // tolerar coma decimal
-    String n = s.replace(',', '.');
-    try {
-      return Double.parseDouble(n);
-    } catch (NumberFormatException e) {
-      log.warn("[CSV] no se pudo parsear número '{}': {}", s, e.getMessage());
-      return null;
-    }
-  }
+
+
 
   private LocalDate parseFecha(String s) {
     if (s == null || s.isBlank()) return null;
@@ -271,7 +299,7 @@ public class ImportadorCSV {
       fechaAcontecimiento = java.time.LocalDate.parse(values[6].trim(), java.time.format.DateTimeFormatter.ofPattern("d/M/yyyy"));
     }
 
-    List<ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta> etiquetas = new ArrayList<>();
+    List<Etiqueta> etiquetas = new ArrayList<>();
     if (values.length > 7 && !values[7].trim().isEmpty() && !"null".equalsIgnoreCase(values[7].trim())) {
       for (String e : values[7].trim().split(",")) etiquetas.add(new Etiqueta(e.trim()));
     }
@@ -291,7 +319,7 @@ public class ImportadorCSV {
     h.setFechaAcontecimiento(fechaAcontecimiento);
     h.setFechaCarga(java.time.LocalDate.now());
     h.setIdHecho(idHecho);
-    h.setEtiquetas(etiquetas);
+
 
     return h;
 

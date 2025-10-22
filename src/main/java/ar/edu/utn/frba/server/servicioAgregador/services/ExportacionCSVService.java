@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.servicioAgregador.domain.ImportadorCSV;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -18,10 +20,20 @@ public class ExportacionCSVService {
 
     @Autowired
     private IHechosRepository hechoRepository;
-
+    private ImportadorCSV importador;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+
+    public ExportacionCSVService(@Qualifier("importadorCSVAgregador") ImportadorCSV importador) {
+        this.importador = importador;
+    }
+
+    public List<Hecho> importarDesdeRuta(String rutaArchivo) {
+        List<Hecho> nuevosHechos = importador.importar(rutaArchivo);
+        nuevosHechos.forEach(hechoRepository::save);
+        return nuevosHechos;
+    }
     /**
      * Exporta todos los hechos a CSV
      */

@@ -35,7 +35,16 @@ public class SecurityConfig {
 
                 // Rutas públicas (landing, login, vistas de lectura)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
+                                .requestMatchers(HttpMethod.GET,
+                                        "/**"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.POST,
+                                        "/**"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.PATCH,
+                                        "/**"
+                                ).permitAll()
+                    /*+    .requestMatchers(
                                 "/", "/index", "/landing", "/legal/**", "/privacy/**"
                         ).permitAll()
                         .requestMatchers(
@@ -70,7 +79,7 @@ public class SecurityConfig {
                         ).hasRole("ADMIN")
 
                         // cualquier otra cosa: autenticado
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()*/
                 )
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

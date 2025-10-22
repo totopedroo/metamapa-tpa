@@ -54,7 +54,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
         if (out.getLatitud() != null) h.setLatitud(out.getLatitud());
         if (out.getLongitud() != null) h.setLongitud(out.getLongitud());
         if (out.getFechaAcontecimiento() != null) h.setFechaAcontecimiento(out.getFechaAcontecimiento());
-        if (out.getEtiquetas() != null) h.setEtiquetas(new ArrayList<>(out.getEtiquetas()));
+
         if (out.getContenidoMultimedia() != null)
             h.setContenidoMultimedia(apiMapper.toContenidoMultimedia(out.getContenidoMultimedia()));
         if (out.getContribuyente() != null)

@@ -24,7 +24,7 @@ public class AgregadorMapper {
 
     public Hecho toDomain(HechoDto d) {
         List<ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta> etiquetas_cast= new ArrayList<>();
-        etiquetas_cast=d.etiquetas().stream().map(e -> castear(e)).collect(Collectors.toList());
+
         Hecho h = Hecho.builder()
                 .idHecho(d.id() != null ? d.id() : (RNG.nextLong() >>> 1)) // id positivo
                 .titulo(d.titulo())
@@ -33,7 +33,7 @@ public class AgregadorMapper {
                 .latitud(d.latitud())
                 .longitud(d.longitud())
                 .fechaAcontecimiento(d.fecha() != null ? d.fecha() : LocalDate.now())
-                .etiquetas(d.etiquetas() == null ? List.of() : etiquetas_cast)
+
                 .build();
 
         // origen por nombre de fuente

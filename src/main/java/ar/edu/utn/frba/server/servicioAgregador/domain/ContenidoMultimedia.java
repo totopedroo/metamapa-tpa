@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "contsa")
 @Table(name="contenido_multimedia")
 public class ContenidoMultimedia {
     @Id

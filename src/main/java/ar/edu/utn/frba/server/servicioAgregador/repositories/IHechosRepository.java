@@ -13,20 +13,20 @@ import java.util.List;
 public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consultas para estadísticas
-    @Query("SELECT h.provincia, COUNT(h) FROM Hecho h WHERE h.eliminado = false GROUP BY h.provincia ORDER BY COUNT(h) DESC")
+    @Query("SELECT h.provincia, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false GROUP BY h.provincia ORDER BY COUNT(h) DESC")
     List<Object[]> contarHechosPorProvincia();
 
-    @Query("SELECT h.categoria, COUNT(h) FROM Hecho h WHERE h.eliminado = false GROUP BY h.categoria ORDER BY COUNT(h) DESC")
+    @Query("SELECT h.categoria, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false GROUP BY h.categoria ORDER BY COUNT(h) DESC")
     List<Object[]> contarHechosPorCategoria();
 
-    @Query("SELECT h.provincia, COUNT(h) FROM Hecho h WHERE h.eliminado = false AND h.categoria = :categoria GROUP BY h.provincia ORDER BY COUNT(h) DESC")
+    @Query("SELECT h.provincia, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.categoria = :categoria GROUP BY h.provincia ORDER BY COUNT(h) DESC")
     List<Object[]> contarHechosPorProvinciaYCategoria(@Param("categoria") String categoria);
 
-    @Query("SELECT h.horaAcontecimiento, COUNT(h) FROM Hecho h WHERE h.eliminado = false AND h.categoria = :categoria AND h.horaAcontecimiento IS NOT NULL GROUP BY h.horaAcontecimiento ORDER BY COUNT(h) DESC")
+    @Query("SELECT h.horaAcontecimiento, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.categoria = :categoria AND h.horaAcontecimiento IS NOT NULL GROUP BY h.horaAcontecimiento ORDER BY COUNT(h) DESC")
     List<Object[]> contarHechosPorHoraYCategoria(@Param("categoria") String categoria);
 
     // Consultas para búsqueda
-    @Query("SELECT h FROM Hecho h WHERE h.eliminado = false AND " +
+    @Query("SELECT h FROM hecho_sa h WHERE h.eliminado = false AND " +
             "(:titulo IS NULL OR LOWER(h.titulo) LIKE LOWER(CONCAT('%', :titulo, '%'))) AND " +
             "(:categoria IS NULL OR LOWER(h.categoria) LIKE LOWER(CONCAT('%', :categoria, '%'))) AND " +
             "(:provincia IS NULL OR LOWER(h.provincia) LIKE LOWER(CONCAT('%', :provincia, '%')))")
@@ -35,7 +35,7 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
                              @Param("provincia") String provincia);
 
     // Consulta para hechos por colección
-    @Query("SELECT h FROM Hecho h JOIN h.colecciones c WHERE c.id = :coleccionId AND h.eliminado = false")
+    @Query("SELECT h FROM hecho_sa h JOIN h.colecciones c WHERE c.id = :coleccionId AND h.eliminado = false")
     List<Hecho> findByColeccionId(@Param("coleccionId") Long coleccionId);
 
     // Consulta para hechos no eliminados

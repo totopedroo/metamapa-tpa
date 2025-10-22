@@ -5,7 +5,6 @@ import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Component
 public class DinamicaMapper {
@@ -19,8 +18,7 @@ public class DinamicaMapper {
                 h.getCategoria(),
                 h.getLatitud(),
                 h.getLongitud(),
-                h.getFechaAcontecimiento() != null ? h.getFechaAcontecimiento() : LocalDate.now(),
-                h.getEtiquetas() != null ? h.getEtiquetas() : List.of()
+                h.getFechaAcontecimiento() != null ? h.getFechaAcontecimiento() : LocalDate.now()
         );
     }
 }

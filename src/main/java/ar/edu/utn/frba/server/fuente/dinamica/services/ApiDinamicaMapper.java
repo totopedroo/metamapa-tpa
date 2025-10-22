@@ -47,7 +47,7 @@ public class ApiDinamicaMapper {
                 .longitud(h.getLongitud())
                 .fechaAcontecimiento(h.getFechaAcontecimiento())
                 .fechaCarga(h.getFechaCarga())
-                .etiquetas(h.getEtiquetas() == null ? List.of() : List.copyOf(h.getEtiquetas()))
+
                 .solicitudes(toDtoLista(h.getSolicitudes()))
                 .contribuyente(toDto(h.getContribuyente()))
                 .eliminado(h.isEliminado())

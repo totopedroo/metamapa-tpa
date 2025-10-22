@@ -61,8 +61,7 @@ public class ProxyMapper {
                 d.getCategoria(),
                 d.getLatitud(),
                 d.getLongitud(),
-                fecha,
-                List.of()
+                fecha
         );
     }
 
@@ -81,8 +80,7 @@ public class ProxyMapper {
                 m.getCategoria(),
                 m.getLatitud(),
                 m.getLongitud(),
-                fecha,
-                tags
+                fecha
         );
     }
 
