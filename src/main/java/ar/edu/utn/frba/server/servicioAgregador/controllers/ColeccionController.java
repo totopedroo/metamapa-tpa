@@ -5,13 +5,15 @@ import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.IrrestrictaStrategy;
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.navegacion.IrrestrictaStrategy;
+import ar.edu.utn.frba.server.servicioEstadisticas.services.ExportacionCSVService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
@@ -50,18 +52,6 @@ public class ColeccionController {
         return ResponseEntity.ok(out);
     }
 
-
-    @PostMapping("/importar-csv-ruta")
-    public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {
-        try {
-
-            List<Hecho> hechosImportados = exportacionCSVService.importarDesdeRuta(rutaArchivo);
-            return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + rutaArchivo);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al importar desde ruta: " + e.getMessage());
-        }
-    }
     @GetMapping("/colecciones/{id}/hechos")
     public List<HechosOutputDto> obtenerHechosDeColeccion(@PathVariable Long id) {
         return coleccionService.obtenerHechosPorColeccion(id).stream()
@@ -88,62 +78,35 @@ public class ColeccionController {
     }
 
     @GetMapping("/colecciones/{coleccionId}/hechos/filtrados")
-    public ResponseEntity<?> filtrarHechosPorColeccion(
+    public ResponseEntity<List<HechosOutputDto>> filtrarHechosDeColeccion(
             @PathVariable Long coleccionId,
             @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String categoria) {
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud
+    ) {
         try {
-            List<Hecho> hechos = coleccionService.filtrarHechosPorColeccion(coleccionId, titulo, categoria);
+            var hechos = coleccionService.filtrarHechosPorColeccion(
+                    coleccionId, titulo, categoria,
+                    fechaReporteDesde, fechaReporteHasta,
+                    fechaAcontecimientoDesde, fechaAcontecimientoHasta,
+                    latitud, longitud
+            );
 
-            // Evita problemas de Optional/serialización devolviendo DTOs
             var dtos = hechos.stream()
-                    .map(ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto::fromModel)
+                    .map(HechosOutputDto::fromModel)
                     .toList();
 
             return ResponseEntity.ok(dtos);
-
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
-    }
-
-    @GetMapping("/debug/csv")
-    public ResponseEntity<?> debugCsv(@RequestParam String archivo) {
-        try {
-            boolean fs = false;
-            boolean res = false;
-            String valor = archivo;
-
-            if (archivo != null && archivo.startsWith("classpath:")) {
-                String cp = archivo.substring("classpath:".length()); // "archivodefinitivo.csv"
-                res = new org.springframework.core.io.ClassPathResource(cp).exists();
-            } else if (archivo != null && !archivo.isBlank()) {
-                java.nio.file.Path p = java.nio.file.Path.of(archivo);
-                fs = java.nio.file.Files.exists(p);
-            }
-
-            return ResponseEntity.ok(
-                    "CSV encontrado? filesystem=" + fs + " | resources=" + res + " | valor='" + valor + "'"
-            );
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("debug error: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/colecciones/desdeFuentes")
-    public ResponseEntity<ColeccionOutputDto> crearDesdeFuentes(
-            @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String criterio) {
-        var c = coleccionService.crearColeccionDesdeFuentes(titulo, criterio);
-        return ResponseEntity.ok(ColeccionOutputDto.fromModel(c));
-    }
-
-    @PostMapping("/crearDesdeCSV")
-    public ResponseEntity<ColeccionOutputDto> crearDesdeCSV(@RequestParam String path) {
-        var c = coleccionService.crearColeccionDesdeFuentes("COLECCION CSV", path);
-        return ResponseEntity.ok(ColeccionOutputDto.fromModel(c));
     }
 
     @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
@@ -158,54 +121,6 @@ public class ColeccionController {
         }
     }
 
-    @PostMapping("/solicitudes/{id}/aprobar")
-    public ResponseEntity<Void> aprobarSolicitud(@PathVariable Long id) {
-        try {
-            solicitudService.aceptarSolicitud(id);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PostMapping("/solicitudes/{id}/denegar")
-    public ResponseEntity<Void> denegarSolicitud(@PathVariable Long id) {
-        try {
-            solicitudService.rechazarSolicitud(id);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PutMapping("/colecciones/{id}/algoritmo")
-    public ResponseEntity<Void> setearAlgoritmoPorNombre(
-            @PathVariable Long id,
-            @RequestParam String tipo) {
-        try {
-            var t = ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso.fromCodigo(tipo);
-
-            ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy algoritmo = switch (t) {
-                case MAYORIA_SIMPLE       -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.MayoriaSimpleStrategy();
-                case MULTIPLES_MENCIONES  -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.MultiplesMencionesStrategy();
-                case ABSOLUTA             -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AbsolutaStrategy();
-                case DEFECTO              -> new ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoPorDefectoStrategy();
-            };
-
-            coleccionService.setAlgoritmoDeConsenso(id, algoritmo);
-            return ResponseEntity.ok().build();
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/consensuar")
     public ResponseEntity<HechosOutputDto> consensuarHecho(
             @PathVariable Long coleccionId,
@@ -217,45 +132,6 @@ public class ColeccionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/agregar-fuente")
-    public ResponseEntity<?> agregarFuenteAHecho(
-            @PathVariable Long coleccionId,
-            @PathVariable Long hechoId,
-            @RequestParam Fuente tipoFuente) {
-        try {
-            Hecho actualizado = coleccionService.agregarFuenteAHecho(coleccionId, hechoId, tipoFuente);
-
-            // devolver DTO para evitar problemas de serialización (Optional, etc.)
-            var dto = ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto.fromModel(actualizado);
-            return ResponseEntity.ok(dto);
-
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
-    }
-
-    @PatchMapping("/colecciones/{coleccionId}/hechos/{hechoId}/quitar-fuente")
-    public ResponseEntity<?> quitarFuenteDeHecho(
-            @PathVariable Long coleccionId,
-            @PathVariable Long hechoId) {
-        try {
-            Hecho actualizado = coleccionService.quitarFuenteDeHecho(coleccionId, hechoId);
-
-            // Devolver DTO para no chocar con Optional/JSON
-            var dto = ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto.fromModel(actualizado);
-            return ResponseEntity.ok(dto);
-
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 }

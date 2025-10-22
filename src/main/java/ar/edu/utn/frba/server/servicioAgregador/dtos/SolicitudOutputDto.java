@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

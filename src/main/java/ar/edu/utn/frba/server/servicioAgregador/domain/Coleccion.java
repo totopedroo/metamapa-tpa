@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
-import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.navegacion.ModoNavegacionStrategy;
 import ar.edu.utn.frba.server.domain.Visualizador;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,6 +40,8 @@ public class Coleccion {
     private List<Hecho> hechosConsensuados = new ArrayList<>();
     @Transient
     private ModoNavegacionStrategy modoNavegacion;
+    @Column(name = "eliminada", nullable = false)
+    private boolean eliminada = false;
 
 
     public Coleccion( String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
@@ -84,6 +86,11 @@ public class Coleccion {
         criterioDePertenencia.add(criterio);
     }
 
+    public void marcarComoEliminada() {
+        this.eliminada = true;
+    }
 
-
+    public boolean estaEliminada() {
+        return eliminada;
+    }
 }

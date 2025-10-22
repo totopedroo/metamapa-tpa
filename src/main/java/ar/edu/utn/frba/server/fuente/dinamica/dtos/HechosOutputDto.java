@@ -1,11 +1,9 @@
 package ar.edu.utn.frba.server.fuente.dinamica.dtos;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Data @Builder @AllArgsConstructor @NoArgsConstructor
 public class HechosOutputDto {

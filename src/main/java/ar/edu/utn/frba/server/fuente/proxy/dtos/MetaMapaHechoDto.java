@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.server.fuente.proxy.dtos;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

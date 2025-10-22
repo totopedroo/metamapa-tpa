@@ -1,20 +1,22 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
-
-import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
-import ar.edu.utn.frba.server.servicioAgregador.domain.CriterioDePertenencia;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.server.common.enums.TipoAlgoritmoConsenso;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ColeccionInputDto {
-    //public String id;
+
+    private String titulo;
+    private String descripcion;
+
     private List<Long> idsHechos;
-    public String titulo;
-    public String descripcion;
-    public  List<CriterioDePertenenciaDto> criterioDePertenencia;
+    private List<CriterioDePertenenciaDto> criterioDePertenencia;
     private TipoAlgoritmoConsenso algoritmo;
+    private boolean eliminada = false;
 }

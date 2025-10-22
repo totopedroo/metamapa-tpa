@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
-import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.common.enums.EstadoConsenso;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.dtos;
 
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.common.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoResult;
-import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.consenso.ConsensoResult;
+import ar.edu.utn.frba.server.common.enums.TipoAlgoritmoConsenso;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 

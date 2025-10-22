@@ -1,5 +1,5 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.common.enums.TipoFuente;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

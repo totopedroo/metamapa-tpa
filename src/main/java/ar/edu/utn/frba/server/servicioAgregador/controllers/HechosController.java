@@ -6,6 +6,7 @@ import ar.edu.utn.frba.server.servicioAgregador.services.IHechosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ public class HechosController {
     @Autowired
     private IHechosService hechosService;
 
-    @PostMapping(path = "/crear", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/hechos", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HechosOutputDto crearHecho(@RequestBody HechosInputDto inputDto) {
         return hechosService.crearHecho(inputDto);
     }
@@ -36,10 +37,18 @@ public class HechosController {
         return hechosService.filtrarHechos(categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta, latitud, longitud);
     }
-/*
-    @GetMapping("/inicializar")
-    public Boolean inicializar() {
-        this.seederService.inicializar();
-        return true;
-    }*/
+
+    @GetMapping("/hechos/{id}")
+    public HechosOutputDto obtenerHecho(@PathVariable Long id) {
+        return hechosService.obtenerHecho(id);
+    }
+
+    @PatchMapping("/hechos/{id}")
+    public ResponseEntity<HechosOutputDto> editarHecho(
+            @PathVariable Long id,
+            @RequestBody HechosInputDto dto) {
+
+        HechosOutputDto edited = hechosService.editarHecho(id, dto);
+        return ResponseEntity.ok(edited);
+    }
 }

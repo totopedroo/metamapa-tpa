@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.config;
 
 
-import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter;
+import ar.edu.utn.frba.server.servicioUsuarios.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.services;
 
-import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
-import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
+import ar.edu.utn.frba.server.common.dtos.HechoDto;
+import ar.edu.utn.frba.server.fuente.domain.FuentePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

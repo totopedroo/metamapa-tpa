@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
 
 
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

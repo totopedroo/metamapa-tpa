@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.repositories;
 
+import ar.edu.utn.frba.server.common.enums.EstadoRevisionHecho;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -46,4 +47,12 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consulta para hechos por categoría
     List<Hecho> findByCategoriaAndEliminadoFalse(String categoria);
+
+    @Query("SELECT COUNT(h) FROM hecho_sa h WHERE h.eliminado = false")
+    long countActivos();
+
+    List<Hecho> findByEstadoRevision(EstadoRevisionHecho estadoRevision);
+
+    @Query("SELECT COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.estadoRevision = 'PENDIENTE'")
+    long countPendientes();
 }

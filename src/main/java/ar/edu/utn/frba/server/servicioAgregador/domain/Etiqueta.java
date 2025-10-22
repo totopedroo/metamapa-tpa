@@ -11,14 +11,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Etiqueta")
-public class Etiqueta
-{
+@Table(name = "Etiqueta")
+public class Etiqueta {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @Column
-    public String etiqueta;
+    private String etiqueta;
 
     public Etiqueta(String etiqueta) {
         this.etiqueta = etiqueta;

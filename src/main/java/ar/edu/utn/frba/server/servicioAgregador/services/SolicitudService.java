@@ -1,8 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.common.services.IDetectorDeSpam;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudOutputDto;
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.ISolicitudRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
@@ -21,7 +22,6 @@ public class SolicitudService implements ISolicitudService {
     private ISolicitudRepository solicitudRepository;
 
     @Autowired
-    @Qualifier("detectorSpamAgregador")
     private IDetectorDeSpam detectorDeSpam;
 
     @Override
@@ -97,4 +97,5 @@ public class SolicitudService implements ISolicitudService {
         solicitud.rechazarSolicitud();
         solicitudRepository.save(solicitud);
     }
+
 }

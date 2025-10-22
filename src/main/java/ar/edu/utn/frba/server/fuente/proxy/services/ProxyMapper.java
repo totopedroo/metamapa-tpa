@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.services;
 
-import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
+import ar.edu.utn.frba.server.common.dtos.HechoDto;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.MetaMapaHechoDto;
 import org.springframework.stereotype.Component;

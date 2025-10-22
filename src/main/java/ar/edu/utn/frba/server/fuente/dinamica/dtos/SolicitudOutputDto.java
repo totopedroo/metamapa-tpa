@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.server.fuente.dinamica.dtos;
 
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
 import lombok.*;
 
 @Data @AllArgsConstructor @NoArgsConstructor

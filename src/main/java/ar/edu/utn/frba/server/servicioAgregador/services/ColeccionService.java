@@ -1,29 +1,30 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
-import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
-import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
-import ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper;
+import ar.edu.utn.frba.server.fuente.estatica.mappers.EstaticaMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-//import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.common.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.handlers.ConsultarHechosHandler;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.AgregadorMapper;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.ColeccionMapper;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
-import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoService;
-import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
-import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.consenso.AlgoritmoDeConsensoStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.consenso.ConsensoService;
+import ar.edu.utn.frba.server.common.enums.TipoAlgoritmoConsenso;
+import ar.edu.utn.frba.server.servicioAgregador.algoritmos.navegacion.ModoNavegacionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
-import static ar.edu.utn.frba.server.contratos.enums.TipoFuente.ESTATICA;
+import static ar.edu.utn.frba.server.common.enums.TipoFuente.ESTATICA;
 
 @Service("coleccionService")
 public class ColeccionService implements IColeccionService {
@@ -61,23 +62,65 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public ColeccionOutputDto crearColeccion(ColeccionInputDto dto) {
-        Coleccion c = ColeccionMapper.toDomain(dto);
+    public ColeccionOutputDto crearColeccionManual(ColeccionInputDto dto) {
+        Coleccion coleccion = new Coleccion();
+        coleccion.setTitulo(dto.getTitulo());
+        coleccion.setDescripcion(dto.getDescripcion());
 
         if (dto.getIdsHechos() != null) {
-            for (Long id : dto.getIdsHechos()) {
-                var h = hechosRepository.findById(id).orElse(null);
-                if (h != null) c.setHecho(h);
-            }
+            List<Hecho> hechos = dto.getIdsHechos().stream()
+                    .map(hechosRepository::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            coleccion.setHechos(hechos);
         }
 
-        coleccionRepository.save(c);
-        return coleccionOutputDto(c);
+        coleccionRepository.save(coleccion);
+        return coleccionOutputDto(coleccion);
+    }
+
+    @Override
+    public ColeccionOutputDto editarColeccion(Long id, ColeccionInputDto dto) {
+        Coleccion coleccion = coleccionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada: " + id));
+
+        if (coleccion.estaEliminada()) {
+            throw new IllegalStateException("No se puede editar una colección eliminada.");
+        }
+
+        if (dto.getTitulo() != null && !dto.getTitulo().isBlank())
+            coleccion.setTitulo(dto.getTitulo());
+        if (dto.getDescripcion() != null)
+            coleccion.setDescripcion(dto.getDescripcion());
+
+        if (dto.getIdsHechos() != null) {
+            List<Hecho> nuevosHechos = dto.getIdsHechos().stream()
+                    .map(hechosRepository::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            coleccion.setHechos(nuevosHechos);
+        }
+
+        coleccionRepository.save(coleccion);
+        return coleccionOutputDto(coleccion);
+    }
+
+    @Override
+    public void eliminarColeccion(Long id) {
+        Coleccion coleccion = coleccionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada: " + id));
+
+        coleccion.marcarComoEliminada();
+        coleccionRepository.save(coleccion);
     }
 
     @Override
     public List<Coleccion> findAll() {
-        return coleccionRepository.findAll();
+        return coleccionRepository.findAll().stream()
+                .filter(c -> !c.estaEliminada())
+                .toList();
     }
 
     @Override
@@ -126,6 +169,10 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
+        }
+
+        if (coleccion.estaEliminada()) {
+            throw new IllegalStateException("No se puede modificar una colección eliminada.");
         }
 
         Hecho hecho = hechosRepository.findById(hechoId).orElse(null);
@@ -218,7 +265,7 @@ public class ColeccionService implements IColeccionService {
                     .map(estMapper::toHechoDto)
                     .map(agregadorMapper::toDomain)       // al dominio del agregador
                     .peek(h -> {
-                        if (h.getFuente() == null) h.setFuente(estatica);
+                        if (h.getFuente() == null) h.agregarFuente(estatica);
                     })
                     .toList();
 
@@ -234,7 +281,7 @@ public class ColeccionService implements IColeccionService {
                         // por las dudas: inferir desde algún campo (ej: fuente)
                         if (h.getFuente() == null && h.getContribuyente() == null) {
                             // si tenés algun indicio, ajustalo; si no, dejalo como PROXY por defecto
-                            h.setFuente(proxy);
+                            h.agregarFuente(proxy);
                         }
                     })
                     .toList();
@@ -338,13 +385,13 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente tipoFuente) {
+    public Hecho agregarFuenteAHecho(Long coleccionId, Long hechoId, Fuente fuente) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
-        if (tipoFuente == null) {
-            throw new IllegalArgumentException("tipoFuente es obligatorio.");
+        if (fuente == null) {
+            throw new IllegalArgumentException("Fuente es obligatorio.");
         }
 
         Hecho hecho = coleccion.getHechos().stream()
@@ -352,7 +399,7 @@ public class ColeccionService implements IColeccionService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
-        hecho.setFuente(tipoFuente);
+        hecho.agregarFuente(fuente);
 
         // Persistir cambios de la colección (upsert)
         coleccionRepository.save(coleccion);
@@ -366,25 +413,26 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId) {
+    public Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId, Fuente fuente) {
         Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
         if (coleccion == null) {
             throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
         }
+        if (fuente == null) {
+            throw new IllegalArgumentException("Fuente es obligatorio.");
+        }
 
-        // null-safe: evita NPE si idHecho es null
         Hecho hecho = coleccion.getHechos().stream()
-                .filter(h -> h != null && java.util.Objects.equals(h.getIdHecho(), hechoId))
+                .filter(h -> h != null && Objects.equals(h.getIdHecho(), hechoId)) // null-safe
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + hechoId));
 
-        // Quitar la fuente
-        hecho.setFuente(null);
+        hecho.quitarFuente(fuente);
 
-        // Guardar colección (upsert)
+        // Persistir cambios de la colección (upsert)
         coleccionRepository.save(coleccion);
 
-        // (Opcional) Si además guardás Hecho en su repo:
+        // (Opcional) Si guardás Hecho también en su repo:
         if (hechosRepository != null) {
             hechosRepository.save(hecho);
         }
@@ -393,27 +441,49 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
-        if (coleccion == null) {
-            throw new NoSuchElementException("Colección no encontrada: " + coleccionId);
+    public List<Hecho> filtrarHechosPorColeccion(Long coleccionId,
+                                                 String titulo,
+                                                 String categoria,
+                                                 LocalDate fechaReporteDesde,
+                                                 LocalDate fechaReporteHasta,
+                                                 LocalDate fechaAcontecimientoDesde,
+                                                 LocalDate fechaAcontecimientoHasta,
+                                                 Double latitud,
+                                                 Double longitud) {
+        // Verificar que exista la colección
+        Coleccion coleccion = coleccionRepository.findById(coleccionId)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada: " + coleccionId));
+
+        // Obtener los hechos asociados
+        List<Hecho> hechos = coleccion.getHechos();
+        if (hechos == null || hechos.isEmpty()) {
+            return List.of(); // no hay hechos en la colección
         }
 
+        // Normalizar strings para evitar nulls y mayúsculas/minúsculas
         String tituloNorm = titulo == null ? null : titulo.trim().toLowerCase();
         String catNorm    = categoria == null ? null : categoria.trim().toLowerCase();
 
-        return coleccion.getHechos().stream()
-                .filter(Objects::nonNull)
-                .filter(h -> {
-                    if (tituloNorm == null || tituloNorm.isEmpty()) return true;
-                    String ht = h.getTitulo() == null ? "" : h.getTitulo().toLowerCase();
-                    return ht.contains(tituloNorm);
-                })
-                .filter(h -> {
-                    if (catNorm == null || catNorm.isEmpty()) return true;
-                    String hc = h.getCategoria() == null ? "" : h.getCategoria().toLowerCase();
-                    return hc.equals(catNorm); // si querés “contiene”, cambiá por contains
-                })
+        // Filtrar aplicando todas las condiciones
+        return hechos.stream()
+                .filter(h -> h != null && !h.estaEliminado()) // excluir hechos marcados como eliminados
+                .filter(h -> tituloNorm == null || tituloNorm.isEmpty() ||
+                        (h.getTitulo() != null && h.getTitulo().toLowerCase().contains(tituloNorm)))
+                .filter(h -> catNorm == null || catNorm.isEmpty() ||
+                        (h.getCategoria() != null && h.getCategoria().equalsIgnoreCase(catNorm)))
+                .filter(h -> fechaReporteDesde == null || !safeDate(h.getFechaCarga()).isBefore(fechaReporteDesde))
+                .filter(h -> fechaReporteHasta == null || !safeDate(h.getFechaCarga()).isAfter(fechaReporteHasta))
+                .filter(h -> fechaAcontecimientoDesde == null || !safeDate(h.getFechaAcontecimiento()).isBefore(fechaAcontecimientoDesde))
+                .filter(h -> fechaAcontecimientoHasta == null || !safeDate(h.getFechaAcontecimiento()).isAfter(fechaAcontecimientoHasta))
+                .filter(h -> latitud == null  || Objects.equals(h.getLatitud(),  latitud))
+                .filter(h -> longitud == null || Objects.equals(h.getLongitud(), longitud))
                 .toList();
     }
+
+    // helper
+    private static LocalDate safeDate(LocalDate d) {
+        return d == null ? LocalDate.MIN : d;
+    }
+
+
 }

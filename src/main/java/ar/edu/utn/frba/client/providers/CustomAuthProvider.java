@@ -3,7 +3,7 @@ package ar.edu.utn.frba.client.providers;
 import ar.edu.utn.frba.client.dtos.AuthResponseDTO;
 import ar.edu.utn.frba.client.dtos.RolesPermisosDTO;
 //import ar.edu.utn.frba.client.services.MetaMapaApiService; ToDo implementar.
-import ar.edu.utn.frba.server.gestorUsuarios.services.GestionUsuariosApiService;
+import ar.edu.utn.frba.server.servicioUsuarios.services.GestionUsuariosApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

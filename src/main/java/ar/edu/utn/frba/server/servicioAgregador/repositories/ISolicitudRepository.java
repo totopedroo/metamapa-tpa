@@ -1,10 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.repositories;
 
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.server.servicioAgregador.domain.SolicitudEliminacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +24,7 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudEliminacion
     // Contar solicitudes por estado
     @Query("SELECT s.estado, COUNT(s) FROM SolicitudEliminacion s GROUP BY s.estado")
     List<Object[]> contarSolicitudesPorEstado();
+
+    @Query("SELECT COUNT(s) FROM SolicitudEliminacion s WHERE s.estado = 'PENDIENTE'")
+    long countPendientes();
 }

@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.server.fuente.estatica.services;
 
-import ar.edu.utn.frba.server.fuente.estatica.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
-import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
-import ar.edu.utn.frba.server.fuente.estatica.repositories.IHechosEstaticosRepository;
+import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.domain.ImportadorCSV;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,9 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     private final EntityManager em;
 
     @Autowired
-    private final IHechosEstaticosRepository repositorio;
+    private final IHechosRepository repositorio;
 
-    public FuenteEstaticaService(ImportadorCSV importador, EntityManager em, IHechosEstaticosRepository repositorio) {
+    public FuenteEstaticaService(ImportadorCSV importador, EntityManager em, IHechosRepository repositorio) {
         this.importador = importador;
         this.em = em;
         this.repositorio = repositorio;

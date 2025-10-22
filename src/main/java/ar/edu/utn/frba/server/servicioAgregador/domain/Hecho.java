@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
 
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
-import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
-import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.common.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.common.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.common.enums.EstadoRevisionHecho;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -63,6 +63,9 @@ public class Hecho {
     private boolean eliminado = false;
     @Column(name = "consensuado", nullable = true)
     private Boolean consensuado = false;
+    @Column(name = "estado_revision")
+    @Enumerated(EnumType.STRING)
+    private EstadoRevisionHecho estadoRevision = EstadoRevisionHecho.PENDIENTE;
     @ManyToMany
     @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
     private List<Fuente> fuente = new ArrayList<>();
@@ -136,9 +139,22 @@ public class Hecho {
         return Math.abs(a - b) <= 0.001; // ~111m
     }
 
-    public void setFuente(Fuente fuente) {
-        this.fuente = (List<Fuente>) fuente;
+    public void setFuente(List<Fuente> fuentes) {
+        this.fuente = fuentes != null ? fuentes : new ArrayList<>();
     }
+
+    public void agregarFuente(Fuente fuente) {
+        if (fuente != null) {
+            if (this.fuente == null) this.fuente = new ArrayList<>();
+            this.fuente.add(fuente);
+        }
+    }
+
+    public void quitarFuente(Fuente fuente) {
+        if (fuente == null || this.fuente == null) return;
+        this.fuente.remove(fuente);
+    }
+
 
     // identidad por id
     @Override public boolean equals(Object o) {
@@ -148,4 +164,10 @@ public class Hecho {
     }
 
     @Override public int hashCode() { return Objects.hash(idHecho); }
+
+    public boolean estaPendiente() { return estadoRevision == EstadoRevisionHecho.PENDIENTE; }
+    public void aprobar() { this.estadoRevision = EstadoRevisionHecho.APROBADO; }
+    public void rechazar() { this.estadoRevision = EstadoRevisionHecho.RECHAZADO; }
+    public void aceptarConModificaciones() { this.estadoRevision = EstadoRevisionHecho.MODIFICADO; }
+
 }

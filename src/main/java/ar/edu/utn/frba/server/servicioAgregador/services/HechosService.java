@@ -4,13 +4,13 @@ import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.common.enums.EstadoConsenso;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -83,15 +83,98 @@ public class HechosService implements IHechosService {
         @Override
         public HechosOutputDto obtenerHecho(Long id) {
                 Hecho hecho = hechosRepository.findById(id).orElse(null);
-                if (hecho == null) return null;
+                if (hecho == null || hecho.estaEliminado()) return null;
                 return HechosOutputDto.fromModel(hecho);
         }
 
         @Override
         public void setConsensuado(Hecho hecho, EstadoConsenso estado) {
-                if (hecho == null) return;
+                if (hecho == null || hecho.estaEliminado()) return;
                 hecho.setEstadoConsenso(estado);
                 hechosRepository.save(hecho);
+        }
+
+        @Override
+        public List<Hecho> buscar(String criterio) {
+                List<Hecho> all = hechosRepository.findAll();
+                if (criterio == null || criterio.isBlank()) {
+                        return all.stream()
+                                .filter(h -> !h.estaEliminado())
+                                .toList();
+                }
+
+                String c = criterio.toLowerCase();
+                return all.stream()
+                        .filter(h -> !h.estaEliminado())
+                        .filter(h ->
+                                (h.getTitulo() != null && h.getTitulo().toLowerCase().contains(c)) ||
+                                        (h.getDescripcion() != null && h.getDescripcion().toLowerCase().contains(c)) ||
+                                        (h.getCategoria() != null && h.getCategoria().toLowerCase().contains(c)) ||
+                                        (h.getEtiquetas() != null && h.getEtiquetas().stream()
+                                                .anyMatch(e -> e != null && e.getEtiqueta().toLowerCase().contains(c)))
+                        )
+                        .toList();
+        }
+
+        @Override
+        public HechosOutputDto editarHecho(Long id, HechosInputDto inputDto) {
+                Hecho h = hechosRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Hecho no encontrado: " + id));
+
+                if (h.estaEliminado()) {
+                        throw new IllegalStateException("No se puede editar un hecho eliminado.");
+                }
+
+                if (inputDto.getTitulo() != null) h.setTitulo(inputDto.getTitulo());
+                if (inputDto.getDescripcion() != null) h.setDescripcion(inputDto.getDescripcion());
+                if (inputDto.getCategoria() != null) h.setCategoria(inputDto.getCategoria());
+                if (inputDto.getLatitud() != null) h.setLatitud(inputDto.getLatitud());
+                if (inputDto.getLongitud() != null) h.setLongitud(inputDto.getLongitud());
+                if (inputDto.getFechaAcontecimiento() != null) h.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
+                if (inputDto.getContenidoMultimedia() != null)
+                        h.setContenidoMultimedia(inputDto.getContenidoMultimedia());
+
+                hechosRepository.save(h);
+                return HechosOutputDto.fromModel(h);
+        }
+
+        @Override
+        public HechosOutputDto aprobarHecho(Long id) {
+                Hecho h = hechosRepository.findById(id)
+                        .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + id));
+                h.aprobar();
+                hechosRepository.save(h);
+                return HechosOutputDto.fromModel(h);
+        }
+
+        @Override
+        public HechosOutputDto rechazarHecho(Long id) {
+                Hecho h = hechosRepository.findById(id)
+                        .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + id));
+                h.rechazar();
+                hechosRepository.save(h);
+                return HechosOutputDto.fromModel(h);
+        }
+
+        @Override
+        public HechosOutputDto aceptarConModificaciones(Long id) {
+                Hecho h = hechosRepository.findById(id)
+                        .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + id));
+                h.aceptarConModificaciones();
+                hechosRepository.save(h);
+                return HechosOutputDto.fromModel(h);
+        }
+
+        @Override
+        public List<HechosOutputDto> obtenerHechosPendientesDeRevision() {
+                var pendientes = hechosRepository.findByEstadoRevision(
+                        ar.edu.utn.frba.server.common.enums.EstadoRevisionHecho.PENDIENTE
+                );
+
+                return pendientes.stream()
+                        .filter(h -> !h.estaEliminado()) // no mostrar los eliminados
+                        .map(HechosOutputDto::fromModel)
+                        .toList();
         }
 
         // --- helpers ---

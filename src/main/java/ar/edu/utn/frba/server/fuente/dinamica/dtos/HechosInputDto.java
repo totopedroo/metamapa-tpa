@@ -1,14 +1,11 @@
 package ar.edu.utn.frba.server.fuente.dinamica.dtos;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Contribuyente;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Data @Builder
 public class HechosInputDto {
