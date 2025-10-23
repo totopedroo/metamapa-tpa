@@ -13,7 +13,7 @@ public class ConsensoPorDefectoStrategy implements AlgoritmoDeConsensoStrategy {
 
     @Override
     public ConsensoResult evaluar(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
-        int totalFuentes = (int) todosLosHechos.stream().map(Hecho::getFuente).distinct().count();
+        int totalFuentes = (int) todosLosHechos.stream().map(Hecho::getFuentes).distinct().count();
         return ConsensoResult.builder()
                 .estado(EstadoConsenso.CONSENSUADO)
                 .soportes(0)

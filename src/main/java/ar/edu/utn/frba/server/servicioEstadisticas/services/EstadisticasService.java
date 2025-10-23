@@ -34,7 +34,8 @@ public class EstadisticasService {
 
         Object[] primerResultado = resultados.get(0);
         String provincia = (String) primerResultado[0];
-        Long cantidad = (Long) primerResultado[1];
+        Number cantidadNum = (Number) primerResultado[1];
+        Long cantidad = cantidadNum.longValue();
 
         return Map.of("provincia", provincia, "cantidad", cantidad);
     }
@@ -51,7 +52,9 @@ public class EstadisticasService {
 
         Object[] primerResultado = resultados.get(0);
         String categoria = (String) primerResultado[0];
-        Long cantidad = (Long) primerResultado[1];
+        Number cantidadNum = (Number) primerResultado[1];
+        Long cantidad = cantidadNum.longValue();
+
 
         return Map.of("categoria", categoria, "cantidad", cantidad);
     }
@@ -68,7 +71,8 @@ public class EstadisticasService {
 
         Object[] primerResultado = resultados.get(0);
         String provincia = (String) primerResultado[0];
-        Long cantidad = (Long) primerResultado[1];
+        Number cantidadNum = (Number) primerResultado[1];
+        Long cantidad = cantidadNum.longValue();
 
         return Map.of("provincia", provincia, "categoria", categoria, "cantidad", cantidad);
     }
@@ -86,7 +90,8 @@ public class EstadisticasService {
 
         Object[] primerResultado = resultados.get(0);
         String hora = primerResultado[0].toString();
-        Long cantidad = (Long) primerResultado[1];
+        Number cantidadNum = (Number) primerResultado[1];
+        Long cantidad = cantidadNum.longValue();
 
         return Map.of("hora", hora, "categoria", categoria, "cantidad", cantidad);
     }

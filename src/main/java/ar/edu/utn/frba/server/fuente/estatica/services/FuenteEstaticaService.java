@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -41,40 +43,31 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     public List<Hecho> sincronizar() {
         return List.of();
     }
+
     @Transactional
     public List<Hecho> importarHechos(String path) {
         List<Hecho> nuevosHechos = importador.importar(path);
-        for (Hecho h : nuevosHechos) {
+        System.out.println("Hechos leídos del CSV: " + nuevosHechos.size());
 
-            h.setIdHecho(null);
+        // Cargar los títulos/lat/long existentes una sola vez
+        Set<String> clavesExistentes = repositorio.findAll().stream()
+                .map(h -> (h.getTitulo() + "|" + h.getLatitud() + "|" + h.getLongitud()))
+                .collect(Collectors.toSet());
 
+        // Filtrar en memoria (muchísimo más rápido que existsBy)
+        List<Hecho> nuevos = nuevosHechos.stream()
+                .filter(h -> !clavesExistentes.contains(
+                        h.getTitulo() + "|" + h.getLatitud() + "|" + h.getLongitud()))
+                .toList();
 
-            ContenidoMultimedia cm = h.getContenidoMultimedia();
-            if (cm != null) {
+        System.out.println("Nuevos hechos a insertar: " + nuevos.size());
 
-                try {
-                    var idField = cm.getClass().getDeclaredField("id");
-                    idField.setAccessible(true);
-                    idField.set(cm, null);
-                } catch (Exception ignore) {
+        // Insertar todos en batch
+        List<Hecho> guardados = repositorio.saveAll(nuevos);
 
-                }
-            }
-            repositorio.save(h);
-        }
-        em.flush();
-
-        return nuevosHechos;
+        System.out.println("Importación finalizada. Total insertados: " + guardados.size());
+        return guardados;
     }
-
-
-
-  /*  public List<Hecho> sincronizar() {
-        importarHechos("src/main/resources/prueba1.csv");
-        List<Hecho> hechosASincronizar = repositorio.buscarNoSincronizados();
-        hechosASincronizar.forEach(h -> h.setEstaSincronizado(true));
-        return hechosASincronizar;
-    }*/
 
     @Override
     public List<Hecho> importarDesdeArchivo(MultipartFile archivo) {

@@ -67,10 +67,10 @@ public class Hecho {
     @Enumerated(EnumType.STRING)
     private EstadoRevisionHecho estadoRevision = EstadoRevisionHecho.PENDIENTE;
     @ManyToMany
-    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
-    private List<Fuente> fuente = new ArrayList<>();
+    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "fuente_id"))
+    private List<Fuente> fuentes = new ArrayList<>();
     @ManyToMany(mappedBy = "hechos")
-    private List<Coleccion> colecciones;
+    private List<Coleccion> colecciones = new ArrayList<>();
     // NUEVO: estado del consenso para navegación curada
     @Builder.Default
     private EstadoConsenso estadoConsenso = EstadoConsenso.CONSENSUADO;
@@ -139,21 +139,22 @@ public class Hecho {
         return Math.abs(a - b) <= 0.001; // ~111m
     }
 
-    public void setFuente(List<Fuente> fuentes) {
-        this.fuente = fuentes != null ? fuentes : new ArrayList<>();
+    public void setFuentes(List<Fuente> fuentes) {
+        this.fuentes = (fuentes != null) ? fuentes : new ArrayList<>();
     }
 
     public void agregarFuente(Fuente fuente) {
         if (fuente != null) {
-            if (this.fuente == null) this.fuente = new ArrayList<>();
-            this.fuente.add(fuente);
+            if (this.fuentes == null) this.fuentes = new ArrayList<>();
+            this.fuentes.add(fuente);
         }
     }
 
     public void quitarFuente(Fuente fuente) {
-        if (fuente == null || this.fuente == null) return;
-        this.fuente.remove(fuente);
+        if (fuente == null || this.fuentes == null) return;
+        this.fuentes.remove(fuente);
     }
+
 
 
     // identidad por id

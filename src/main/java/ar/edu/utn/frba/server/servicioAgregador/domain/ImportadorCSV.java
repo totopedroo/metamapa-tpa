@@ -156,11 +156,14 @@ public class ImportadorCSV {
         h.setLongitud(parseDouble(lonStr));
         h.setFechaAcontecimiento(parseFecha(fechaStr));
         h.setFechaCarga(java.time.LocalDate.now());
-
-        // ✅ ID positivo
-        long rnd = new java.security.SecureRandom().nextLong();
-        if (rnd <= 0) rnd = Math.abs(rnd) + 1;
-        h.setIdHecho(rnd);
+        h.setEstadoRevision(ar.edu.utn.frba.server.common.enums.EstadoRevisionHecho.APROBADO);
+        h.setFuentes(List.of(new ar.edu.utn.frba.server.servicioAgregador.domain.Fuente(
+                ar.edu.utn.frba.server.common.enums.TipoFuente.ESTATICA
+        )));
+        String provincia = get(cols, idx, "provincia");
+        h.setProvincia(provincia != null && !provincia.isBlank()
+                ? provincia.trim()
+                : ResolverProvinciaDesdeLatLon(h.getLatitud(), h.getLongitud()));
 
         return h;
     }
@@ -291,8 +294,11 @@ public class ImportadorCSV {
         h.setLongitud(longitud);
         h.setFechaAcontecimiento(fechaAcontecimiento);
         h.setFechaCarga(java.time.LocalDate.now());
-        h.setIdHecho(idHecho);
         h.setEtiquetas(etiquetas);
+        h.setEstadoRevision(ar.edu.utn.frba.server.common.enums.EstadoRevisionHecho.APROBADO);
+        h.setFuentes(List.of(new ar.edu.utn.frba.server.servicioAgregador.domain.Fuente(
+                ar.edu.utn.frba.server.common.enums.TipoFuente.ESTATICA
+        )));
 
         return h;
 
@@ -315,4 +321,11 @@ public class ImportadorCSV {
         }
     }
 
+    private String ResolverProvinciaDesdeLatLon(Double lat, Double lon) {
+        if (lat == null || lon == null) return "Desconocida";
+        if (lat < -30 && lon < -60) return "Buenos Aires";
+        if (lat < -27 && lon >= -60) return "Santa Fe";
+        if (lat < -24) return "Córdoba";
+        return "Desconocida";
+    }
 }

@@ -37,8 +37,8 @@ public class ColeccionOutputDto {
         );
 
         dto.setCriterios(
-                c.getCriterioDePertenencia() == null ? List.of()
-                        : c.getCriterioDePertenencia().stream()
+                c.getCriteriosDePertenencia() == null ? List.of()
+                        : c.getCriteriosDePertenencia().stream()
                         .map(CriterioDePertenenciaDto::fromModel)
                         .toList()
         );

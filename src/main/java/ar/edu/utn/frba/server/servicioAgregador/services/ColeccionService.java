@@ -149,7 +149,7 @@ public class ColeccionService implements IColeccionService {
                         .collect(java.util.stream.Collectors.toList())
         );
 
-        dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
+        dto.setCriterioDePertenencia(coleccion.getCriteriosDePertenencia());
         dto.setAlgoritmoDeConsenso(
                 coleccion.getAlgoritmoDeConsenso() == null ? null
                         : coleccion.getAlgoritmoDeConsenso().getClass().getSimpleName()
@@ -226,7 +226,7 @@ public class ColeccionService implements IColeccionService {
                 .filter(d -> ORIGEN_METAMAPA.equalsIgnoreCase(d.fuente()))
                 .map(agregadorMapper::toDomain)
                 // respetar criterios de pertenencia de la colección
-                .filter(h -> coleccion.getCriterioDePertenencia().stream().allMatch(c -> c.cumple(h)))
+                .filter(h -> coleccion.getCriteriosDePertenencia().stream().allMatch(c -> c.cumple(h)))
                 .toList();
 
         // merge sin duplicar por id
@@ -265,7 +265,7 @@ public class ColeccionService implements IColeccionService {
                     .map(estMapper::toHechoDto)
                     .map(agregadorMapper::toDomain)       // al dominio del agregador
                     .peek(h -> {
-                        if (h.getFuente() == null) h.agregarFuente(estatica);
+                        if (h.getFuentes() == null) h.agregarFuente(estatica);
                     })
                     .toList();
 
@@ -279,7 +279,7 @@ public class ColeccionService implements IColeccionService {
                     .peek(h -> {
                         // si tu mapper ya setea tipoFuente, esto no hace falta;
                         // por las dudas: inferir desde algún campo (ej: fuente)
-                        if (h.getFuente() == null && h.getContribuyente() == null) {
+                        if (h.getFuentes() == null && h.getContribuyente() == null) {
                             // si tenés algun indicio, ajustalo; si no, dejalo como PROXY por defecto
                             h.agregarFuente(proxy);
                         }
@@ -299,8 +299,9 @@ public class ColeccionService implements IColeccionService {
         // Persistir y asociar
         for (var h : nuevosHechos) {
             hechosRepository.save(h);
-            coleccion.setHecho(h);
+            coleccion.getHechos().add(h);
         }
+
         coleccionRepository.save(coleccion);
 
         // ----- Descripción linda según orígenes
@@ -334,12 +335,12 @@ public class ColeccionService implements IColeccionService {
                 if (hecho.estaEliminado())
                     continue;
 
-                boolean cumple = coleccion.getCriterioDePertenencia()
+                boolean cumple = coleccion.getCriteriosDePertenencia()
                         .stream()
                         .allMatch(c -> c.cumple(hecho));
 
                 if (cumple) {
-                    coleccion.setHecho(hecho);
+                    coleccion.getHechos().add(hecho);
                 }
             }
             coleccionRepository.save(coleccion);

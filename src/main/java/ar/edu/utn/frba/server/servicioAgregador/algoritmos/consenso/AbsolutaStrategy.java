@@ -18,7 +18,7 @@ public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public ConsensoResult evaluar(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     @NotNull Set<List<Fuente>> totalFuentesSet = todosLosHechos.stream()
-            .map(Hecho::getFuente)
+            .map(Hecho::getFuentes)
             .collect(Collectors.toSet());
 
     if (totalFuentesSet.isEmpty()) {
@@ -33,7 +33,7 @@ public class AbsolutaStrategy implements AlgoritmoDeConsensoStrategy {
 
     @NotNull List<List<Fuente>> fuentesSoporte = todosLosHechos.stream()
             .filter(h -> h.esIgualA(hechoAProcesar))
-            .map(Hecho::getFuente)
+            .map(Hecho::getFuentes)
             .distinct()
             .collect(Collectors.toList());
 

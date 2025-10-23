@@ -6,21 +6,44 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consultas para estadísticas
-    @Query("SELECT h.provincia, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false GROUP BY h.provincia ORDER BY COUNT(h) DESC")
+    @Query("""
+SELECT 
+  COALESCE(NULLIF(TRIM(h.provincia), ''), 'Desconocida') AS provincia,
+  COUNT(h)
+FROM hecho_sa h
+WHERE h.eliminado = false
+GROUP BY COALESCE(NULLIF(TRIM(h.provincia), ''), 'Desconocida')
+ORDER BY COUNT(h) DESC
+""")
     List<Object[]> contarHechosPorProvincia();
 
-    @Query("SELECT h.categoria, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false GROUP BY h.categoria ORDER BY COUNT(h) DESC")
+    @Query("""
+SELECT 
+  COALESCE(NULLIF(TRIM(h.categoria), ''), 'Sin categoría') AS categoria,
+  COUNT(h)
+FROM hecho_sa h
+WHERE h.eliminado = false
+GROUP BY COALESCE(NULLIF(TRIM(h.categoria), ''), 'Sin categoría')
+ORDER BY COUNT(h) DESC
+""")
     List<Object[]> contarHechosPorCategoria();
 
-    @Query("SELECT h.provincia, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.categoria = :categoria GROUP BY h.provincia ORDER BY COUNT(h) DESC")
+    @Query("""
+SELECT 
+  COALESCE(NULLIF(TRIM(h.provincia), ''), 'Desconocida') AS provincia,
+  COUNT(h)
+FROM hecho_sa h
+WHERE h.eliminado = false AND LOWER(h.categoria) = LOWER(:categoria)
+GROUP BY COALESCE(NULLIF(TRIM(h.provincia), ''), 'Desconocida')
+ORDER BY COUNT(h) DESC
+""")
     List<Object[]> contarHechosPorProvinciaYCategoria(@Param("categoria") String categoria);
 
     @Query("SELECT h.horaAcontecimiento, COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.categoria = :categoria AND h.horaAcontecimiento IS NOT NULL GROUP BY h.horaAcontecimiento ORDER BY COUNT(h) DESC")
@@ -55,4 +78,7 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     @Query("SELECT COUNT(h) FROM hecho_sa h WHERE h.eliminado = false AND h.estadoRevision = 'PENDIENTE'")
     long countPendientes();
+
+    boolean existsByTituloAndFechaAcontecimientoAndLatitudAndLongitud(
+            String titulo, LocalDate fecha, Double lat, Double lon);
 }

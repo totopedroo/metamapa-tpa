@@ -50,8 +50,7 @@ public class AdminController {
     @PostMapping("/importar-csv-ruta")
     public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {
         try {
-
-            List<Hecho> hechosImportados = exportacionCSVService.importarDesdeRuta(rutaArchivo);
+            List<Hecho> hechosImportados = fuenteEstaticaService.importarHechos(rutaArchivo);
             return ResponseEntity.ok("Se importaron " + hechosImportados.size() + " hechos desde " + rutaArchivo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -16,7 +16,7 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
   @Override
   public ConsensoResult evaluar(Hecho hechoAProcesar, List<Hecho> todosLosHechos) {
     int totalFuentes = (int) todosLosHechos.stream()
-            .map(Hecho::getFuente)
+            .map(Hecho::getFuentes)
             .distinct()
             .count();
 
@@ -32,7 +32,7 @@ public class MayoriaSimpleStrategy implements AlgoritmoDeConsensoStrategy {
 
     @NotNull List<List<Fuente>> fuentesSoporte = todosLosHechos.stream()
             .filter(h -> h.esIgualA(hechoAProcesar))
-            .map(Hecho::getFuente)
+            .map(Hecho::getFuentes)
             .distinct()
             .collect(Collectors.toList());
 
