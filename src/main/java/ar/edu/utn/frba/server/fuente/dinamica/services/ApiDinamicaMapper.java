@@ -42,14 +42,11 @@ public class ApiDinamicaMapper {
                 .titulo(h.getTitulo())
                 .descripcion(h.getDescripcion())
                 .categoria(h.getCategoria())
-                .contenidoMultimedia(toDto(h.getContenidoMultimedia()))
+               // .contenidoMultimedia(toDto(h.getContenidoMultimedia()))
                 .latitud(h.getLatitud())
                 .longitud(h.getLongitud())
                 .fechaAcontecimiento(h.getFechaAcontecimiento())
                 .fechaCarga(h.getFechaCarga())
-
-                .solicitudes(toDtoLista(h.getSolicitudes()))
-                .contribuyente(toDto(h.getContribuyente()))
                 .eliminado(h.isEliminado())
                 .build();
     }

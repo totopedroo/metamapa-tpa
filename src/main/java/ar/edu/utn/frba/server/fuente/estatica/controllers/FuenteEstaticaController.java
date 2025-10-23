@@ -24,9 +24,8 @@ public class FuenteEstaticaController {
     @GetMapping("/hechos")
     @Transactional
     public ResponseEntity<List<Hecho>> obtenerHechos() {
-        List<Hecho> hechos = fuenteEstaticaService.obtenerTodos();
+        List<Hecho> hechos = fuenteEstaticaService.obtenerTodosHechos();
         return ResponseEntity.ok(hechos);
-
     }
     @PostMapping("/importar-csv-ruta")
     public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {

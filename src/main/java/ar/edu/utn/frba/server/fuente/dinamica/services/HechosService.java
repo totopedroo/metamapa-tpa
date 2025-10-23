@@ -2,7 +2,8 @@ package ar.edu.utn.frba.server.fuente.dinamica.services;
 
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
-import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosRepository;
+import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
+import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HechosService implements IHechosService {
 
-        private final IHechosRepository hechosRepository;
+        private final IHechosDinamicosRepository hechosRepository;
         private final ApiDinamicaMapper apiMapper;
 
         /** Devuelve dominio para el Adapter del agregador */
@@ -29,9 +30,7 @@ public class HechosService implements IHechosService {
                 return all.stream().filter(h ->
                         (h.getTitulo() != null && h.getTitulo().toLowerCase().contains(c)) ||
                                 (h.getDescripcion() != null && h.getDescripcion().toLowerCase().contains(c)) ||
-                                (h.getCategoria() != null && h.getCategoria().toLowerCase().contains(c)) ||
-                                (h.getEtiquetas() != null && h.getEtiquetas().stream()
-                                        .anyMatch(e -> e != null && e.getEtiqueta().toLowerCase().contains(c)))
+                                (h.getCategoria() != null && h.getCategoria().toLowerCase().contains(c))
                 ).toList();
         }
 
@@ -62,21 +61,19 @@ public class HechosService implements IHechosService {
                         .titulo(inputDto.getTitulo())
                         .descripcion(inputDto.getDescripcion())
                         .categoria(inputDto.getCategoria())
-                        .contenidoMultimedia(apiMapper.toContenidoMultimedia(inputDto.getContenidoMultimedia()))
+                        //.contenidoMultimedia(apiMapper.toContenidoMultimedia(inputDto.getContenidoMultimedia()))
                         .latitud(inputDto.getLatitud())
                         .longitud(inputDto.getLongitud())
                         .fechaAcontecimiento(inputDto.getFechaAcontecimiento())
                         .fechaCarga(java.time.LocalDate.now())
-                        .etiquetas(inputDto.getEtiquetas() == null ? new ArrayList<>() : new ArrayList<>(inputDto.getEtiquetas()))
-                        .contribuyente(apiMapper.toContribuyente(inputDto.getContribuyente()))
                         .build();
 
                 hechosRepository.save(hecho);
                 return apiMapper.toOutput(hecho);
         }
 
-        public HechosOutputDto obtenerHecho(Long id) {
+   /*     public HechosOutputDto obtenerHecho(Long id) {
                 Hecho hecho = hechosRepository.findById(id);
                 return (hecho == null) ? null : apiMapper.toOutput(hecho);
-        }
+        }*/
 }

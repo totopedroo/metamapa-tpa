@@ -10,28 +10,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
+import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
+import ar.edu.utn.frba.server.fuente.dinamica.services.FuenteDinamicaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/fuente-dinamica")
-@CrossOrigin("http://localhost:8080")
 @RequiredArgsConstructor
 public class FuenteDinamicaController {
 
-    private final IFuenteDinamicaService fuenteDinamicaService;
+    private final FuenteDinamicaService service;
+    private final IHechosDinamicosRepository repo;
 
-    @PostMapping("/hechos")
-    public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody HechosInputDto hechoInputDto) {
-        HechosOutputDto created = fuenteDinamicaService.crearHecho(hechoInputDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    @PostMapping("/crearhecho")
+    public ResponseEntity<HechosOutputDto> crear(@RequestBody HechosInputDto input) {
+        return ResponseEntity.ok(service.crearHecho(input));
     }
 
-    @PatchMapping("/hechos/{hechoId}")
-    public ResponseEntity<HechosOutputDto> editarHecho(@PathVariable Long hechoId,
-                                                       @RequestBody HechosOutputDto out) {
-        HechosOutputDto edited = fuenteDinamicaService.editarHecho(hechoId, out);
-        return ResponseEntity.ok(edited);
+    @PutMapping("/hechos/{id}")
+    public ResponseEntity<HechosOutputDto> editar(@PathVariable Long id, @RequestBody HechosOutputDto out) {
+        return ResponseEntity.ok(service.editarHecho(id, out));
     }
 
-    @GetMapping("/estado")
-    public String estado() { return "Fuente Dinámica operativa"; }
+    // extra: listar hechos desde BD
+    @GetMapping("/hechos")
+    public ResponseEntity<List<HechosOutputDto>> listar() {
+        return ResponseEntity.ok(
+                repo.findAll().stream().map(h -> service.getApiMapper().toOutput(h)).toList()
+        );
+    }
 }
 

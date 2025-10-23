@@ -32,15 +32,33 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
         this.repositorio = repositorio;
     }
 
-    @Transactional
-    public List<Hecho> obtenerTodos() {
-        return repositorio.findAll();
+    @Transactional()
+    public List<Hecho> obtenerTodosHechos() {
+        List<Hecho> hechos = repositorio.findAllFromHecho();
+
+        return hechos.stream()
+                .map(h -> Hecho.builder()
+                        .idHecho(h.getIdHecho())
+                        .titulo(h.getTitulo())
+                        .descripcion(h.getDescripcion())
+                        .categoria(h.getCategoria())
+                        .provincia(h.getProvincia())
+                        .latitud(h.getLatitud())
+                        .longitud(h.getLongitud())
+                        .fechaAcontecimiento(h.getFechaAcontecimiento())
+                        .horaAcontecimiento(h.getHoraAcontecimiento())
+                        .fechaCarga(h.getFechaCarga())
+                        .consensuado(Boolean.TRUE.equals(h.getConsensuado()))
+                        .eliminado(h.isEliminado()).build())
+                .toList();
     }
 
     @Override
     public List<Hecho> sincronizar() {
         return List.of();
     }
+
+
     @Transactional
     public List<Hecho> importarHechos(String path) {
         List<Hecho> nuevosHechos = importador.importar(path);

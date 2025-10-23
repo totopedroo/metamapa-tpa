@@ -8,8 +8,8 @@ import java.util.List;
 public interface IFuenteEstaticaService {
     public List<Hecho> sincronizar();
 
-    public List<Hecho> obtenerTodos();
     public List<Hecho> importarHechos(String path);
+    public List<Hecho> obtenerTodosHechos() ;
 
     public List<Hecho> importarDesdeArchivo(MultipartFile archivo);
 
