@@ -6,6 +6,7 @@ import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 
@@ -25,7 +26,8 @@ import java.util.Optional;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "hecho_sa")@Table
+@Entity(name = "hecho_sa")
+@Table(name = "hecho")
 @Builder
 public class Hecho {
     @Id
@@ -72,6 +74,8 @@ public class Hecho {
     @Builder.Default
     private EstadoConsenso estadoConsenso = EstadoConsenso.CONSENSUADO;
 
+    public Hecho(String titulo, String descripcion, String categoria, Object o, Double latitud, Double longitud, OffsetDateTime fechaHecho, LocalDate now, Long id) {
+    }
 
 
     // === utilidades ===

@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.server.fuente.dinamica.controllers;
 
+import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.services.IFuenteDinamicaService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +31,13 @@ public class FuenteDinamicaController {
     private final FuenteDinamicaService service;
     private final IHechosDinamicosRepository repo;
 
-    @PostMapping("/crearhecho")
-    public ResponseEntity<HechosOutputDto> crear(@RequestBody HechosInputDto input) {
-        return ResponseEntity.ok(service.crearHecho(input));
+    @PostMapping("/hechos/crear")
+    public ResponseEntity<HechosOutputDto> crearHecho(@RequestBody @Valid HechosInputDto input) {
+        HechosOutputDto result = service.crearHecho(input);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @PutMapping("/hechos/{id}")
+    @PutMapping("/hechos/editar/{id}")
     public ResponseEntity<HechosOutputDto> editar(@PathVariable Long id, @RequestBody HechosOutputDto out) {
         return ResponseEntity.ok(service.editarHecho(id, out));
     }

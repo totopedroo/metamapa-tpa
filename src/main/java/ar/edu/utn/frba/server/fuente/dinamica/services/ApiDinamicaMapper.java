@@ -17,7 +17,7 @@ public class ApiDinamicaMapper {
     public ContenidoMultimedia toContenidoMultimedia(ContenidoMultimediaDto dto) {
         if (dto == null) return null;
         var cm = new ContenidoMultimedia();
-        cm.url = dto.getUrl();
+        cm.setUrl(dto.getUrl());
         return cm;
     }
 
@@ -63,7 +63,7 @@ public class ApiDinamicaMapper {
     // --- helpers dominio -> DTO (privados) ---
     private ContenidoMultimediaDto toDto(ContenidoMultimedia cm) {
         if (cm == null) return null;
-        return ContenidoMultimediaDto.builder().url(cm.url).build();
+        return ContenidoMultimediaDto.builder().url(cm.getUrl()).build();
     }
 
     private ContribuyenteDto toDto(Contribuyente c) {

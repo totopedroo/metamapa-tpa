@@ -16,10 +16,13 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConse
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoService;
 import ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso;
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -29,6 +32,7 @@ import static ar.edu.utn.frba.server.contratos.enums.TipoFuente.ESTATICA;
 public class ColeccionService implements IColeccionService {
     private final IColeccionRepository coleccionRepository;
     private final IHechosRepository hechosRepository;
+    private final ImportadorAPI importadorAPI;
 
     @Qualifier("Importadorcsvagregador")
     private ImportadorCSV importadorCSV;
@@ -45,7 +49,7 @@ public class ColeccionService implements IColeccionService {
 
     @Autowired
     public ColeccionService(IColeccionRepository coleccionRepository,
-                            IHechosRepository hechosRepository,
+                            IHechosRepository hechosRepository, ImportadorAPI importadorAPI,
                             ConsensoService consensoService,
                             @Qualifier("irrestricta") ModoNavegacionStrategy irrestricta,
                             @Qualifier("curada") ModoNavegacionStrategy curada,
@@ -53,6 +57,7 @@ public class ColeccionService implements IColeccionService {
                             AgregadorMapper agregadorMapper) {
         this.coleccionRepository = coleccionRepository;
         this.hechosRepository = hechosRepository;
+        this.importadorAPI = importadorAPI;
         this.consensoService = consensoService;
         this.irrestricta = irrestricta;
         this.curada = curada;
@@ -261,6 +266,30 @@ public class ColeccionService implements IColeccionService {
         coleccionRepository.save(coleccion);
 
         return coleccion;
+    }
+
+    @Transactional
+    public Coleccion createColeccionDesdeApi(String tituloColeccion) {
+        try {
+            // 1) Importar hechos como entidades de servicioAgregador
+            List<Hecho> hechos = importadorAPI.importarDesdeApi();
+
+            // 2) Persistir los hechos primero para que tengan IDs de 'hecho'
+            hechosRepository.saveAll(hechos);
+
+            // 3) Crear colección y asociar
+            Coleccion col = new Coleccion();
+            col.setTitulo(tituloColeccion);
+            col.setDescripcion("Colección creada desde API");
+            col.setHechos(new ArrayList<>(hechos)); // inicializar por las dudas
+            col.setAdministrador(null);
+            return coleccionRepository.save(col);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY,
+                    "Fallo creando la colección desde la API: " + e.getMessage(), e
+            );
+        }
     }
 
     /** AUX: Construye una descripción consistente según las fuentes detectadas. */

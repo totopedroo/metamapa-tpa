@@ -55,22 +55,7 @@ public class HechosService implements IHechosService {
                         .collect(Collectors.toList());                    // usa Collectors si tu JDK < 16
         }
 
-        @Override
-        public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-                Hecho hecho = Hecho.builder()
-                        .titulo(inputDto.getTitulo())
-                        .descripcion(inputDto.getDescripcion())
-                        .categoria(inputDto.getCategoria())
-                        //.contenidoMultimedia(apiMapper.toContenidoMultimedia(inputDto.getContenidoMultimedia()))
-                        .latitud(inputDto.getLatitud())
-                        .longitud(inputDto.getLongitud())
-                        .fechaAcontecimiento(inputDto.getFechaAcontecimiento())
-                        .fechaCarga(java.time.LocalDate.now())
-                        .build();
 
-                hechosRepository.save(hecho);
-                return apiMapper.toOutput(hecho);
-        }
 
    /*     public HechosOutputDto obtenerHecho(Long id) {
                 Hecho hecho = hechosRepository.findById(id);

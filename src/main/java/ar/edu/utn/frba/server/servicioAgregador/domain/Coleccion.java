@@ -1,89 +1,94 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
+
+import ar.edu.utn.frba.server.domain.Visualizador;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
-import ar.edu.utn.frba.server.domain.Visualizador;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name="Coleccion")
+@Table(name = "coleccion") // en tus logs Hibernate trabaja con 'coleccion'
 public class Coleccion {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    public long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
     @ManyToMany
-    @JoinTable(name = "coleccion_por_hecho", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "hecho_id"))
-    private List<Hecho> hechos;
-    @Column(name="Titulo", columnDefinition = "Char(50)")
-    public String titulo;
-    @Column(name="descripcion", columnDefinition = "TEXT")
-    public String descripcion;
+    @JoinTable(
+            name = "coleccion_por_hecho",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "hecho_id")
+    )
+    private List<Hecho> hechos = new ArrayList<>();
+
+    @Column(name = "titulo", columnDefinition = "Char(50)")
+    private String titulo;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+
     @ManyToOne
-    @JoinColumn(name = "administrador_id")
+    @JoinColumn(name = "administrador_id", nullable = false) // dejar nullable si la FK en DB lo permite
     private Administrador administrador;
-    @ManyToMany@JoinTable(name = "criterios_por_coleccion", joinColumns = @JoinColumn(name = "coleccion_id"), inverseJoinColumns = @JoinColumn(name = "criterio_id"))
-    public  List<CriterioDePertenencia> criterioDePertenencia;
+
+    @ManyToMany
+    @JoinTable(
+            name = "criterios_por_coleccion",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "criterio_id")
+    )
+    private List<CriterioDePertenencia> criterioDePertenencia = new ArrayList<>();
+
+    /* ---- Campos no persistidos (lógica de dominio) ---- */
     @Transient
     private AlgoritmoDeConsensoStrategy algoritmoDeConsenso;
+
     @Transient
     private List<Hecho> hechosConsensuados = new ArrayList<>();
+
     @Transient
     private ModoNavegacionStrategy modoNavegacion;
 
-
-    public Coleccion( String titulo, String descripcion, List<CriterioDePertenencia> criterioDePertenencia) {
-
-        this.hechos = new ArrayList<>();
+    /* ---- Constructores de conveniencia ---- */
+    public Coleccion(String titulo, String descripcion, List<CriterioDePertenencia> criterios) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.criterioDePertenencia = criterioDePertenencia;
+        if (criterios != null) this.criterioDePertenencia = new ArrayList<>(criterios);
     }
 
+    /* ---- Helpers de dominio ---- */
     public List<Hecho> getHechosVisibles() {
-        return hechos.stream()
+        return this.hechos.stream()
                 .filter(h -> !h.estaEliminado())
                 .toList();
-    } //REVISAR CON GETHECHOSFILTRADOS, SE PUEDE BORRAR UNA
+    }
 
+    /** Agrega un hecho si no está eliminado */
     public void setHecho(Hecho hecho) {
-        if (hecho.estaEliminado()) {
-            System.out.println("No se puede agregar el hecho '" + hecho.getTitulo() + "' porque fue eliminado.");
-            return;
-        }
-
+        if (hecho == null) return;
+        if (hecho.estaEliminado()) return;
         this.hechos.add(hecho);
-        System.out.println("Hecho agregado a la colección: " + hecho.getTitulo());
     }
 
-    public void setCriterioDePertenencia(List<CriterioDePertenencia> criterioDePertenencia) {
-        this.criterioDePertenencia = criterioDePertenencia;
+    public void addCriterio(CriterioDePertenencia criterio) {
+        if (criterio == null) return;
+        this.criterioDePertenencia.add(criterio);
     }
 
+    /** Muestra por consola los hechos que pasan los filtros personales del visualizador */
     public void getHechosFiltrados(Coleccion coleccion, Visualizador visualizador) {
         System.out.println("Hechos visibles para " + visualizador.nombre + " en colección '" + coleccion.getTitulo() + "':");
         for (Hecho hecho : coleccion.getHechos()) {
             boolean cumple = visualizador.filtrosPersonales.stream().allMatch(c -> c.cumple(hecho));
-            if (cumple) {
-                System.out.println("-> " + hecho.getTitulo());
-            }
+            if (cumple) System.out.println("-> " + hecho.getTitulo());
         }
     }
-
-    public void setCriterioDePertenencia(CriterioDePertenencia criterio) {
-        criterioDePertenencia.add(criterio);
-    }
-
-
-
 }

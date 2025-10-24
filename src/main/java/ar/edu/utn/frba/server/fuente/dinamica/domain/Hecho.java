@@ -4,7 +4,7 @@ package ar.edu.utn.frba.server.fuente.dinamica.domain;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 
-import ar.edu.utn.frba.server.fuente.estatica.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.fuente.dinamica.domain.ContenidoMultimedia;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import jakarta.persistence.*;
 import lombok.*;

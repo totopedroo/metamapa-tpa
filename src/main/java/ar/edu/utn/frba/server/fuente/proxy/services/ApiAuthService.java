@@ -6,21 +6,39 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
-@Service @RequiredArgsConstructor
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
+
+@Service("apiAuthAgregadorService")
 public class ApiAuthService {
-    private final RestTemplate rt;
-    private final DesastresProps props;
+
+    private static final String LOGIN_URL = "https://api-ddsi.disilab.ar/public/api/login";
 
     public String obtenerToken() {
-        String url = props.getBaseUrl() + "/api/login";
-        HttpHeaders h = new HttpHeaders(); h.setContentType(MediaType.APPLICATION_JSON);
-        String body = String.format("{\"email\":\"%s\",\"password\":\"%s\"}", props.getEmail(), props.getPassword());
+        RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<Map> resp = rt.postForEntity(url, new HttpEntity<>(body, h), Map.class);
-        if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
-            throw new RuntimeException("No se pudo obtener token de API Desastres");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String requestBody = "{\"email\": \"ddsi@gmail.com\", \"password\": \"ddsi2025*\"}";
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(LOGIN_URL, request, Map.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Map<String, Object> responseBody = response.getBody();
+            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+            String token = (String) data.get("access_token");
+            // System.out.println("TOKEN OBTENIDO: " + token);
+            return token;
         }
-        Map data = (Map) resp.getBody().get("data");
-        return (String) data.get("access_token");
+
+        throw new RuntimeException("No se pudo obtener el token de autenticación.");
     }
 }

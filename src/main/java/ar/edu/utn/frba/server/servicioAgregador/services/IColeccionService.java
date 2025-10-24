@@ -30,4 +30,4 @@ public interface IColeccionService {
     Hecho quitarFuenteDeHecho(Long coleccionId, Long hechoId);
     List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
     Coleccion findByIdOrThrow(Long id);
-}
+    public Coleccion createColeccionDesdeApi(String nombre) ;}

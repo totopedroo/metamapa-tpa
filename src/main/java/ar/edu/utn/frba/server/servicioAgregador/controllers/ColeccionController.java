@@ -42,6 +42,8 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
+
+
     @GetMapping("/colecciones")
     public ResponseEntity<List<ColeccionOutputDto>> listar() {
         var out = coleccionService.findAll().stream()
