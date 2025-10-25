@@ -1,12 +1,12 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
 import ar.edu.utn.frba.server.fuente.estatica.services.FuenteEstaticaService;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.*;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.IrrestrictaStrategy;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.security.SecureRandom;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping
+@RequestMapping("/colecciones")
 @CrossOrigin("http://localhost:8080")
 public class ColeccionController {
     private final ImportadorCSV importadorCSV;
@@ -44,16 +44,27 @@ public class ColeccionController {
 
 
 
-    @GetMapping("/colecciones")
+   /* @GetMapping("/colecciones")
     public ResponseEntity<List<ColeccionOutputDto>> listar() {
         var out = coleccionService.findAll().stream()
                 .map(ColeccionOutputDto::fromModel)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(out);
     }
+*/
+   @PostMapping
+   public ResponseEntity<ColeccionOutputBD> crear(@Valid @RequestBody ColeccionInputBD dto) {
+       ColeccionOutputBD out = coleccionService.crear(dto);
+       return ResponseEntity.status(HttpStatus.CREATED).body(out);
+   }
+    @GetMapping("/{id}")
+    public ResponseEntity<ColeccionOutputBD> listar(@PathVariable Long id) {
+        return ResponseEntity.ok(coleccionService.listar(id));
+    }
 
 
-    @PostMapping("/importar-csv-ruta")
+
+@PostMapping("/importar-csv-ruta")
     public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {
         try {
 

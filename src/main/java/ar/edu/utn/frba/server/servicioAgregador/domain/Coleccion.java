@@ -36,7 +36,7 @@ public class Coleccion {
     private String descripcion;
 
     @ManyToOne
-    @JoinColumn(name = "administrador_id", nullable = false) // dejar nullable si la FK en DB lo permite
+    @JoinColumn(name = "administrador_id", nullable = true)
     private Administrador administrador;
 
     @ManyToMany

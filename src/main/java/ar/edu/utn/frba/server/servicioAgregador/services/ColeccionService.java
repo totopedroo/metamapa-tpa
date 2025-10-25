@@ -6,11 +6,11 @@ import ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 //import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IAdministradorRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.ICriterioRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoService;
@@ -33,7 +33,8 @@ public class ColeccionService implements IColeccionService {
     private final IColeccionRepository coleccionRepository;
     private final IHechosRepository hechosRepository;
     private final ImportadorAPI importadorAPI;
-
+    private final IAdministradorRepository adminRepo;
+    private final ICriterioRepository coleccionCriterioRepository;
     @Qualifier("Importadorcsvagregador")
     private ImportadorCSV importadorCSV;
     private final ModoNavegacionStrategy irrestricta; // Estrategia de navegación (inyectadas por nombre de bean)
@@ -49,7 +50,7 @@ public class ColeccionService implements IColeccionService {
 
     @Autowired
     public ColeccionService(IColeccionRepository coleccionRepository,
-                            IHechosRepository hechosRepository, ImportadorAPI importadorAPI,
+                            IHechosRepository hechosRepository, ImportadorAPI importadorAPI, IAdministradorRepository adminRepo, ICriterioRepository coleccionCriterioRepository,
                             ConsensoService consensoService,
                             @Qualifier("irrestricta") ModoNavegacionStrategy irrestricta,
                             @Qualifier("curada") ModoNavegacionStrategy curada,
@@ -58,6 +59,8 @@ public class ColeccionService implements IColeccionService {
         this.coleccionRepository = coleccionRepository;
         this.hechosRepository = hechosRepository;
         this.importadorAPI = importadorAPI;
+        this.adminRepo = adminRepo;
+        this.coleccionCriterioRepository = coleccionCriterioRepository;
         this.consensoService = consensoService;
         this.irrestricta = irrestricta;
         this.curada = curada;
@@ -65,20 +68,87 @@ public class ColeccionService implements IColeccionService {
         this.agregadorMapper = agregadorMapper;
     }
 
-    @Override
-    public ColeccionOutputDto crearColeccion(ColeccionInputDto dto) {
-        Coleccion c = ColeccionMapper.toDomain(dto);
 
-        if (dto.getIdsHechos() != null) {
-            for (Long id : dto.getIdsHechos()) {
-                var h = hechosRepository.findById(id).orElse(null);
-                if (h != null) c.setHecho(h);
-            }
+
+    @Transactional
+    public ColeccionOutputBD crear(ColeccionInputBD in) {
+        // --- VALIDACIÓN DE ADMINISTRADORID (Ya robusta) ---
+        if (in.getAdministradorId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El campo 'administradorId' es obligatorio");
         }
 
-        coleccionRepository.save(c);
-        return coleccionOutputDto(c);
+        Administrador admin = adminRepo.findById(in.getAdministradorId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "administradorId inexistente"));
+
+        Coleccion c = new Coleccion();
+
+        // --- VALIDACIÓN DE TITULO (Ya robusta) ---
+        if (in.getTitulo() == null || in.getTitulo().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El campo 'titulo' es obligatorio");
+        }
+        c.setTitulo(in.getTitulo().trim());
+
+        c.setDescripcion(in.getDescripcion() == null ? "" : in.getDescripcion().trim());
+        c.setAdministrador(admin);
+
+        // --- CAMBIO CLAVE 1: Usar findById para validar existencia de Hechos inmediatamente ---
+        if (in.getHechosIds() != null && !in.getHechosIds().isEmpty()) {
+            List<Hecho> hechos = in.getHechosIds().stream()
+                    .map(id -> hechosRepository.findById(id).orElseThrow(
+                            () -> new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST,
+                                    "hechosIds contiene un ID (" + id + ") inexistente"
+                            )
+                    ))
+                    .toList();
+            c.getHechos().addAll(hechos);
+        }
+
+        // --- CAMBIO CLAVE 2: Usar findById para validar existencia de Criterios inmediatamente ---
+        if (in.getCriteriosIds() != null && !in.getCriteriosIds().isEmpty()) {
+            List<CriterioDePertenencia> criterios = in.getCriteriosIds().stream()
+                    .map(id -> coleccionCriterioRepository.findById(id).orElseThrow(
+                            () -> new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST,
+                                    "criteriosIds contiene un ID (" + id + ") inexistente"
+                            )
+                    ))
+                    .toList();
+            c.getCriterioDePertenencia().addAll(criterios);
+        }
+
+        Coleccion saved = coleccionRepository.save(c);
+
+        // --- CAMBIO CLAVE 3 (Defensivo): Evitar NPE en la salida por el administradorId ---
+        Long adminId = Long.valueOf(saved.getAdministrador() != null ? saved.getAdministrador().getId() : null);
+
+        return new ColeccionOutputBD(
+                saved.getId(),
+                saved.getTitulo(),
+                saved.getDescripcion(),
+                adminId,
+                saved.getHechos().stream().map(Hecho::getIdHecho).toList(),
+                saved.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
+        );
     }
+
+    @Transactional
+    public ColeccionOutputBD listar(Long id) {
+        Coleccion c = coleccionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
+
+        return new ColeccionOutputBD(
+                c.getId(),
+                c.getTitulo(),
+                c.getDescripcion(),
+                null,
+                //c.getAdministrador() != null ? c.getAdministrador().getId() : null,
+                c.getHechos().stream().map(Hecho::getIdHecho).toList(),
+                c.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
+        );
+    }
+
+
 
     @Override
     public List<Coleccion> findAll() {
@@ -291,6 +361,8 @@ public class ColeccionService implements IColeccionService {
             );
         }
     }
+
+
 
     /** AUX: Construye una descripción consistente según las fuentes detectadas. */
     private String descripcionPorFuentes(java.util.Set<TipoFuente> usadas) {
