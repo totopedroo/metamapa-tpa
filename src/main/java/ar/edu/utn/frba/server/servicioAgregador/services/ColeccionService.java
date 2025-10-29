@@ -149,6 +149,85 @@ public class ColeccionService implements IColeccionService {
     }
 
 
+    @Transactional
+    public ColeccionOutputBD editar(Long coleccionId, ColeccionUpdateBD in) {
+        Coleccion c = coleccionRepository.findById(coleccionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Colección no encontrada con ID: " + coleccionId));
+
+        // --- Título (opcional, valida si viene) ---
+        if (in.titulo() != null) {
+            if (in.titulo().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El campo 'titulo' no puede estar vacío");
+            }
+            c.setTitulo(in.titulo().trim());
+        }
+
+        // --- Descripción (opcional) ---
+        if (in.descripcion() != null) {
+            c.setDescripcion(in.descripcion().trim());
+        }
+
+        // --- Administrador (opcional) ---
+        if (in.administradorId() != null) {
+            Administrador admin = adminRepo.findById(in.administradorId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                            "administradorId inexistente"));
+            c.setAdministrador(admin);
+        }
+
+        // --- Hechos (opcional: si viene la lista, reemplaza) ---
+        if (in.hechosIds() != null) {
+            List<Hecho> hechos = in.hechosIds().stream()
+                    .map(id -> hechosRepository.findById(id).orElseThrow(
+                            () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                    "hechosIds contiene un ID (" + id + ") inexistente")
+                    ))
+                    .toList();
+            c.getHechos().clear();
+            c.getHechos().addAll(hechos);
+        }
+
+        // --- Criterios (opcional: si viene la lista, reemplaza) ---
+        if (in.criteriosIds() != null) {
+            List<CriterioDePertenencia> criterios = in.criteriosIds().stream()
+                    .map(id -> coleccionCriterioRepository.findById(id).orElseThrow(
+                            () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                    "criteriosIds contiene un ID (" + id + ") inexistente")
+                    ))
+                    .toList();
+            c.getCriterioDePertenencia().clear();
+            c.getCriterioDePertenencia().addAll(criterios);
+        }
+
+        Coleccion saved = coleccionRepository.save(c);
+
+        Long adminId = Long.valueOf(saved.getAdministrador() != null ? saved.getAdministrador().getId() : null);
+
+        return new ColeccionOutputBD(
+                saved.getId(),
+                saved.getTitulo(),
+                saved.getDescripcion(),
+                adminId,
+                saved.getHechos().stream().map(Hecho::getIdHecho).toList(),
+                saved.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
+        );
+    }
+
+    @Transactional
+    public void eliminar(Long coleccionId) {
+        Coleccion c = coleccionRepository.findById(coleccionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Colección no encontrada con ID: " + coleccionId));
+
+        // Limpiar relaciones ManyToMany para evitar violación de FK en tablas puente
+        c.getHechos().clear();
+        c.getCriterioDePertenencia().clear();
+        coleccionRepository.save(c); // asegura limpieza en join tables
+
+        coleccionRepository.delete(c);
+    }
+
 
     @Override
     public List<Coleccion> findAll() {

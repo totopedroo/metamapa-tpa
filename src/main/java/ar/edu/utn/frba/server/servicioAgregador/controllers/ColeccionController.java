@@ -44,25 +44,38 @@ public class ColeccionController {
 
 
 
-   /* @GetMapping("/colecciones")
+   @GetMapping("")
     public ResponseEntity<List<ColeccionOutputDto>> listar() {
         var out = coleccionService.findAll().stream()
                 .map(ColeccionOutputDto::fromModel)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(out);
     }
-*/
+
    @PostMapping
    public ResponseEntity<ColeccionOutputBD> crear(@Valid @RequestBody ColeccionInputBD dto) {
        ColeccionOutputBD out = coleccionService.crear(dto);
        return ResponseEntity.status(HttpStatus.CREATED).body(out);
    }
     @GetMapping("/{id}")
-    public ResponseEntity<ColeccionOutputBD> listar(@PathVariable Long id) {
+    public ResponseEntity<ColeccionOutputBD> listarUna(@PathVariable Long id) {
         return ResponseEntity.ok(coleccionService.listar(id));
     }
 
+    @PatchMapping("/editar/{id}")
+    public ResponseEntity<ColeccionOutputBD> editar(
+            @PathVariable Long id,
+            @RequestBody ColeccionUpdateBD in
+    ) {
+        ColeccionOutputBD out = coleccionService.editar(id, in);
+        return ResponseEntity.ok(out);
+    }
 
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        coleccionService.eliminar(id);
+        return ResponseEntity.noContent().build(); // 204
+    }
 
 @PostMapping("/importar-csv-ruta")
     public ResponseEntity<String> importarDesdeRutaCSV(@RequestParam("ruta") String rutaArchivo) {

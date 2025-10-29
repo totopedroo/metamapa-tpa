@@ -44,6 +44,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PATCH,
                                         "/**"
                                 ).permitAll()
+                                .requestMatchers(HttpMethod.PUT,
+                                        "/**"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.DELETE,
+                                        "/**"
+                                ).permitAll()
                     /*+    .requestMatchers(
                                 "/", "/index", "/landing", "/legal/**", "/privacy/**"
                         ).permitAll()

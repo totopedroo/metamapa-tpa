@@ -4,11 +4,11 @@ package ar.edu.utn.frba.server.servicioAgregador.services;
 
 
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
+import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Coleccion;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,5 +28,9 @@ public interface IColeccionService {
     List<Hecho> filtrarHechosPorColeccion(Long coleccionId, String titulo, String categoria);
     Coleccion findByIdOrThrow(Long id);
     public Coleccion createColeccionDesdeApi(String nombre) ;
-    public ColeccionOutputBD listar(Long id);    public ColeccionOutputBD crear(ColeccionInputBD dto);
+    public ColeccionOutputBD listar(Long id);
+    public ColeccionOutputBD editar(Long coleccionId, ColeccionUpdateBD in);
+    public ColeccionOutputBD crear(ColeccionInputBD dto);
+    public void eliminar(Long coleccionId);
+
 }
