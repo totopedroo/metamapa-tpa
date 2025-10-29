@@ -1,6 +1,6 @@
 package ar.edu.utn.frba.server.fuente.dinamica.repositories;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

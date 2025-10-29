@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.controllers;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.proxy.services.ImportacionDesastresService;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

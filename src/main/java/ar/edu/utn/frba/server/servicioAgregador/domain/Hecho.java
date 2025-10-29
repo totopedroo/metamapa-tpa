@@ -26,12 +26,14 @@ import java.util.Optional;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "hecho_sa")
+@Entity
 @Table(name = "hecho")
 @Builder
 public class Hecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_hecho")   // <<-- Debe existir en la tabla HECHO
+
     private Long idHecho;
     @Column(name = "titulo", columnDefinition = "varchar(255)")
     private String titulo;

@@ -159,15 +159,24 @@ public class ColeccionController {
         return ResponseEntity.ok(ColeccionOutputDto.fromModel(c));
     }
 
-    @PostMapping("/colecciones/{coleccionId}/hechos/{hechoId}")
-    public ResponseEntity<?> agregarHechoAColeccion(@PathVariable Long coleccionId, @PathVariable Long hechoId) {
+    @PatchMapping("/{coleccionId}/hechos/{hechoId}")
+    public ResponseEntity<?> agregarHechoAColeccion(
+            @PathVariable Long coleccionId,
+            @PathVariable Long hechoId) {
+
         try {
-            ColeccionOutputDto coleccionActualizada = coleccionService.agregarHechoAColeccion(coleccionId, hechoId);
-            return ResponseEntity.ok(coleccionActualizada);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
+            ColeccionOutputDto resultado = coleccionService.agregarHechoAColeccion(coleccionId, hechoId);
+
+            // HTTP 200 OK (La colección ha sido actualizada)
+            return ResponseEntity.ok(resultado);
+
+        } catch (NoSuchElementException e) {
+            // Si no se encuentra la colección o el hecho (404 Not Found)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        } catch (Exception e) {
+            // Para cualquier otro error no esperado (500 Internal Server Error)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno: " + e.getMessage());
         }
     }
 

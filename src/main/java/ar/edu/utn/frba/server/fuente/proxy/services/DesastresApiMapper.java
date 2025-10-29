@@ -1,7 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.services;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

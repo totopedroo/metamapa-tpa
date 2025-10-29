@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.server.fuente.estatica.services;
 
-import ar.edu.utn.frba.server.fuente.estatica.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
 import ar.edu.utn.frba.server.fuente.estatica.repositories.IHechosEstaticosRepository;
+import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

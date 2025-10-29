@@ -1,14 +1,13 @@
 package ar.edu.utn.frba.server.fuente.estatica.controllers;
 
-import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.estatica.services.IFuenteEstaticaService;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +16,8 @@ import java.util.List;
 @CrossOrigin("http://localhost:8080")
 @RequiredArgsConstructor
 public class FuenteEstaticaController {
+
+
 
     @Autowired
     private IFuenteEstaticaService fuenteEstaticaService;

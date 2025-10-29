@@ -1,15 +1,12 @@
 package ar.edu.utn.frba.server.fuente.dinamica.services;
 
-import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
-import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

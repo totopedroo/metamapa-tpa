@@ -197,23 +197,28 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
+    @Transactional // Asegura que los cambios se guarden en la base de datos
     public ColeccionOutputDto agregarHechoAColeccion(Long coleccionId, Long hechoId) {
-        Coleccion coleccion = coleccionRepository.findById(coleccionId).orElse(null);
-        if (coleccion == null) {
-            throw new RuntimeException("Colección no encontrada con ID: " + coleccionId);
-        }
+        // 1. Buscar la Colección (lanza excepción 404 si no existe)
+        Coleccion coleccion = coleccionRepository.findById(coleccionId)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada con ID: " + coleccionId));
 
-        Hecho hecho = hechosRepository.findById(hechoId).orElse(null);
-        if (hecho == null) {
-            throw new RuntimeException("Hecho no encontrado con ID: " + hechoId);
-        }
+        // 2. Buscar el Hecho (lanza excepción 404 si no existe)
+        Hecho hecho = hechosRepository.findById(hechoId)
+                .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado con ID: " + hechoId));
 
-
+        // 3. Agregar el hecho a la colección si no está ya presente
         if (!coleccion.getHechos().contains(hecho)) {
-            coleccion.getHechos().add(hecho);
+            // Usamos el helper que tienes en tu entidad Coleccion.java
+            // (Aunque tu helper se llama setHecho, lo usaremos como "addHecho".)
+            coleccion.setHecho(hecho);
+
+            // No es estrictamente necesario, ya que @Transactional sincroniza el estado
+            // de la entidad gestionada, pero es una buena práctica para forzar el guardado.
             coleccionRepository.save(coleccion);
         }
 
+        // 4. Devolver el DTO de salida
         return coleccionOutputDto(coleccion);
     }
 

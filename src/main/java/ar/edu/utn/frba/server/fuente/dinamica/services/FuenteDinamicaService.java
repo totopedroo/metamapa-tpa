@@ -3,8 +3,7 @@ package ar.edu.utn.frba.server.fuente.dinamica.services;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +73,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
         if (out.getCategoria() != null) h.setCategoria(out.getCategoria());
         if (out.getLatitud() != null) h.setLatitud(out.getLatitud());
         if (out.getLongitud() != null) h.setLongitud(out.getLongitud());
-        if (out.getFechaAcontecimiento() != null) h.setFechaAcontecimiento(out.getFechaAcontecimiento());
+        if (out.getFechaAcontecimiento() != null) h.setFechaAcontecimiento(LocalDate.parse(out.getFechaAcontecimiento()));
 
         if (out.getContenidoMultimedia() != null) {
             var cm = out.getContenidoMultimedia();

@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.server.fuente.dinamica.services;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
 

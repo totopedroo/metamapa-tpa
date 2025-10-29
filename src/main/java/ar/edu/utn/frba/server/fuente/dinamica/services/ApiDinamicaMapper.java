@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.server.fuente.dinamica.services;
 
-import ar.edu.utn.frba.server.fuente.dinamica.domain.Hecho;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.SolicitudEliminacion;
-import ar.edu.utn.frba.server.fuente.dinamica.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.Contribuyente;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.*;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class ApiDinamicaMapper {
 
     // ===== DTO -> dominio =====
-    public ContenidoMultimedia toContenidoMultimedia(ContenidoMultimediaDto dto) {
+    public ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia toContenidoMultimedia(ContenidoMultimediaDto dto) {
         if (dto == null) return null;
         var cm = new ContenidoMultimedia();
         cm.setUrl(dto.getUrl());
@@ -45,7 +45,7 @@ public class ApiDinamicaMapper {
                // .contenidoMultimedia(toDto(h.getContenidoMultimedia()))
                 .latitud(h.getLatitud())
                 .longitud(h.getLongitud())
-                .fechaAcontecimiento(h.getFechaAcontecimiento())
+                .fechaAcontecimiento(String.valueOf(h.getFechaAcontecimiento()))
                 .fechaCarga(h.getFechaCarga())
                 .eliminado(h.isEliminado())
                 .build();

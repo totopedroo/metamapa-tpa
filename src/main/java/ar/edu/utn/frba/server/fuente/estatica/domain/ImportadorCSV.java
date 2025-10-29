@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.fuente.estatica.domain;
 
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -73,9 +74,9 @@ public class ImportadorCSV {
         LocalTime horaAcontecimiento = parseTime(safe(c, 8));
         LocalDate fechaCarga = parseDate(safe(c, 9));
 
-        ContenidoMultimedia cm = null;
+        ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia cm = null;
         if (url != null && !url.isBlank()) {
-          cm = new ContenidoMultimedia();
+          cm = new ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia();
           // NO seteamos id acá
           cm.setUrl(url.trim());
         }

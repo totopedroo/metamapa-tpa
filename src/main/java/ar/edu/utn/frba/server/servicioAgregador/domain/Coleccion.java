@@ -29,6 +29,7 @@ public class Coleccion {
     )
     private List<Hecho> hechos = new ArrayList<>();
 
+
     @Column(name = "titulo", columnDefinition = "Char(50)")
     private String titulo;
 

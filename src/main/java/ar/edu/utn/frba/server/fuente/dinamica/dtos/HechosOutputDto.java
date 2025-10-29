@@ -16,7 +16,7 @@ public class HechosOutputDto {
     private ContenidoMultimediaDto contenidoMultimedia;
     private Double latitud;
     private Double longitud;
-    private LocalDate fechaAcontecimiento;
+    private String fechaAcontecimiento;
     private LocalDate fechaCarga;
     private List<SolicitudEliminacionDto> solicitudes;
     private ContribuyenteDto contribuyente;

@@ -1,11 +1,10 @@
 package ar.edu.utn.frba.server.fuente.estatica.services;
 
-import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Component
 public class EstaticaMapper {
