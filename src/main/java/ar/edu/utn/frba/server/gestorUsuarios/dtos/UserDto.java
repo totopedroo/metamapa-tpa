@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.server.gestorUsuarios.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+@AllArgsConstructor
+public class UserDto {
     private String username;
-    private String password;
 }

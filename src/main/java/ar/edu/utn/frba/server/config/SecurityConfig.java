@@ -1,56 +1,93 @@
 package ar.edu.utn.frba.server.config;
 
-
-import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter;
+import ar.edu.utn.frba.server.gestorUsuarios.services.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity // habilita @PreAuthorize/@Secured
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter,
-                          UserDetailsService userDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // Usá el mismo encoder que empleaste al crear usuarios
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder encoder,
+                                                               UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setPasswordEncoder(encoder);
+        p.setUserDetailsService(userDetailsService);
+        return p;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return customUserDetailsService;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(DaoAuthenticationProvider provider) {
+        // AuthenticationManager para login manual en el controller
+        return new ProviderManager(provider);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Para API: desactivo CSRF por simplicidad (si querés, activalo con CookieCsrfTokenRepository)
                 .csrf(csrf -> csrf.disable())
 
-                // Rutas públicas (landing, login, vistas de lectura)
+                // CON SESIONES: nada de STATELESS
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.GET,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.POST,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.PATCH,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.PUT,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.DELETE,
-                                        "/**"
-                                ).permitAll()
-                    /*+    .requestMatchers(
+                        .requestMatchers("/auth/**").permitAll()
+                        // si tenés swagger/h2:
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        // permitir GET público a algo, si querés:
+                        .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+
+                // No usamos formLogin tradicional (login será por endpoint JSON)
+                .formLogin(form -> form.disable())
+
+                // Logout estándar en /logout (POST por default en Spring Security 6)
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                );
+
+        // si usás h2-console
+        http.headers(h -> h.frameOptions(frame -> frame.sameOrigin()));
+
+        return http.build();
+    }
+}
+/*+    .requestMatchers(
                                 "/", "/index", "/landing", "/legal/**", "/privacy/**"
                         ).permitAll()
                         .requestMatchers(
@@ -86,23 +123,3 @@ public class SecurityConfig {
 
                         // cualquier otra cosa: autenticado
                         .anyRequest().authenticated()*/
-                )
-
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
-        return provider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
-        return cfg.getAuthenticationManager();
-    }
-}
