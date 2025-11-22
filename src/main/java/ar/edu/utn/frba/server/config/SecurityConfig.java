@@ -1,108 +1,49 @@
-package ar.edu.utn.frba.server.config;
+package ar.edu.utn.frba.server.config; // Ajusta el paquete si es necesario
 
-
-import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter;
+import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter; // Asegúrate de tener este filtro
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity // habilita @PreAuthorize/@Secured
+@EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
+  // Inyectamos tu filtro JWT (asumo que lo tienes creado o instálalo como bean)
+  // Si no lo tienes como Bean, puedes hacer new JwtAuthenticationFilter() en el addFilterBefore si no tiene dependencias
+  private final JwtAuthenticationFilter jwtFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter,
-                          UserDetailsService userDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
-    }
+  public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
+    this.jwtFilter = jwtFilter;
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> {
+          // 1. Rutas de Autenticación (Login)
+          auth.requestMatchers("/api/auth/**").permitAll();
 
-                // Rutas públicas (landing, login, vistas de lectura)
-                .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.GET,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.POST,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.PATCH,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.PUT,
-                                        "/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.DELETE,
-                                        "/**"
-                                ).permitAll()
-                    /*+    .requestMatchers(
-                                "/", "/index", "/landing", "/legal/**", "/privacy/**"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/api/auth/**"  // login/refresh/register
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll()
-                        // Visualización anónima de hechos/colecciones/estadísticas/export
-                        .requestMatchers(HttpMethod.GET,
-                                "/colecciones",
-                                "/hechos",
-                                "/api/estadisticas/**",
-                                "/api/export/**",
-                                "/api/busqueda/**"
-                        ).hasAnyRole("ADMIN")
+          // 2. Ruta de Registro (PÚBLICA)
+          auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
 
+          // 3. Rutas Públicas de Hechos y Colecciones (para tu Landing)
+          auth.requestMatchers(HttpMethod.GET, "/api/colecciones").permitAll();
+          auth.requestMatchers(HttpMethod.GET, "/api/hechos").permitAll();
 
-                        // Contribuyente: crear/editar hechos propios, crear solicitudes
-                        .requestMatchers(HttpMethod.POST,
-                                "/hechos/**",
-                                "/solicitudes/**"
-                        ).hasAnyRole("CONTRIBUYENTE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/hechos/**")
-                        .hasAnyRole("CONTRIBUYENTE", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/hechos/**")
-                        .hasAnyRole("CONTRIBUYENTE", "ADMIN")
+          // 4. Cualquier otra cosa requiere Token
+          auth.anyRequest().authenticated();
+        })
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        // Admin: gestión de colecciones, fuentes, normalizador, aprobaciones, import masivo
-                        .requestMatchers(
-                                "/colecciones/admin/**",
-                                "/servicio-agregador/**",
-                                "/normalizador/**"
-                        ).hasRole("ADMIN")
-
-                        // cualquier otra cosa: autenticado
-                        .anyRequest().authenticated()*/
-                )
-
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
-        return provider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
-        return cfg.getAuthenticationManager();
-    }
+    return http.build();
+  }
 }

@@ -1,36 +1,40 @@
 package ar.edu.utn.frba.server.gestorUsuarios.services;
 
-import ar.edu.utn.frba.server.gestorUsuarios.Exceptions.UsuarioYaExistenteException;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Rol;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
 import ar.edu.utn.frba.server.gestorUsuarios.dtos.UsuarioDtoInput;
 import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UsuariosService {
-    @Autowired
-    private UsuariosRepository repo; // O como se llame tu repo
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final UsuariosRepository usuariosRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public Usuario crearUsuario(UsuarioDtoInput req) {
+        Usuario usuario = new Usuario();
 
-        if (repo.findByNombreDeUsuario(req.getUsername()).isPresent()) {
-            throw new UsuarioYaExistenteException("El nombre de usuario ya existe");
-        }
+        // Mapeo de datos
+        usuario.setNombre(req.getNombre());
+        // Concatenamos nombre y apellido para el campo 'nombre' de la BD si quieres, o guardamos apellido aparte si la entidad lo tiene.
+        // Si la entidad Usuario tiene campo apellido: usuario.setApellido(req.getApellido());
 
-        // 2. El mapeo también vive acá.
-        Usuario u = new Usuario();
-        u.setNombreDeUsuario(req.getUsername().trim());
-        u.setContrasenia(encoder.encode(req.getPassword()));
-        u.setRol(Rol.valueOf(req.getRol().trim().toUpperCase()));
-        u.setHabilitado(true);
-        u.setBloqueado(false);
+        usuario.setMail(req.getMail());
 
-        return repo.save(u);
+        // IMPORTANTE: Usamos el mail como nombre_de_usuario para el login, o generamos uno.
+        usuario.setNombreDeUsuario(req.getMail());
+
+        usuario.setContrasenia(passwordEncoder.encode(req.getPassword()));
+
+        // ROL POR DEFECTO
+        usuario.setRol(Rol.CONTRIBUYENTE); // O el rol que uses por defecto (ej: USER)
+        usuario.setHabilitado(true);
+        usuario.setBloqueado(false);
+
+        return usuariosRepository.save(usuario);
     }
 }
