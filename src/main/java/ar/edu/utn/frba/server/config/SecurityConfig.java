@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+// 👇 Estos imports son vitales para el AuthenticationManager
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,42 +24,49 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtFilter;
 
-  // Agregamos este Bean (del conflicto de abajo) porque es útil para inyectar en tus servicios
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
+  // 👇👇👇 ESTE ES EL BEAN QUE SOLUCIONA TU ERROR DE INICIO 👇👇👇
+  // Permite que AuthController pueda inyectar AuthenticationManager
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+  }
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        // Desactivamos CSRF porque usamos JWT (Stateless)
+        // 1. Desactivamos CSRF (No necesario para APIs Stateless)
         .csrf(AbstractHttpConfigurer::disable)
 
-        // Definimos política sin estado (No crea JSESSIONID)
+        // 2. Política Stateless (Sin sesiones en el servidor)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+        // 3. Reglas de acceso
         .authorizeHttpRequests(auth -> {
-          // 1. Login y Auth
+          // Auth y Login
           auth.requestMatchers("/api/auth/**").permitAll();
 
-          // 2. Registro de Usuarios (CRUCIAL para lo que estamos haciendo)
+          // Registro Público
           auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
 
-          // 3. Rutas Públicas de Hechos y Colecciones (para tu Landing Page)
+          // Datos públicos para la Landing Page
           auth.requestMatchers(HttpMethod.GET, "/api/colecciones").permitAll();
           auth.requestMatchers(HttpMethod.GET, "/api/hechos").permitAll();
 
-          // 4. Opcional: Permitir Swagger/H2 si lo usas (estaba en tu otro branch)
+          // Swagger / H2 Console (Opcional)
           auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
 
-          // 5. Cualquier otra cosa requiere Token
+          // Todo lo demás requiere Token
           auth.anyRequest().authenticated();
         })
-        // Añadimos el filtro JWT antes del de usuario/contraseña
+        // 4. Filtro JWT
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-    // Configuración extra para H2 Console si la usas
+    // Configuración extra para H2 Console (si la usas)
     http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
     return http.build();
