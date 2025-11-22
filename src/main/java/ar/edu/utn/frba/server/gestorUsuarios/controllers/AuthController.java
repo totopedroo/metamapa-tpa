@@ -1,108 +1,67 @@
 package ar.edu.utn.frba.server.gestorUsuarios.controllers;
 
-import ar.edu.utn.frba.server.config.NotFoundException;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.*;
-import ar.edu.utn.frba.server.gestorUsuarios.services.LoginService;
-import ar.edu.utn.frba.server.utils.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import ar.edu.utn.frba.server.gestorUsuarios.dtos.LoginRequest;
+import ar.edu.utn.frba.server.gestorUsuarios.dtos.UserDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-    private final LoginService loginService;
-    private final JwtUtil jwtUtil;
-    private final org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder enc =
-            new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+    private final AuthenticationManager authenticationManager;
 
-    @PostMapping(value="/login", consumes="application/json", produces="application/json")
-    public ResponseEntity<?> loginApi(@RequestBody Map<String,String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "username y password son obligatorios"));
-        }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest req,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
         try {
-            var usuario = loginService.autenticarUsuario(username, password);
+            UsernamePasswordAuthenticationToken token =
+                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword());
 
-            String accessToken = jwtUtil.generarAccessToken(usuario.getNombreDeUsuario());
-            String refreshToken = jwtUtil.generarRefreshToken(usuario.getNombreDeUsuario());
+            Authentication auth = authenticationManager.authenticate(token);
 
-            // Si tu DTO no tiene refresh, devolvé sólo los 3 campos o agregá refresh al DTO
-            AuthResponseDTO resp = new AuthResponseDTO("Bearer", accessToken, 3600);
-            return ResponseEntity.ok(resp);
+            // Guarda el SecurityContext en la sesión (JSESSIONID)
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(auth);
+            SecurityContextHolder.setContext(context);
+            request.getSession(true); // crea sesión si no existe
+            new HttpSessionSecurityContextRepository().saveContext(context, request, response);
 
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Error interno", "detail", e.getMessage()));
+            // Opcional: devolver un dto simple del usuario
+            User principal = (User) auth.getPrincipal();
+            return ResponseEntity.ok(new UserDto(principal.getUsername()));
+
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(401).body("Credenciales inválidas");
         }
     }
 
-    @GetMapping("/check")
-    public Map<String,Object> check(@RequestParam String raw, @RequestParam String hash) {
-        boolean ok = enc.matches(raw, hash);
-        return Map.of("raw", raw, "hash_len", hash.length(), "matches", ok);
+    @GetMapping("/me")
+    public ResponseEntity<?> me(@AuthenticationPrincipal User user) {
+        if (user == null) return ResponseEntity.status(401).body("No autenticado");
+        return ResponseEntity.ok(new UserDto(user.getUsername()));
     }
 
-    @GetMapping("/make")
-    public Map<String,String> make(@RequestParam String raw) {
-        return Map.of("hash", enc.encode(raw));
+    // Logout lo maneja SecurityConfig en /auth/logout (POST)
+    // Pero si querés un GET/POST manual:
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession(false); // si hay
+        // Spring ya hace invalidate en el logout configurado, acá sería redundante
+        return ResponseEntity.ok().build();
     }
 }
-  /*
-  @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@RequestBody RefreshRequest request) {
-        try {
-            String username = JwtUtil.validarToken(request.getRefreshToken());
-
-            // Validar que el token sea de tipo refresh
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(JwtUtil.getKey())
-                    .build()
-                    .parseClaimsJws(request.getRefreshToken())
-                    .getBody();
-
-            if (!"refresh".equals(claims.get("type"))) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            String newAccessToken = JwtUtil.generarAccessToken(username);
-            TokenResponse response = new TokenResponse(newAccessToken, request.getRefreshToken());
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-*/
-/*
-    @GetMapping("/user/roles-permisos")
-    public ResponseEntity<UserRolesPermissionsDTO> getUserRolesAndPermissions(Authentication authentication) {
-        try {
-            String username = authentication.getName();
-            UserRolesPermissionsDTO response = loginService.obtenerRolesYPermisosUsuario(username);
-            return ResponseEntity.ok(response);
-        } catch (NotFoundException e) {
-            log.error("Usuario no encontrado", e);
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            log.error("Error al obtener roles y permisos del usuario", e);
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-*/
