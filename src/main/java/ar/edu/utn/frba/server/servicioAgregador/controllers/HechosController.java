@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping
-@CrossOrigin("http://localhost:8080")
+@CrossOrigin("http://localhost:8082")
 public class HechosController {
 
     @Autowired

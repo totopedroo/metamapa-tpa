@@ -32,5 +32,7 @@ public interface IColeccionService {
     public ColeccionOutputBD editar(Long coleccionId, ColeccionUpdateBD in);
     public ColeccionOutputBD crear(ColeccionInputBD dto);
     public void eliminar(Long coleccionId);
+    public List<HechosOutputDto> obtenerHechosPorTituloColeccion(String tituloColeccion);
 
-}
+
+    }

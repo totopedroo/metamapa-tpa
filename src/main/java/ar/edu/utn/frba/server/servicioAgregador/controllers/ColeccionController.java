@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/colecciones")
-@CrossOrigin("http://localhost:8080")
+@CrossOrigin("http://localhost:8082")
+
 public class ColeccionController {
     private final ImportadorCSV importadorCSV;
     private final SecureRandom secureRandom = new SecureRandom();
@@ -50,6 +51,14 @@ public class ColeccionController {
                 .map(ColeccionOutputDto::fromModel)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(out);
+    }
+
+    @GetMapping("/hechos")
+    public ResponseEntity<List<HechosOutputDto>> obtenerHechosPorTituloColeccion(
+            @RequestParam("tituloColeccion") String tituloColeccion
+    ) {
+        List<HechosOutputDto> hechos = coleccionService.obtenerHechosPorTituloColeccion(tituloColeccion);
+        return ResponseEntity.ok(hechos);
     }
 
    @PostMapping

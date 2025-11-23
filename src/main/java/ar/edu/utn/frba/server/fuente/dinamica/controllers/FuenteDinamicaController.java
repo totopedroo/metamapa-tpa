@@ -18,6 +18,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/fuente-dinamica")
 @RequiredArgsConstructor
+@CrossOrigin("http://localhost:8082")
+
 public class FuenteDinamicaController {
 
     private final FuenteDinamicaService service;

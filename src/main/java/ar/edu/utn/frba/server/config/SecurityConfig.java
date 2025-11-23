@@ -1,5 +1,66 @@
 package ar.edu.utn.frba.server.config;
 
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager; // Importación necesaria
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration; // Importación necesaria
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    // NUEVO BEAN: Esto expone el AuthenticationManager para que AuthController lo pueda inyectar
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. Deshabilitar CSRF: Obligatorio cuando se usa anyRequest().permitAll() o CORS complejo
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 2. Configurar CORS (usamos la configuración del bean de abajo)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 3. Permitir TODAS las peticiones (incluye /fuente-dinamica/**)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
+
+        return http.build();
+    }
+
+    // Bean para configurar CORS globalmente (solo si no usas @CrossOrigin en todos los Controllers)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // **IMPORTANTE**: Permitir solo el origen 8082
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8082"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+}
+
+/*
 import ar.edu.utn.frba.server.gestorUsuarios.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +115,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Para API: desactivo CSRF por simplicidad (si querés, activalo con CookieCsrfTokenRepository)
-                .csrf(csrf -> csrf.disable())
+                /*.csrf(csrf -> csrf.disable())
 
                 // CON SESIONES: nada de STATELESS
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
@@ -82,11 +143,12 @@ public class SecurityConfig {
                 );
 
         // si usás h2-console
-        http.headers(h -> h.frameOptions(frame -> frame.sameOrigin()));
-
+        http.headers(h -> h.frameOptions(frame -> frame.sameOrigin()));*/
+/*.authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll());
         return http.build();
     }
-}
+}*/
 /*+    .requestMatchers(
                                 "/", "/index", "/landing", "/legal/**", "/privacy/**"
                         ).permitAll()
