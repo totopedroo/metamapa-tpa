@@ -1,67 +1,63 @@
 package ar.edu.utn.frba.server.gestorUsuarios.controllers;
 
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.LoginRequest;
-import ar.edu.utn.frba.server.gestorUsuarios.dtos.UserDto;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import ar.edu.utn.frba.server.config.NotFoundException;
+import ar.edu.utn.frba.server.gestorUsuarios.dtos.AuthResponseDTO;
+import ar.edu.utn.frba.server.gestorUsuarios.services.LoginService;
+import ar.edu.utn.frba.server.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private final LoginService loginService;
+    private final JwtUtil jwtUtil;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest req,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response) {
-        try {
-            UsernamePasswordAuthenticationToken token =
-                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword());
+    @PostMapping(value="/login", consumes="application/json", produces="application/json")
+    public ResponseEntity<?> loginApi(@RequestBody Map<String,String> credentials) {
+        String username = credentials.get("username");
+        String password = credentials.get("password");
 
-            Authentication auth = authenticationManager.authenticate(token);
+        System.out.println(">>> BACKEND: Intento de login para: " + username);
 
-            // Guarda el SecurityContext en la sesión (JSESSIONID)
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(auth);
-            SecurityContextHolder.setContext(context);
-            request.getSession(true); // crea sesión si no existe
-            new HttpSessionSecurityContextRepository().saveContext(context, request, response);
-
-            // Opcional: devolver un dto simple del usuario
-            User principal = (User) auth.getPrincipal();
-            return ResponseEntity.ok(new UserDto(principal.getUsername()));
-
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "username y password son obligatorios"));
         }
-    }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> me(@AuthenticationPrincipal User user) {
-        if (user == null) return ResponseEntity.status(401).body("No autenticado");
-        return ResponseEntity.ok(new UserDto(user.getUsername()));
-    }
+        try {
+            // 1. Autenticamos
+            var usuario = loginService.autenticarUsuario(username, password);
+            System.out.println(">>> BACKEND: Usuario autenticado: " + usuario.getId());
 
-    // Logout lo maneja SecurityConfig en /auth/logout (POST)
-    // Pero si querés un GET/POST manual:
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        request.getSession(false); // si hay
-        // Spring ya hace invalidate en el logout configurado, acá sería redundante
-        return ResponseEntity.ok().build();
+            // 2. Generamos Tokens (OJO: Aquí suele fallar si JwtUtil no está bien configurado)
+            String accessToken = jwtUtil.generarAccessToken(usuario.getNombreDeUsuario());
+            System.out.println(">>> BACKEND: Access Token generado");
+
+            // Si tu JwtUtil tiene refresh token, úsalo, sino comenta esta línea
+            // String refreshToken = jwtUtil.generarRefreshToken(usuario.getNombreDeUsuario());
+
+            AuthResponseDTO resp = new AuthResponseDTO("Bearer", accessToken, 3600);
+            return ResponseEntity.ok(resp);
+
+        } catch (NotFoundException e) {
+            System.err.println(">>> BACKEND ERROR 401: " + e.getMessage());
+            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+        } catch (Exception e) {
+            // 👇 ESTO ES LO IMPORTANTE: Imprimir el stack trace completo
+            System.err.println(">>> BACKEND ERROR 500 FATAL:");
+            e.printStackTrace();
+
+            String msg = e.getMessage() != null ? e.getMessage() : "Error desconocido (NullPointerException?)";
+            return ResponseEntity.status(500).body(Map.of("error", "Error interno", "detail", msg));
+        }
     }
 }

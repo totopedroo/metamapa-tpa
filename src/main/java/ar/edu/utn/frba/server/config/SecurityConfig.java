@@ -1,4 +1,83 @@
+
 package ar.edu.utn.frba.server.config;
+
+import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+// 👇 Estos imports son vitales para el AuthenticationManager
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtFilter;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // 👇👇👇 ESTE ES EL BEAN QUE SOLUCIONA TU ERROR DE INICIO 👇👇👇
+    // Permite que AuthController pueda inyectar AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. Desactivamos CSRF (No necesario para APIs Stateless)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 2. Política Stateless (Sin sesiones en el servidor)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 3. Reglas de acceso
+                .authorizeHttpRequests(auth -> {
+                    // Auth y Login
+                    auth.requestMatchers("/api/auth/**").permitAll();
+
+                    // Registro Público
+                    auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
+
+                    // Datos públicos para la Landing Page
+                    auth.requestMatchers(HttpMethod.GET, "/api/colecciones").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/hechos").permitAll();
+
+                    // Swagger / H2 Console (Opcional)
+                    auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
+
+                    // Todo lo demás requiere Token
+                    auth.anyRequest().authenticated();
+                })
+                // 4. Filtro JWT
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Configuración extra para H2 Console (si la usas)
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+
+        return http.build();
+    }
+}
+
+
+
+
+/*package ar.edu.utn.frba.server.config;
 
 
 import org.springframework.context.annotation.Bean;
@@ -62,86 +141,83 @@ public class SecurityConfig {
 
 /*
 import ar.edu.utn.frba.server.gestorUsuarios.services.CustomUserDetailsService;
+=======
+import ar.edu.utn.frba.server.gestorUsuarios.filters.JwtAuthenticationFilter;
+>>>>>>> d23349f570260998e2786b6a20df3636b583a1dc
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+// 👇 Estos imports son vitales para el AuthenticationManager
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
+  private final JwtAuthenticationFilter jwtFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // Usá el mismo encoder que empleaste al crear usuarios
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder encoder,
-                                                               UserDetailsService userDetailsService) {
-        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
-        p.setPasswordEncoder(encoder);
-        p.setUserDetailsService(userDetailsService);
-        return p;
-    }
+  // 👇👇👇 ESTE ES EL BEAN QUE SOLUCIONA TU ERROR DE INICIO 👇👇👇
+  // Permite que AuthController pueda inyectar AuthenticationManager
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+  }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return customUserDetailsService;
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // 1. Desactivamos CSRF (No necesario para APIs Stateless)
+        .csrf(AbstractHttpConfigurer::disable)
 
-    @Bean
-    public AuthenticationManager authenticationManager(DaoAuthenticationProvider provider) {
-        // AuthenticationManager para login manual en el controller
-        return new ProviderManager(provider);
-    }
+        // 2. Política Stateless (Sin sesiones en el servidor)
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+<<<<<<< HEAD
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Para API: desactivo CSRF por simplicidad (si querés, activalo con CookieCsrfTokenRepository)
                 /*.csrf(csrf -> csrf.disable())
+=======
+        // 3. Reglas de acceso
+        .authorizeHttpRequests(auth -> {
+          // Auth y Login
+          auth.requestMatchers("/api/auth/**").permitAll();
+>>>>>>> d23349f570260998e2786b6a20df3636b583a1dc
 
-                // CON SESIONES: nada de STATELESS
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+          // Registro Público
+          auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        // si tenés swagger/h2:
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        // permitir GET público a algo, si querés:
-                        .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+          // Datos públicos para la Landing Page
+          auth.requestMatchers(HttpMethod.GET, "/api/colecciones").permitAll();
+          auth.requestMatchers(HttpMethod.GET, "/api/hechos").permitAll();
 
-                // No usamos formLogin tradicional (login será por endpoint JSON)
-                .formLogin(form -> form.disable())
+          // Swagger / H2 Console (Opcional)
+          auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
 
-                // Logout estándar en /logout (POST por default en Spring Security 6)
-                .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                );
+          // Todo lo demás requiere Token
+          auth.anyRequest().authenticated();
+        })
+        // 4. Filtro JWT
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+<<<<<<< HEAD
         // si usás h2-console
         http.headers(h -> h.frameOptions(frame -> frame.sameOrigin()));*/
 /*.authorizeHttpRequests(auth -> auth
@@ -185,3 +261,10 @@ public class SecurityConfig {
 
                         // cualquier otra cosa: autenticado
                         .anyRequest().authenticated()*/
+/*=======
+    // Configuración extra para H2 Console (si la usas)
+    http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+
+    return http.build();
+  }
+}*/

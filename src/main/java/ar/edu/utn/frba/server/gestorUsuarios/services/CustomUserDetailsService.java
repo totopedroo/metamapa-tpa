@@ -20,26 +20,40 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario u = usuariosRepository.findByNombreDeUsuario(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
         List<GrantedAuthority> auths = new ArrayList<>();
         if (u.getRol() != null) {
             auths.add(new SimpleGrantedAuthority("ROLE_" + u.getRol().name()));
         }
-        /*if (u.getPermisos() != null) {
-            u.getPermisos().forEach(p -> {
-                String name = (p instanceof Enum<?> e) ? e.name() : String.valueOf(p);
-                if (!name.startsWith("PERM_")) name = "PERM_" + name;
-                auths.add(new SimpleGrantedAuthority(name));
-            });*/
 
+        // Si decidiste usar List<String> en permisos, puedes descomentar esto:
+        /*
+        if (u.getPermisos() != null) {
+            u.getPermisos().forEach(permiso -> {
+                String authName = permiso;
+                if (!authName.startsWith("PERM_")) authName = "PERM_" + authName;
+                auths.add(new SimpleGrantedAuthority(authName));
+            });
+        }
+        */
+
+        // CORRECCIÓN AQUÍ:
+        // 1. Usamos getHabilitado() en lugar de isHabilitado()
+        // 2. Usamos Boolean.TRUE.equals(...) para manejar nulos de forma segura
+        boolean enabled = Boolean.TRUE.equals(u.getHabilitado());
+
+        // accountNonLocked es true si el usuario NO está bloqueado
+        boolean accountNonLocked = !Boolean.TRUE.equals(u.getBloqueado());
 
         return new org.springframework.security.core.userdetails.User(
-                u.getNombreDeUsuario(),
-                u.getContrasenia(),             // hash BCrypt
-                u.isHabilitado(),               // enabled
-                true, true, !u.isBloqueado(),   // accountNonExpired, credentialsNonExpired, accountNonLocked
-                auths
+            u.getNombreDeUsuario(),
+            u.getContrasenia(),             // hash BCrypt
+            enabled,                        // enabled
+            true,                           // accountNonExpired
+            true,                           // credentialsNonExpired
+            accountNonLocked,               // accountNonLocked
+            auths
         );
     }
 }
