@@ -41,6 +41,7 @@ public class AuthController {
             // 2. Generamos Tokens (OJO: Aquí suele fallar si JwtUtil no está bien configurado)
             String accessToken = jwtUtil.generarAccessToken(usuario.getNombreDeUsuario());
             System.out.println(">>> BACKEND: Access Token generado");
+            System.out.println(accessToken);
 
             // Si tu JwtUtil tiene refresh token, úsalo, sino comenta esta línea
             // String refreshToken = jwtUtil.generarRefreshToken(usuario.getNombreDeUsuario());
