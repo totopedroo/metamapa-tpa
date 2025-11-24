@@ -40,6 +40,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
                 // 1. Desactivamos CSRF (No necesario para APIs Stateless)
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -49,6 +50,8 @@ public class SecurityConfig {
                 // 3. Reglas de acceso
                 .authorizeHttpRequests(auth -> {
                     // Auth y Login
+                    auth.requestMatchers("/hechos/**").permitAll();
+                    auth.requestMatchers("/fuente-dinamica/**").permitAll();
                     auth.requestMatchers("/api/auth/**").permitAll();
 
                     // Registro Público
