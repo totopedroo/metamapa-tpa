@@ -22,25 +22,43 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
     @Override
     @Transactional
     public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-        // Validaciones básicas (mejor si usas Bean Validation con @Valid en el controller)
+
         if (inputDto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Body requerido");
         }
+
+        // TÍTULO
         if (inputDto.getTitulo() == null || inputDto.getTitulo().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El título es obligatorio");
         }
 
-        // Fecha: si viene null o vacía, podés decidir default o rechazar
-        LocalDate fechaAcontecimiento = inputDto.getFechaAcontecimiento();
-        // si tu DTO trae fecha como String, parseala aquí con try/catch y BAD_REQUEST si falla
+        // CATEGORÍA
+        if (inputDto.getCategoria() == null || inputDto.getCategoria().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoría es obligatoria");
+        }
 
-        // Contenido multimedia: si viene sin url, lo dejamos en null
+        // LATITUD / LONGITUD
+        if (inputDto.getLatitud() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La latitud es obligatoria");
+        }
+        if (inputDto.getLongitud() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La longitud es obligatoria");
+        }
+
+        // FECHA ACONTECIMIENTO (LocalDate)
+        LocalDate fechaAcontecimiento = inputDto.getFechaAcontecimiento();
+        if (fechaAcontecimiento == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de acontecimiento es obligatoria");
+        }
+
+        // Contenido multimedia opcional
         var cmDto = inputDto.getContenidoMultimedia();
-        var contenidoMultimedia = (cmDto != null && cmDto.getUrl() != null && !cmDto.getUrl().isBlank())
+        var contenidoMultimedia = (cmDto != null
+                && cmDto.getUrl() != null
+                && !cmDto.getUrl().isBlank())
                 ? apiMapper.toContenidoMultimedia(cmDto)
                 : null;
 
-        // Construcción del Hecho (sin setear idHecho: que lo genere la DB)
         Hecho hecho = Hecho.builder()
                 .titulo(nullToEmpty(inputDto.getTitulo()))
                 .descripcion(nullToEmpty(inputDto.getDescripcion()))
@@ -52,11 +70,7 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .fechaCarga(LocalDate.now())
                 .build();
 
-
         Hecho guardado = hechosRepository.save(hecho);
-        // flush opcional para surfear violaciones de constraint ya mismo
-        // hechosRepository.flush();
-
         return apiMapper.toOutput(guardado);
     }
     public ApiDinamicaMapper getApiMapper() { return apiMapper; }

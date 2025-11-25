@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudFrontDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
@@ -10,6 +11,12 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.SolicitudEliminacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service("solicitudAgregadorService")
 public class SolicitudService implements ISolicitudService {
@@ -96,5 +103,41 @@ public class SolicitudService implements ISolicitudService {
 
         solicitud.rechazarSolicitud();
         solicitudRepository.save(solicitud);
+    }
+
+    @Override
+    public List<SolicitudFrontDto> obtenerSolicitudesConTitulo() {
+        // 1. Traemos todas las solicitudes de la DB
+        List<SolicitudEliminacion> solicitudes = solicitudRepository.findAll();
+
+        // Si no hay nada, devolvemos lista vacía rápido
+        if (solicitudes.isEmpty()) return new ArrayList<>();
+
+        // 2. Extraemos todos los IDs de los hechos para hacer UNA sola consulta (optimización)
+        Set<Long> idsDeHechos = solicitudes.stream()
+                .map(SolicitudEliminacion::getIdHechoAsociado)
+                .collect(Collectors.toSet());
+
+        // 3. Vamos a la tabla de Hechos y traemos los títulos de esos IDs
+        // Creamos un Map (Diccionario): ID -> Título
+        Map<Long, String> mapaDeTitulos = hechosRepository.findAllById(idsDeHechos).stream()
+                .collect(Collectors.toMap(Hecho::getIdHecho, Hecho::getTitulo));
+
+        // 4. Ahora sí, armamos los DTOs cruzando la info
+        return solicitudes.stream().map(solicitud -> {
+            SolicitudFrontDto dto = new SolicitudFrontDto();
+
+            // Copiamos datos simples
+            dto.setId(solicitud.getIdSolicitud());
+            dto.setEstado(solicitud.getEstado());
+            dto.setJustificacion(solicitud.getJustificacion());
+
+            // Cruzamos el dato: Usamos el ID de la solicitud para buscar el título en el Map
+            String titulo = mapaDeTitulos.getOrDefault(solicitud.getIdHechoAsociado(), "Hecho No Encontrado");
+            dto.setTituloHecho(titulo);
+
+            return dto;
+        }).collect(Collectors.toList());
+
     }
 }

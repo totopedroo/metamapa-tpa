@@ -227,6 +227,41 @@ public class ColeccionService implements IColeccionService {
 
         coleccionRepository.delete(c);
     }
+    @Transactional
+    public List<HechosOutputDto> obtenerHechosPorTituloColeccion(String tituloColeccion) {
+
+        // 1) Buscar la colección por título
+        Coleccion coleccion = coleccionRepository.findByTitulo(tituloColeccion)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No existe colección con título: " + tituloColeccion));
+
+        // 2) Traer los hechos de esa colección
+        // según tu repo: por id, por objeto, etc.
+        List<Hecho> hechos = hechosRepository.findByColeccionId(coleccion.getId());
+        // o: hechoRepository.findByColeccion(coleccion);
+
+        // 3) Mapear entidad → DTO "a mano"
+        return hechos.stream()
+                .map(this::toHechosOutputDto)
+                .toList();
+    }
+
+    // ---- mapeo manual entidad → DTO ----
+    private HechosOutputDto toHechosOutputDto(Hecho hecho) {
+        HechosOutputDto dto = new HechosOutputDto();
+
+        // Ajustá estos setters a lo que tenga tu clase HechosOutputDto
+        dto.setTitulo(hecho.getTitulo());
+        dto.setDescripcion(hecho.getDescripcion());
+        dto.setLatitud(hecho.getLatitud());
+        dto.setLongitud(hecho.getLongitud());
+        dto.setCategoria(hecho.getCategoria());
+        dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+
+        // si tu DTO tiene más campos, setealos acá
+
+        return dto;
+    }
 
 
     @Override

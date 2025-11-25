@@ -15,11 +15,10 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/colecciones") // Ruta base correcta
-@RequiredArgsConstructor // Genera un único constructor para todas las dependencias 'final'
+@RequestMapping("/api/colecciones")
+@RequiredArgsConstructor
 public class ColeccionController {
 
-    // Dependencias unificadas
     private final IColeccionService coleccionService;
     private final SolicitudService solicitudService;
     private final ExportacionCSVService exportacionCSVService;
@@ -38,6 +37,19 @@ public class ColeccionController {
             .map(ColeccionOutputDto::fromModel)
             .collect(Collectors.toList());
         return ResponseEntity.ok(out);
+    }
+
+    // Funcionalidad de buscar por título
+    // Endpoint: GET /api/colecciones/hechos?tituloColeccion=...
+    // Nota: Asegúrate de agregar 'obtenerHechosPorTituloColeccion' a tu interfaz IColeccionService si no existe.
+    @GetMapping("/hechos")
+    public ResponseEntity<List<HechosOutputDto>> obtenerHechosPorTituloColeccion(
+        @RequestParam("tituloColeccion") String tituloColeccion
+    ) {
+        /* List<HechosOutputDto> hechos = coleccionService.obtenerHechosPorTituloColeccion(tituloColeccion);
+        return ResponseEntity.ok(hechos);
+        */
+        return ResponseEntity.ok(List.of()); // Placeholder hasta confirmar servicio
     }
 
     @PostMapping
@@ -120,10 +132,12 @@ public class ColeccionController {
     public ResponseEntity<Void> setearAlgoritmoPorNombre(@PathVariable Long id, @RequestParam String tipo) {
         try {
             var t = ar.edu.utn.frba.server.contratos.enums.TipoAlgoritmoConsenso.fromCodigo(tipo);
-            // ... (lógica de algoritmo simplificada para brevedad)
+            // ... lógica simplificada ...
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

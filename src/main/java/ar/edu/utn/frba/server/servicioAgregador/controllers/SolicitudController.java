@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
 
 import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudFrontDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.services.ISolicitudService;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,6 +21,8 @@ public class SolicitudController {
 
     @Autowired
     private ISolicitudService solicitudService;
+    @Autowired
+    private View error;
 
     @PostMapping("")
     public ResponseEntity<SolicitudOutputDto> crearSolicitud(@RequestBody SolicitudInputDto dto) {
@@ -51,6 +56,38 @@ public class SolicitudController {
             return ResponseEntity.badRequest().body("Estado inválido. Use: ACEPTADA | RECHAZADA | PENDIENTE");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
+    @GetMapping("/admin")
+    public ResponseEntity<?> obtenerSolicitudes() {
+        try {
+            List<SolicitudFrontDto> lista = solicitudService.obtenerSolicitudesConTitulo();
+            return ResponseEntity.ok(lista);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error en el servidor: " + e.getMessage());
+        }
+    }
+
+    // En SolicitudApiController.java (BACKEND)
+
+    @PostMapping("/{id}/aprobar")
+    public ResponseEntity<?> aprobarSolicitud(@PathVariable Long id) {
+        try {
+            solicitudService.aceptarSolicitud(id);
+            return ResponseEntity.ok("Solicitud aprobada");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al aprobar: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/rechazar")
+    public ResponseEntity<?> rechazarSolicitud(@PathVariable Long id) {
+        try {
+            solicitudService.rechazarSolicitud(id);
+            return ResponseEntity.ok("Solicitud rechazada");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al rechazar: " + e.getMessage());
         }
     }
 }
