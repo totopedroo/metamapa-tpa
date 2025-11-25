@@ -29,7 +29,6 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-  // 👇👇👇 ESTE ES EL BEAN QUE SOLUCIONA TU ERROR DE INICIO 👇👇👇
   // Permite que AuthController pueda inyectar AuthenticationManager
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -54,8 +53,8 @@ public class SecurityConfig {
           auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
 
           // Datos públicos para la Landing Page
-          auth.requestMatchers(HttpMethod.GET, "/api/colecciones").permitAll();
-          auth.requestMatchers(HttpMethod.GET, "/api/hechos").permitAll();
+          auth.requestMatchers(HttpMethod.GET, "/api/colecciones/**").permitAll();
+          auth.requestMatchers(HttpMethod.GET, "/api/hechos/**").permitAll();
 
           // Swagger / H2 Console (Opcional)
           auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();

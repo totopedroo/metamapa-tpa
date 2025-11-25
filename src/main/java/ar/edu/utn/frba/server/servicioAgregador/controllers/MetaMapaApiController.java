@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.servicioAgregador.controllers;
+/*package ar.edu.utn.frba.server.servicioAgregador.controllers;
 
 import ar.edu.utn.frba.server.servicioAgregador.domain.Coleccion;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
@@ -71,7 +71,7 @@ public class MetaMapaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-/*
+
     @GetMapping("/colecciones/{id}/hechos/navegacion")
     public ResponseEntity<List<Hecho>> navegarHechos(
             @PathVariable Long id,
@@ -95,7 +95,7 @@ public class MetaMapaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
         }
     }
-*/
+
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDto> crearSolicitudEliminacion(
             @RequestBody SolicitudInputDto solicitudInputDto) {
@@ -153,3 +153,4 @@ public class MetaMapaApiController {
 
 }
 
+*/

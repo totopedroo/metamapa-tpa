@@ -8,7 +8,9 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import jakarta.transaction.Transactional;
+import java.awt.print.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

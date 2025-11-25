@@ -23,4 +23,7 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
     // Contar hechos por colección
     @Query("SELECT c.id, c.titulo, COUNT(h) FROM Coleccion c LEFT JOIN c.hechos h WHERE h.eliminado = false OR h IS NULL GROUP BY c.id, c.titulo")
     List<Object[]> contarHechosPorColeccion();
+
+    // Trae las últimas 5 colecciones ordenadas por ID descendente
+    List<Coleccion> findTop5ByOrderByIdDesc();
 }

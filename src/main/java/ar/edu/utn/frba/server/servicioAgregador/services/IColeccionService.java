@@ -33,4 +33,6 @@ public interface IColeccionService {
     public ColeccionOutputBD crear(ColeccionInputBD dto);
     public void eliminar(Long coleccionId);
 
+    List<ColeccionOutputBD> listarUltimas();
+
 }
