@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/solicitudes")
-@CrossOrigin("http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:8082")
 public class SolicitudController {
 
     @Autowired

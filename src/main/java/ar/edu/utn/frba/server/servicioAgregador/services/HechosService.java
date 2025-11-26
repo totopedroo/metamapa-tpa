@@ -2,18 +2,18 @@ package ar.edu.utn.frba.server.servicioAgregador.services;
 
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
+import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoDTO;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IContribuyenteRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
-import jakarta.transaction.Transactional;
-import java.awt.print.Pageable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service("hechosAgregadorService")
+@RequiredArgsConstructor
 public class HechosService implements IHechosService {
 
     @Autowired
@@ -42,31 +43,33 @@ public class HechosService implements IHechosService {
     // --- uso la factory centralizada ---
     @Override
     public HechosOutputDto convertirDto(Hecho hecho) {
-                return HechosOutputDto.fromModel(hecho);
-        }
+        return HechosOutputDto.fromModel(hecho);
+    }
 
-    // Filtra contra el repositorio (no contra una lista inexistente) y excluye eliminados
     @Override
-    public List<HechosOutputDto> filtrarHechos(String categoria,
-                                               LocalDate fechaReporteDesde,
-                                               LocalDate fechaReporteHasta,
-                                               LocalDate fechaAcontecimientoDesde,
-                                               LocalDate fechaAcontecimientoHasta,
-                                               Double latitud,
-                                               Double longitud) {
+    public List<HechosOutputDto> filtrarHechos(
+            String categoria,
+            LocalDate fechaReporteDesde,
+            LocalDate fechaReporteHasta,
+            LocalDate fechaAcontecimientoDesde,
+            LocalDate fechaAcontecimientoHasta,
+            Double latitud,
+            Double longitud) {
 
-                return hechosRepository.findAll().stream()
-                        .filter(h -> !h.estaEliminado()) // no mostrar hechos con solicitud aceptada
-                        .filter(h -> categoria == null || safeEqIgnoreCase(h.getCategoria(), categoria))
-                        .filter(h -> fechaReporteDesde == null || !safeDate(h.getFechaCarga()).isBefore(fechaReporteDesde))
-                        .filter(h -> fechaReporteHasta == null || !safeDate(h.getFechaCarga()).isAfter(fechaReporteHasta))
-                        .filter(h -> fechaAcontecimientoDesde == null || !safeDate(h.getFechaAcontecimiento()).isBefore(fechaAcontecimientoDesde))
-                        .filter(h -> fechaAcontecimientoHasta == null || !safeDate(h.getFechaAcontecimiento()).isAfter(fechaAcontecimientoHasta))
-                        .filter(h -> latitud == null  || Objects.equals(h.getLatitud(),  latitud))
-                        .filter(h -> longitud == null || Objects.equals(h.getLongitud(), longitud))
-                        .map(HechosOutputDto::fromModel) // factory simple → cero ambigüedad
-                        .collect(Collectors.toList());
-        }
+        return hechosRepository.findAll().stream()
+                .filter(h -> !h.estaEliminado())
+                .filter(h -> categoria == null || safeEqIgnoreCase(h.getCategoria(), categoria))
+                .filter(h -> fechaReporteDesde == null || !safeDate(h.getFechaCarga()).isBefore(fechaReporteDesde))
+                .filter(h -> fechaReporteHasta == null || !safeDate(h.getFechaCarga()).isAfter(fechaReporteHasta))
+                .filter(h -> fechaAcontecimientoDesde == null ||
+                        !safeDate(h.getFechaAcontecimiento()).isBefore(fechaAcontecimientoDesde))
+                .filter(h -> fechaAcontecimientoHasta == null ||
+                        !safeDate(h.getFechaAcontecimiento()).isAfter(fechaAcontecimientoHasta))
+                .filter(h -> latitud == null || Objects.equals(h.getLatitud(), latitud))
+                .filter(h -> longitud == null || Objects.equals(h.getLongitud(), longitud))
+                .map(HechosOutputDto::fromModel)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public HechosOutputDto crearHecho(HechosInputDto inputDto) {
@@ -101,39 +104,60 @@ public class HechosService implements IHechosService {
 
     @Transactional
     public List<Hecho> importarDesdeApi() {
-                DesastreDto[] body = restTemplate.getForObject(apiUrl, DesastreDto[].class);
 
-                List<Hecho> aGuardar = new ArrayList<>();
-                if (body == null || body.length == 0) return aGuardar;
+        DesastreDto[] body = restTemplate.getForObject(apiUrl, DesastreDto[].class);
+        List<Hecho> aGuardar = new ArrayList<>();
 
-                for (DesastreDto d : body) {
-                        LocalDate fecha = d.getFechaHecho() != null ? d.getFechaHecho().toLocalDate() : null;
-                        LocalTime hora  = d.getFechaHecho() != null ? d.getFechaHecho().toLocalTime() : null;
+        if (body == null || body.length == 0) return aGuardar;
 
-                        String titulo = trimToLen(nvl(d.getTitulo()), 50); // tu columna es Char(50)
-                        String descripcion = nvl(d.getDescripcion());
-                        String categoria = nvl(d.getCategoria());
+        for (DesastreDto d : body) {
 
-                     /*   boolean existe = hechosRepository.existsByTituloAndFecha(
-                                titulo, fecha, d.getLatitud(), d.getLongitud()
-                        );
-                        if (existe) continue;
-*/
-                        Hecho h = Hecho.builder()
-                                .titulo(titulo)
-                                .descripcion(descripcion)
-                                .categoria(categoria)
-                                .latitud(d.getLatitud())
-                                .longitud(d.getLongitud())
-                                .fechaAcontecimiento(fecha)
-                                .fechaCarga(LocalDate.now())
-                                .build();
+            LocalDate fecha = d.getFechaHecho() != null
+                    ? d.getFechaHecho().toLocalDate()
+                    : null;
 
-                        aGuardar.add(h);
-                }
+            String titulo = trimToLen(nvl(d.getTitulo()), 50);
+            String descripcion = nvl(d.getDescripcion());
+            String categoria = nvl(d.getCategoria());
 
-                return hechosRepository.saveAll(aGuardar);
+            Hecho h = Hecho.builder()
+                    .titulo(titulo)
+                    .descripcion(descripcion)
+                    .categoria(categoria)
+                    .latitud(d.getLatitud())
+                    .longitud(d.getLongitud())
+                    .fechaAcontecimiento(fecha)
+                    .fechaCarga(LocalDate.now())
+                    .build();
+
+            aGuardar.add(h);
         }
+
+        return hechosRepository.saveAll(aGuardar);
+    }
+
+    @Override
+    public List<HechoDTO> obtenerHechosLanding(String modo, int limit) {
+    // 1. Determinar estado (0=Irrestricto, 1=Curado)
+    Integer estadoDB = "curado".equalsIgnoreCase(modo) ? 1 : 0;
+
+    // 2. Llamar al método JPQL del repositorio (asegúrate de haber actualizado IHechosRepository)
+    List<Hecho> hechos = hechosRepository.findByEstadoConsensoAndEliminadoFalseOrderByFechaCargaDesc(
+        estadoDB,
+        PageRequest.of(0, limit)
+    );
+
+    // 3. Convertir a DTO Simple
+    return hechos.stream().map(h -> HechoDTO.builder()
+        .id(h.getIdHecho())
+        .titulo(h.getTitulo())
+        .descripcion(h.getDescripcion())
+        .categoria(h.getCategoria())
+        .lugar(h.getProvincia())
+        .fecha(h.getFechaAcontecimiento())
+        .build()
+    ).collect(Collectors.toList());
+  }
 
     private static String nvl(String s) {
                 return s == null ? "" : s;
@@ -143,7 +167,6 @@ public class HechosService implements IHechosService {
                 if (s == null) return null;
                 return s.length() <= max ? s : s.substring(0, max);
         }
-
 
     @Override
     public void setConsensuado(Hecho hecho, EstadoConsenso estado) {

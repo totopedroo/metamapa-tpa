@@ -647,7 +647,6 @@ public class ColeccionService implements IColeccionService {
             c.getId(),
             c.getTitulo(),
             c.getDescripcion(),
-            // 👇 CORRECCIÓN AQUÍ: Si getId() es int primitivo, usamos el cast directo a long
             c.getAdministrador() != null ? (long) c.getAdministrador().getId() : null,
             c.getHechos().stream().map(Hecho::getIdHecho).toList(),
             c.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
