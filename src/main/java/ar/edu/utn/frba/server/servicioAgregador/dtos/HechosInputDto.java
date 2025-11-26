@@ -26,7 +26,7 @@ public class HechosInputDto {
     private LocalDate fechaAcontecimiento;
     private LocalTime horaAcontecimiento;
     private List<String> etiquetas = new ArrayList();
-    private Contribuyente contribuyente;
+    private Long idContribuyente;
     private boolean eliminado = false;
     private TipoFuente fuente;
 

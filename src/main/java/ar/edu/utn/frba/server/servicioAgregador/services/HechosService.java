@@ -1,8 +1,10 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IContribuyenteRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
@@ -24,31 +26,34 @@ import java.util.stream.Collectors;
 @Service("hechosAgregadorService")
 public class HechosService implements IHechosService {
 
-        @Autowired
-        private IHechosRepository hechosRepository;
+    @Autowired
+    private IHechosRepository hechosRepository;
 
-        @Autowired
-        private NormalizadorService normalizadorService;
-        private static final String apiUrl = "https://api-ddsi.disilab.ar/docs/API_Desastres_Naturales.postman_collection.json";
+    @Autowired
+    private IContribuyenteRepository contribuyenteRepository;
 
-        @Autowired
+    @Autowired
+    private NormalizadorService normalizadorService;
+    private static final String apiUrl = "https://api-ddsi.disilab.ar/docs/API_Desastres_Naturales.postman_collection.json";
+
+    @Autowired
     private RestTemplate restTemplate;
 
-        // --- uso la factory centralizada ---
-        @Override
-        public HechosOutputDto convertirDto(Hecho hecho) {
+    // --- uso la factory centralizada ---
+    @Override
+    public HechosOutputDto convertirDto(Hecho hecho) {
                 return HechosOutputDto.fromModel(hecho);
         }
 
-        // Filtra contra el repositorio (no contra una lista inexistente) y excluye eliminados
-        @Override
-        public List<HechosOutputDto> filtrarHechos(String categoria,
-                                                   LocalDate fechaReporteDesde,
-                                                   LocalDate fechaReporteHasta,
-                                                   LocalDate fechaAcontecimientoDesde,
-                                                   LocalDate fechaAcontecimientoHasta,
-                                                   Double latitud,
-                                                   Double longitud) {
+    // Filtra contra el repositorio (no contra una lista inexistente) y excluye eliminados
+    @Override
+    public List<HechosOutputDto> filtrarHechos(String categoria,
+                                               LocalDate fechaReporteDesde,
+                                               LocalDate fechaReporteHasta,
+                                               LocalDate fechaAcontecimientoDesde,
+                                               LocalDate fechaAcontecimientoHasta,
+                                               Double latitud,
+                                               Double longitud) {
 
                 return hechosRepository.findAll().stream()
                         .filter(h -> !h.estaEliminado()) // no mostrar hechos con solicitud aceptada
@@ -63,44 +68,39 @@ public class HechosService implements IHechosService {
                         .collect(Collectors.toList());
         }
 
-        @Override
-        public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-                // Normalizar datos de entrada
-                String tituloNormalizado = normalizadorService.normalizarTitulo(inputDto.getTitulo());
-                String descripcionNormalizada = normalizadorService.normalizarDescripcion(inputDto.getDescripcion());
-                String categoriaNormalizada = normalizadorService.normalizarCategoria(inputDto.getCategoria());
-                String provinciaNormalizada = normalizadorService.normalizarProvincia(inputDto.getProvincia());
-                Double latitudNormalizada = normalizadorService.normalizarLatitud(inputDto.getLatitud());
-                Double longitudNormalizada = normalizadorService.normalizarLongitud(inputDto.getLongitud());
+    @Override
+    public HechosOutputDto crearHecho(HechosInputDto inputDto) {
 
-                Hecho hecho = new Hecho();
-                hecho.setTitulo(tituloNormalizado);
-                hecho.setDescripcion(descripcionNormalizada);
-                hecho.setCategoria(categoriaNormalizada);
-                hecho.setContenidoMultimedia(inputDto.getContenidoMultimedia());
-                hecho.setLatitud(latitudNormalizada);
-                hecho.setLongitud(longitudNormalizada);
-                hecho.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
-                hecho.setHoraAcontecimiento(inputDto.getHoraAcontecimiento());
-                hecho.setProvincia(provinciaNormalizada);
-                hecho.setFechaCarga(LocalDate.now());
-                hecho.setEliminado(false);
-                hecho.setConsensuado(false);
+        Contribuyente c = contribuyenteRepository.findById(inputDto.getIdContribuyente())
+                .orElseThrow(() -> new RuntimeException("Contribuyente no encontrado"));
 
-                Hecho hechoGuardado = hechosRepository.save(hecho);
-                return HechosOutputDto.fromModel(hechoGuardado);
-        }
+        Hecho hecho = new Hecho();
+        hecho.setTitulo(normalizadorService.normalizarTitulo(inputDto.getTitulo()));
+        hecho.setDescripcion(normalizadorService.normalizarDescripcion(inputDto.getDescripcion()));
+        hecho.setCategoria(normalizadorService.normalizarCategoria(inputDto.getCategoria()));
+        hecho.setProvincia(normalizadorService.normalizarProvincia(inputDto.getProvincia()));
+        hecho.setLatitud(normalizadorService.normalizarLatitud(inputDto.getLatitud()));
+        hecho.setLongitud(normalizadorService.normalizarLongitud(inputDto.getLongitud()));
+        hecho.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
+        hecho.setHoraAcontecimiento(inputDto.getHoraAcontecimiento());
+        hecho.setFechaCarga(LocalDate.now());
+        hecho.setEliminado(false);
+        hecho.setConsensuado(false);
+        hecho.setContribuyente(c);
 
-        @Override
-        public HechosOutputDto obtenerHecho(Long id) {
+        Hecho guardado = hechosRepository.save(hecho);
+        return HechosOutputDto.fromModel(guardado);
+    }
+
+    @Override
+    public HechosOutputDto obtenerHecho(Long id) {
                 Hecho hecho = hechosRepository.findById(id).orElse(null);
                 if (hecho == null) return null;
                 return HechosOutputDto.fromModel(hecho);
         }
 
-
-        @Transactional
-        public List<Hecho> importarDesdeApi() {
+    @Transactional
+    public List<Hecho> importarDesdeApi() {
                 DesastreDto[] body = restTemplate.getForObject(apiUrl, DesastreDto[].class);
 
                 List<Hecho> aGuardar = new ArrayList<>();
@@ -135,29 +135,37 @@ public class HechosService implements IHechosService {
                 return hechosRepository.saveAll(aGuardar);
         }
 
-        private static String nvl(String s) {
+    private static String nvl(String s) {
                 return s == null ? "" : s;
         }
 
-        private static String trimToLen(String s, int max) {
+    private static String trimToLen(String s, int max) {
                 if (s == null) return null;
                 return s.length() <= max ? s : s.substring(0, max);
         }
 
 
-        @Override
-        public void setConsensuado(Hecho hecho, EstadoConsenso estado) {
+    @Override
+    public void setConsensuado(Hecho hecho, EstadoConsenso estado) {
                 if (hecho == null) return;
                 hecho.setEstadoConsenso(estado);
                 hechosRepository.save(hecho);
         }
 
-        // --- helpers ---
-        private static boolean safeEqIgnoreCase(String a, String b) {
-                return a != null && b != null && a.trim().equalsIgnoreCase(b.trim());
-        }
+    @Override
+    public List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario) {
+        return hechosRepository.findByContribuyente_Id(idUsuario)
+                .stream()
+                .map(HechosOutputDto::fromModel)
+                .collect(Collectors.toList());
+    }
 
-        private static LocalDate safeDate(LocalDate d) {
+    // --- helpers ---
+    private static boolean safeEqIgnoreCase(String a, String b) {
+        return a != null && b != null && a.trim().equalsIgnoreCase(b.trim());
+    }
+
+    private static LocalDate safeDate(LocalDate d) {
                 return d == null ? LocalDate.MIN : d;
         }
 }

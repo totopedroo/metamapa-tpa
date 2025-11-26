@@ -61,7 +61,8 @@ public class Hecho {
     private List<Etiqueta> etiquetas = new ArrayList<>();
     @OneToMany(mappedBy = "idHechoAsociado")
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
-    @Transient
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contribuyente_id")
     private Contribuyente contribuyente;
     @Column(name = "eliminado")
     private boolean eliminado = false;

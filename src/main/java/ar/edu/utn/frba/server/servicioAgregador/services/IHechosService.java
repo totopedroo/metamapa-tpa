@@ -15,7 +15,8 @@ public interface IHechosService
     HechosOutputDto obtenerHecho(Long id);
     HechosOutputDto convertirDto(Hecho hechos);
     void  setConsensuado(Hecho hecho, EstadoConsenso estado);
-    public List<Hecho> importarDesdeApi() ;
-        List<HechosOutputDto> filtrarHechos(String categoria, LocalDate fechaReporteDesde, LocalDate fechaReporteHasta, LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta, Double latitud, Double longitud);
+    List<Hecho> importarDesdeApi() ;
+    List<HechosOutputDto> filtrarHechos(String categoria, LocalDate fechaReporteDesde, LocalDate fechaReporteHasta, LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta, Double latitud, Double longitud);
+    List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario);
 }
 

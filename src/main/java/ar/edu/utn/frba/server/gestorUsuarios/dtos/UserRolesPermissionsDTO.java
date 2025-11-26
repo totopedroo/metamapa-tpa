@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 @Builder
 public class UserRolesPermissionsDTO {
+    private Long id;
     private String username;
     private Rol rol;
-
     private List<String> permisos;
 }

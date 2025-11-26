@@ -46,4 +46,7 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consulta para hechos por categoría
     List<Hecho> findByCategoriaAndEliminadoFalse(String categoria);
+
+    // Consulta por contribuyente
+    List<Hecho> findByContribuyente_Id(Long idContribuyente);
 }

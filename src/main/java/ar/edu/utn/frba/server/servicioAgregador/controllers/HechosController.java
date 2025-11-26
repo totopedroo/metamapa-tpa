@@ -49,16 +49,8 @@ public class HechosController {
         ));
     }
 
-    // GET /hechos → devuelve todo lo que hay en la tabla
-  /*  @GetMapping
-    public List<Hecho> listar() {
-        return hechosRepository.findAll();
-    }*/
+    @GetMapping("/hechos/usuario/{idUsuario}")
+    public List<HechosOutputDto> listarHechosPorUsuario(@PathVariable Long idUsuario) {
+        return hechosService.listarHechosPorUsuario(idUsuario);
+    }
 }
-/*
-    @GetMapping("/inicializar")
-    public Boolean inicializar() {
-        this.seederService.inicializar();
-        return true;
-    }*/
-

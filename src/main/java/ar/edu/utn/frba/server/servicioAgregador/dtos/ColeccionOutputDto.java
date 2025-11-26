@@ -17,10 +17,10 @@ public class ColeccionOutputDto {
 
     private List<HechosOutputDto> hechos;
 
-    // 👇 Ahora DTOs, no objetos de dominio
+    // Ahora DTOs, no objetos de dominio
     private List<CriterioDePertenenciaDto> criterios;
 
-    // 👇 Las estrategias siguen siendo problemáticas -> exponer nombre simple
+    // Las estrategias siguen siendo problemáticas -> exponer nombre simple
     private String algoritmoDeConsenso;
 
     public static ColeccionOutputDto fromModel(Coleccion c) {
@@ -51,7 +51,7 @@ public class ColeccionOutputDto {
         return dto;
     }
 
-    // ✅ Adaptador para que compile tu línea vieja:
+    // Adaptador para que compile tu línea vieja:
     // dto.setCriterioDePertenencia(coleccion.getCriterioDePertenencia());
     public void setCriterioDePertenencia(List<CriterioDePertenencia> cps) {
         this.criterios = (cps == null ? List.of()

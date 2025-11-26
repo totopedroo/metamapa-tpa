@@ -21,8 +21,6 @@ public class SolicitudController {
 
     @Autowired
     private ISolicitudService solicitudService;
-    @Autowired
-    private View error;
 
     @PostMapping("")
     public ResponseEntity<SolicitudOutputDto> crearSolicitud(@RequestBody SolicitudInputDto dto) {
@@ -37,28 +35,19 @@ public class SolicitudController {
         }
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> actualizarEstadoSolicitud(
-            @PathVariable Long id, @RequestBody Map<String, String> body) {
-
-        String raw = body.get("estado");
-        if (raw == null) return ResponseEntity.badRequest().body("Falta 'estado'");
-
+    @GetMapping("/usuarios/{idUsuario}")
+    public ResponseEntity<?> obtenerPorUsuario(@PathVariable Long idUsuario) {
         try {
-            EstadoDeSolicitud nuevo = EstadoDeSolicitud.valueOf(raw.trim().toUpperCase());
-            switch (nuevo) {
-                case ACEPTADA -> { solicitudService.aceptarSolicitud(id); return ResponseEntity.ok("Solicitud aceptada"); }
-                case RECHAZADA -> { solicitudService.rechazarSolicitud(id); return ResponseEntity.ok("Solicitud rechazada"); }
-                case PENDIENTE ->   { /* opcional: permitir volver a pendiente */ return ResponseEntity.ok("Solicitud pendiente"); }
-                default -> { return ResponseEntity.badRequest().body("Estado no válido"); }
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Estado inválido. Use: ACEPTADA | RECHAZADA | PENDIENTE");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+            List<SolicitudFrontDto> lista = solicitudService.obtenerPorUsuario(idUsuario);
+            return ResponseEntity.ok(lista);
 
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
+
+
     @GetMapping("/admin")
     public ResponseEntity<?> obtenerSolicitudes() {
         try {
@@ -69,7 +58,6 @@ public class SolicitudController {
         }
     }
 
-    // En SolicitudApiController.java (BACKEND)
 
     @PostMapping("/{id}/aprobar")
     public ResponseEntity<?> aprobarSolicitud(@PathVariable Long id) {

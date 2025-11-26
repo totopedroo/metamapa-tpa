@@ -13,5 +13,6 @@ public class AuthResponseDTO {
     private String accessToken;
     private String tokenType;
     private long expiresIn;
+    private UserRolesPermissionsDTO usuario;
   //  private String refreshToken;
 }

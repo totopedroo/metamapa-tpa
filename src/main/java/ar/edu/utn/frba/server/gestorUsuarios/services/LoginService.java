@@ -53,6 +53,7 @@ public class LoginService {
         }
         Usuario usuario = usuarioOpt.get();
         return UserRolesPermissionsDTO.builder()
+                .id(usuario.getId())
                 .username(usuario.getNombreDeUsuario())
                 .rol(usuario.getRol())
                 .permisos(usuario.getPermisos())
