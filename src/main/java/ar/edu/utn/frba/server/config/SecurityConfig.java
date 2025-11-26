@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 // 👇 Estos imports son vitales para el AuthenticationManager
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,6 +44,7 @@ public class SecurityConfig {
 
                 // 1. Desactivamos CSRF (No necesario para APIs Stateless)
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())   // 👈 habilitar CORS
 
                 // 2. Política Stateless (Sin sesiones en el servidor)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -53,6 +55,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/hechos/**").permitAll();
                     auth.requestMatchers("/fuente-dinamica/**").permitAll();
                     auth.requestMatchers("/api/auth/**").permitAll();
+                    auth.requestMatchers("/solicitudes").permitAll();
+
 
                     // Registro Público
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();

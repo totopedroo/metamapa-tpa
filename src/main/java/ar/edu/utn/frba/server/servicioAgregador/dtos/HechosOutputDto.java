@@ -43,7 +43,7 @@ public class HechosOutputDto {
     public static HechosOutputDto fromModel(Hecho h) {
         HechosOutputDto dto = new HechosOutputDto();
         if (h == null) return dto;
-        //dto.setIdHecho(h.getIdHecho());
+        dto.setIdHecho(h.getIdHecho());
         dto.setTitulo(h.getTitulo());
         dto.setDescripcion(h.getDescripcion());
         dto.setCategoria(h.getCategoria());
