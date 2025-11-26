@@ -3,6 +3,8 @@ package ar.edu.utn.frba.server.servicioAgregador.controllers;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IAlgoritmoConsensoRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,45 @@ public class ColeccionController {
     private final SolicitudService solicitudService;
     private final ExportacionCSVService exportacionCSVService;
 
+    private final IAlgoritmoConsensoRepository algoritmoRepo;
+    private final IColeccionRepository coleccionRepo;
+
     // --- ENDPOINT PARA LANDING PAGE (GET /api/colecciones/ultimas) ---
     @GetMapping("/ultimas")
     public ResponseEntity<List<ColeccionOutputBD>> listarUltimas() {
         return ResponseEntity.ok(coleccionService.listarUltimas());
+    }
+
+    // --- ENDPOINTS DE ALGORITMOS DE CONSENSO ---
+
+    // 1. Listar algoritmos para el select del modal
+    @GetMapping("/algoritmos")
+    public ResponseEntity<List<AlgoritmoConsenso>> listarAlgoritmosDisponibles() {
+        return ResponseEntity.ok(algoritmoRepo.findAll());
+    }
+
+    // 2. Asociar algoritmo a una colección
+    @PutMapping("/{id}/asociar-algoritmo")
+    public ResponseEntity<?> asociarAlgoritmo(@PathVariable Long id, @RequestParam(required = false) Long algoritmoId) {
+        try {
+            Coleccion c = coleccionRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
+
+            if (algoritmoId != null) {
+                AlgoritmoConsenso algo = algoritmoRepo.findById(algoritmoId)
+                    .orElseThrow(() -> new NoSuchElementException("Algoritmo no encontrado"));
+                c.setAlgoritmoConsensoEntidad(algo);
+            } else {
+                c.setAlgoritmoConsensoEntidad(null);
+            }
+
+            coleccionRepo.save(c);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     // --- OTROS ENDPOINTS ---
