@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -46,4 +47,9 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consulta para hechos por categoría
     List<Hecho> findByCategoriaAndEliminadoFalse(String categoria);
+
+    //Forzamos SQL Nativo para evitar errores de mapeo de tipos (Integer vs Enum)
+    // estado_consenso y eliminado se comparan directamente como números.
+    @Query(value = "SELECT * FROM hecho WHERE estado_consenso = :estadoConsenso AND eliminado = 0 ORDER BY fecha_carga DESC", nativeQuery = true)
+    List<Hecho> findByEstadoConsensoAndEliminadoFalseOrderByFechaCargaDesc(@Param("estadoConsenso") Integer estadoConsenso, Pageable pageable);
 }
