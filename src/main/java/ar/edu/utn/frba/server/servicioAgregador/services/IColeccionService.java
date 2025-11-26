@@ -34,5 +34,6 @@ public interface IColeccionService {
     public void eliminar(Long coleccionId);
     public List<HechosOutputDto> obtenerHechosPorTituloColeccion(String tituloColeccion);
 
+    List<ColeccionOutputBD> listarUltimas();
 
-    }
+}
