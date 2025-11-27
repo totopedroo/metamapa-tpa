@@ -23,8 +23,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.util.*;
 
 import static ar.edu.utn.frba.server.contratos.enums.TipoFuente.ESTATICA;
@@ -652,6 +654,131 @@ public class ColeccionService implements IColeccionService {
             c.getHechos().stream().map(Hecho::getIdHecho).toList(),
             c.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
         )).toList();
+    }
+
+    @Override
+
+    public Coleccion crearColeccionDesdeFuentes2(String titulo, String criterio) {
+        System.out.println(">>> [DEBUG] Iniciando crearColeccionDesdeFuentes...");
+
+        Coleccion coleccion = new Coleccion(
+                (titulo == null || titulo.isBlank()) ? "Colección desde Fuentes" : titulo,
+                "Colección creada",
+                new ArrayList<>()
+        );
+
+        // Definimos explícitamente el Set
+        EnumSet<TipoFuente> fuentesUsadas = EnumSet.noneOf(TipoFuente.class);
+
+        List<Hecho> nuevosHechos = new ArrayList<>();
+        Fuente estatica = new Fuente(TipoFuente.ESTATICA);
+        Fuente proxy = new Fuente(TipoFuente.PROXY);
+
+        // ----- CASO 1: RUTA CSV (estática) ----------------------------------------
+        if (criterio != null && (criterio.endsWith(".csv") || criterio.startsWith("classpath:"))) {
+            System.out.println(">>> [DEBUG] Detectado criterio CSV. Procesando...");
+
+            // 1. Instanciamos el importador
+            ImportadorCSV importador = new ImportadorCSV();
+            String path = criterio.startsWith("classpath:") ? criterio.substring("classpath:".length()) : criterio;
+
+            // 2. Obtenemos la lista con TIPO EXPLÍCITO (Aquí saltaría si el importador devolviera otra cosa)
+            List<Hecho> hechosCsv = importador.importar(path);
+
+            System.out.println(">>> [DEBUG] Hechos importados del CSV: " + (hechosCsv != null ? hechosCsv.size() : "NULL"));
+
+            if (hechosCsv != null) {
+                // 3. Asignamos la fuente ESTATICA a cada hecho
+                // IMPORTANTE: Sin mappers, usamos los objetos directos del importador
+                for (Hecho h : hechosCsv) {
+                    if (h.getFuente() == null) {
+                        h.setFuente(estatica);
+                    }
+                    nuevosHechos.add(h);
+                }
+            }
+
+            fuentesUsadas.add(TipoFuente.ESTATICA);
+
+            // ----- CASO 2: FUENTES EXTERNAS (proxy/dinámica) --------------------------
+        } else {
+            System.out.println(">>> [DEBUG] Detectado criterio API/Proxy.");
+
+            // Consultamos handler
+            var externos = consultarHechosHandler.consultar(criterio);
+
+            // Aquí sí usamos el mapper porque 'externos' suele ser una lista de DTOs, no de Hechos
+            if (externos != null) {
+                List<Hecho> hechosExternos = externos.stream()
+                        .map(agregadorMapper::toDomain)
+                        .toList();
+
+                for (Hecho h : hechosExternos) {
+                    if (h.getFuente() == null && h.getContribuyente() == null) {
+                        h.setFuente(proxy);
+                    }
+                    nuevosHechos.add(h);
+                }
+            }
+
+            if (!nuevosHechos.isEmpty()) {
+                fuentesUsadas.add(TipoFuente.PROXY);
+            }
+        }
+
+        System.out.println(">>> [DEBUG] Total hechos a guardar: " + nuevosHechos.size());
+
+        // Persistir y asociar
+        for (Hecho h : nuevosHechos) {
+            hechosRepository.save(h);
+            coleccion.setHecho(h);
+        }
+        coleccionRepository.save(coleccion);
+
+        // Descripción según orígenes
+        // Convertimos el EnumSet a ArrayList explícitamente para evitar líos de tipos
+        coleccion.setDescripcion(descripcionPorFuentes(fuentesUsadas));
+        coleccionRepository.save(coleccion);
+
+        System.out.println(">>> [DEBUG] Colección creada exitosamente.");
+        return coleccion;
+    }
+
+
+    @Override
+    public void importarDesdeWeb(MultipartFile file) {
+        File tempFile = null;
+        System.out.println(">>> Entre al service porque soy re crack.");
+
+        try {
+            // 1. Crear un archivo temporal en el sistema operativo
+            // Prefijo: "upload_", Sufijo: ".csv"
+            tempFile = File.createTempFile("upload_", ".csv");
+
+            // 2. Transferir los bytes del MultipartFile al archivo en disco
+            file.transferTo(tempFile);
+
+            // 3. REUTILIZAR TU MÉTODO EXISTENTE
+            // Pasamos la ruta absoluta del archivo temporal como 'criterio'
+            String tituloColeccion = "Importación Web - " + file.getOriginalFilename();
+            String rutaArchivo = tempFile.getAbsolutePath();
+
+            // ¡Aquí llamamos a tu lógica original!
+            crearColeccionDesdeFuentes2(tituloColeccion, rutaArchivo);
+
+            System.out.println(">>> Importación reutilizando lógica exitosa.");
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al importar CSV: " + e.getMessage());
+        } finally {
+            // 4. LIMPIEZA (Muy importante)
+            // Borramos el archivo temporal pase lo que pase para no llenar el servidor
+            if (tempFile != null && tempFile.exists()) {
+                boolean borrado = tempFile.delete();
+                if (!borrado)
+                    System.err.println("Advertencia: No se pudo borrar el archivo temporal " + tempFile.getName());
+            }
+        }
     }
 
 }

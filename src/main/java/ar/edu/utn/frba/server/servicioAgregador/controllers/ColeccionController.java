@@ -10,8 +10,10 @@ import ar.edu.utn.frba.server.servicioAgregador.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -213,5 +215,18 @@ public class ColeccionController {
 
         var out = coleccionService.consensuarHecho(coleccionId, hechoId);
         return ResponseEntity.ok(HechoFrontMapper.toDto(out));
+    }
+
+    @PostMapping(value = "/importar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> importarCsv(@RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println(">>> ¡LLEGUÉ AL CONTROLLER DEL BACKEND! <<<"); // <--- Agrega esto
+            System.out.println("Archivo recibido: " + file.getOriginalFilename());
+            coleccionService.importarDesdeWeb(file);
+            return ResponseEntity.ok("Importación finalizada con éxito.");
+        } catch (Exception e) {
+            System.out.println(">>> ¡Rompi porque soy re puto! <<<");
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 }
