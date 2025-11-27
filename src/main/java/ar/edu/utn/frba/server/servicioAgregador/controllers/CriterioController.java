@@ -3,7 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.controllers;
 import ar.edu.utn.frba.server.servicioAgregador.domain.CriterioDePertenencia;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.CriterioDePertenenciaDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.ICriterioRepository;
-import ar.edu.utn.frba.server.servicioAgregador.services.CriterioDePertenenciaMapper;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.CriterioDePertenenciaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

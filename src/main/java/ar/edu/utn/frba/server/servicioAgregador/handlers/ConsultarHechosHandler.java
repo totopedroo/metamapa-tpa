@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.servicioAgregador.services;
+package ar.edu.utn.frba.server.servicioAgregador.handlers;
 
 import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;

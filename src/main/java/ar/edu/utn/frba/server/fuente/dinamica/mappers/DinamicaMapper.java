@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.fuente.dinamica.services;
+package ar.edu.utn.frba.server.fuente.dinamica.mappers;
 
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;

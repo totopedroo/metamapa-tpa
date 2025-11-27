@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.fuente.dinamica.services;
+package ar.edu.utn.frba.server.fuente.dinamica.mappers;
 
 import ar.edu.utn.frba.server.fuente.dinamica.domain.SolicitudEliminacion;
 import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;

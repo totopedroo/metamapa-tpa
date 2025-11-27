@@ -1,12 +1,11 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
-import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoPorDefectoStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.handlers.ConsultarHechosHandler;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.AgregadorMapper;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

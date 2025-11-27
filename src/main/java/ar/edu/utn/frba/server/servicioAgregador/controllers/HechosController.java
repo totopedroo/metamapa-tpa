@@ -1,15 +1,18 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
 
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoDTO;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoFrontDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
-import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.HechoFrontMapper;
 import ar.edu.utn.frba.server.servicioAgregador.services.IHechosService;
+import ar.edu.utn.frba.server.fuente.estatica.services.IFuenteEstaticaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,51 +25,100 @@ import java.util.Map;
 public class HechosController {
 
     private final IHechosService hechosService;
+    private final IFuenteEstaticaService estaticaService;
 
-    // ENDPOINT PARA LANDING (Resuelve el error 500)
-    // GET /api/hechos?modo=irrestricto&limit=5
+    /**
+     * GET /api/hechos
+     * - Si viene 'modo' → landing page (usa HechoDTO simplificado)
+     * - Si no viene → búsqueda avanzada (devuelve HechoFrontDto)
+     */
     @GetMapping
     public ResponseEntity<Map<String, Object>> obtenerHechos(
-        @RequestParam(required = false) String modo,
-        @RequestParam(required = false) Integer limit,
-        // Parámetros para el filtro avanzado (se pueden combinar o separar)
-        @RequestParam(required = false) String categoria,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
-        @RequestParam(required = false) Double latitud,
-        @RequestParam(required = false) Double longitud) {
+            @RequestParam(required = false) String modo,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud) {
 
-        // Si viene 'modo', asumimos que es la Landing Page pidiendo los últimos N
+        // === LANDING PAGE ===
         if (modo != null) {
             int limite = (limit != null) ? limit : 5;
-            List<HechoDTO> hechos = hechosService.obtenerHechosLanding(modo, limite);
-            return ResponseEntity.ok(Map.of("items", hechos));
+            var hechosLanding = hechosService.obtenerHechosLanding(modo, limite);
+            // Este endpoint sigue usando HechoDTO simplificado
+            return ResponseEntity.ok(Map.of("items", hechosLanding));
         }
 
-        // Si no viene 'modo', asumimos que es la búsqueda avanzada
-        List<HechosOutputDto> filtrados = hechosService.filtrarHechos(categoria, fechaReporteDesde, fechaReporteHasta,
-            fechaAcontecimientoDesde, fechaAcontecimientoHasta, latitud, longitud);
+        // === BÚSQUEDA AVANZADA ===
+        var hechos = hechosService.filtrarHechos(
+                categoria, fechaReporteDesde, fechaReporteHasta,
+                fechaAcontecimientoDesde, fechaAcontecimientoHasta,
+                latitud, longitud
+        );
 
-        // Para búsqueda avanzada, podemos devolver la lista directa o wrappeada.
-        // Por compatibilidad, devolvemos items.
-        return ResponseEntity.ok(Map.of("items", filtrados));
+        // Convertimos SIEMPRE al DTO del FRONT
+        var salida = hechos.stream()
+                .map(HechoFrontMapper::toDto)
+                .toList();
+
+        return ResponseEntity.ok(Map.of("items", salida));
     }
 
-    @PostMapping(path = "/crear", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HechosOutputDto crearHecho(@RequestBody HechosInputDto inputDto) {
-        return hechosService.crearHecho(inputDto);
+    /**
+     * POST /api/hechos/crear
+     * Devuelve siempre el DTO del FRONT
+     */
+    @PostMapping(
+            path = "/crear",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public HechoFrontDto crearHecho(@RequestBody HechosInputDto inputDto) {
+        var creado = hechosService.crearHecho(inputDto);
+        return HechoFrontMapper.toDto(creado);
     }
 
+    /**
+     * POST /api/hechos/importar-api
+     */
     @PostMapping("/importar-api")
     public ResponseEntity<?> importarApi() {
         List<Hecho> guardados = hechosService.importarDesdeApi();
         return ResponseEntity.ok(Map.of("insertados", guardados.size()));
     }
 
+    /**
+     * GET /api/hechos/hechos/usuario/{idUsuario}
+     * También homogenizado al front DTO
+     */
     @GetMapping("/hechos/usuario/{idUsuario}")
-    public List<HechosOutputDto> listarHechosPorUsuario(@PathVariable Long idUsuario) {
-        return hechosService.listarHechosPorUsuario(idUsuario);
+    public List<HechoFrontDto> listarHechosPorUsuario(@PathVariable Long idUsuario) {
+        return hechosService.listarHechosPorUsuario(idUsuario).stream()
+                .map(HechoFrontMapper::toDto)
+                .toList();
     }
+
+    @PostMapping(
+            path = "/importar-csv",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> importarCsv(@RequestParam("file") MultipartFile file) {
+        try {
+            List<Hecho> hechos = estaticaService.importarDesdeArchivo(file);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "importados", hechos.size()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "error", e.getMessage()
+                    ));
+        }
+    }
+
 }

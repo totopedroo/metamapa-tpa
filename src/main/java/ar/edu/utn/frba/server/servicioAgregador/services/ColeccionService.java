@@ -1,13 +1,14 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
-import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
 import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
-import ar.edu.utn.frba.server.fuente.estatica.services.EstaticaMapper;
+import ar.edu.utn.frba.server.fuente.estatica.mappers.EstaticaMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 //import ar.edu.utn.frba.server.fuente.estatica.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.servicioAgregador.handlers.ConsultarHechosHandler;
+import ar.edu.utn.frba.server.servicioAgregador.mappers.AgregadorMapper;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IAdministradorRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.ICriterioRepository;

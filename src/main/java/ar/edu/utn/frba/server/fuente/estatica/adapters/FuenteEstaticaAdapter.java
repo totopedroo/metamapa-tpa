@@ -1,8 +1,9 @@
-package ar.edu.utn.frba.server.fuente.estatica.services;
+package ar.edu.utn.frba.server.fuente.estatica.adapters;
 
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
 import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
 import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
+import ar.edu.utn.frba.server.fuente.estatica.mappers.EstaticaMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

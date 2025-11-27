@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.fuente.proxy.services;
+package ar.edu.utn.frba.server.fuente.proxy.mappers;
 
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;

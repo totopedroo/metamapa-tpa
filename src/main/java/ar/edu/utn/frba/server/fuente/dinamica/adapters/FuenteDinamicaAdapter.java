@@ -1,7 +1,9 @@
-package ar.edu.utn.frba.server.fuente.dinamica.services;
+package ar.edu.utn.frba.server.fuente.dinamica.adapters;
 
 import ar.edu.utn.frba.server.contratos.fuentes.FuentePort;
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
+import ar.edu.utn.frba.server.fuente.dinamica.mappers.DinamicaMapper;
+import ar.edu.utn.frba.server.fuente.dinamica.services.HechosService;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

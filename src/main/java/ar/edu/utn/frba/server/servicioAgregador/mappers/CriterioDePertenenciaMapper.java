@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.server.servicioAgregador.services;
+package ar.edu.utn.frba.server.servicioAgregador.mappers;
 
 import ar.edu.utn.frba.server.servicioAgregador.dtos.CriterioDePertenenciaDto;
 import ar.edu.utn.frba.server.servicioAgregador.domain.CriterioDePertenencia;

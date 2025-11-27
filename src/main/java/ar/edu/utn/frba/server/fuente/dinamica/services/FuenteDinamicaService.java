@@ -2,6 +2,7 @@ package ar.edu.utn.frba.server.fuente.dinamica.services;
 
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
+import ar.edu.utn.frba.server.fuente.dinamica.mappers.ApiDinamicaMapper;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import jakarta.transaction.Transactional;
