@@ -63,6 +63,9 @@ public class Hecho {
     @OneToMany(mappedBy = "idHechoAsociado")
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SolicitudModificacion> solicitudesModificacion = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contribuyente_id")
     private Contribuyente contribuyente;
@@ -174,4 +177,15 @@ public class Hecho {
     }
 
     @Override public int hashCode() { return Objects.hash(idHecho); }
+
+    public void agregarSolicitudModificacion(SolicitudModificacion solicitud) {
+        solicitudesModificacion.add(solicitud);
+        solicitud.setHecho(this); // Vinculación bidireccional
+    }
+
+    // Método para remover
+    public void removerSolicitudModificacion(SolicitudModificacion solicitud) {
+        solicitudesModificacion.remove(solicitud);
+        solicitud.setHecho(this);
+    }
 }

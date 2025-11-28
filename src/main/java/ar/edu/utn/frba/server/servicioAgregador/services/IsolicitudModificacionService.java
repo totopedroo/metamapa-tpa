@@ -1,0 +1,12 @@
+package ar.edu.utn.frba.server.servicioAgregador.services;
+
+import ar.edu.utn.frba.server.contratos.enums.CampoHecho;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudModificacionInputDto;
+
+public interface IsolicitudModificacionService {
+     void aplicarCambio(Hecho hecho, CampoHecho campo, String valorStr);
+     void aprobarSolicitud(Long idSolicitud);
+     void crearSolicitud(SolicitudModificacionInputDto dto, Long idUsuario);
+     void rechazarSolicitud(Long idSolicitud);
+}
