@@ -7,10 +7,14 @@ import ar.edu.utn.frba.server.servicioAgregador.mappers.HechoFrontMapper;
 import ar.edu.utn.frba.server.servicioAgregador.services.IHechosService;
 import ar.edu.utn.frba.server.fuente.estatica.services.IFuenteEstaticaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +40,8 @@ public class HechosController {
     public ResponseEntity<Map<String, Object>> obtenerHechos(
             @RequestParam(required = false) String modo,
             @RequestParam(required = false) Integer limit,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
@@ -52,19 +58,26 @@ public class HechosController {
             return ResponseEntity.ok(Map.of("items", hechosLanding));
         }
 
-        // === BÚSQUEDA AVANZADA ===
-        var hechos = hechosService.filtrarHechos(
+        // PAGINACIÓN
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Hecho> paged = hechosService.filtrarHechosPaginado(
                 categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta,
-                latitud, longitud
+                latitud, longitud, pageable
         );
 
-        // Convertimos SIEMPRE al DTO del FRONT
-        var salida = hechos.stream()
+        var salida = paged.getContent().stream()
                 .map(HechoFrontMapper::toDto)
                 .toList();
 
-        return ResponseEntity.ok(Map.of("items", salida));
+        return ResponseEntity.ok(Map.of(
+                "items", salida,
+                "totalItems", paged.getTotalElements(),
+                "totalPages", paged.getTotalPages(),
+                "page", page,
+                "size", size
+        ));
     }
 
     /**
@@ -121,4 +134,34 @@ public class HechosController {
         }
     }
 
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarHecho(@PathVariable Long id) {
+
+        // 1. Obtener rol desde el JWT parseado
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || auth.getAuthorities().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Debe autenticarse para eliminar hechos"));
+        }
+
+        String rol = auth.getAuthorities().iterator().next().getAuthority();  // ej: "ROLE_ADMIN"
+
+        // 2. Validar rol
+        if (!"ROLE_ADMIN".equalsIgnoreCase(rol)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Solo un ADMIN puede eliminar hechos"));
+        }
+
+        // 3. Ejecutar operación en el servicio
+        boolean eliminado = hechosService.eliminarHecho(id);
+
+        if (!eliminado) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Hecho no encontrado"));
+        }
+
+        // 4. Éxito
+        return ResponseEntity.noContent().build();
+    }
 }

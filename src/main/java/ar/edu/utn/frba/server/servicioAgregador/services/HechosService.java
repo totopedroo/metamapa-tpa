@@ -11,7 +11,9 @@ import ar.edu.utn.frba.server.servicioAgregador.repositories.IContribuyenteRepos
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -69,6 +71,29 @@ public class HechosService implements IHechosService {
                 .filter(h -> longitud == null || Objects.equals(h.getLongitud(), longitud))
                 .map(HechosOutputDto::fromModel)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Hecho> filtrarHechosPaginado(
+            String categoria,
+            LocalDate fechaReporteDesde,
+            LocalDate fechaReporteHasta,
+            LocalDate fechaAcontecimientoDesde,
+            LocalDate fechaAcontecimientoHasta,
+            Double latitud,
+            Double longitud,
+            Pageable pageable
+    ) {
+        return hechosRepository.filtrarHechosPaginado(
+                categoria,
+                fechaReporteDesde,
+                fechaReporteHasta,
+                fechaAcontecimientoDesde,
+                fechaAcontecimientoHasta,
+                latitud,
+                longitud,
+                pageable
+        );
     }
 
     @Override
@@ -181,6 +206,17 @@ public class HechosService implements IHechosService {
                 .stream()
                 .map(HechosOutputDto::fromModel)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public boolean eliminarHecho(Long id) {
+        Hecho hecho = hechosRepository.findById(id).orElse(null);
+        if (hecho == null) return false;
+
+        hecho.setEliminado(true);
+        hechosRepository.save(hecho);
+        return true;
     }
 
     // --- helpers ---
