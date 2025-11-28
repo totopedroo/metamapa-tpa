@@ -54,6 +54,8 @@ public class SecurityConfig {
                     // Auth y Login
                     auth.requestMatchers("/hechos/**").permitAll();
                     auth.requestMatchers("/fuente-dinamica/**").permitAll();
+                    auth.requestMatchers("/fuente-estatica/**").permitAll();
+
                     auth.requestMatchers("/api/auth/**").permitAll();
                     auth.requestMatchers("/solicitudes").permitAll();
 
