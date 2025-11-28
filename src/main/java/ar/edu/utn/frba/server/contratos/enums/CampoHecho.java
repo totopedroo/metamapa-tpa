@@ -4,7 +4,6 @@ package ar.edu.utn.frba.server.contratos.enums;
 import lombok.Data;
 import lombok.Getter;
 
-@Data
 public enum CampoHecho {
     TITULO("titulo", "Título"),
     DESCRIPCION("descripcion", "Descripción"),
@@ -25,7 +24,7 @@ public enum CampoHecho {
         this.etiqueta = etiqueta;
     }
 
-    // Método útil para buscar un enum por el nombre del campo (ej: "fechaAcontecimiento")
+    // Metodo útil para buscar un enum por el nombre del campo (ej: "fechaAcontecimiento")
     public static CampoHecho fromNombreCampo(String campo) {
         for (CampoHecho c : values()) {
             if (c.nombreCampo.equalsIgnoreCase(campo)) {
