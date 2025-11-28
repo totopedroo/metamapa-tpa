@@ -22,8 +22,15 @@ public class Fuente {
     @Enumerated(EnumType.STRING)
     private TipoFuente tipo;
 
-
+    /*
     public Fuente(String url, TipoFuente tipoFuente) {
+    }
+
+
+     */
+    public Fuente(String url, TipoFuente tipoFuente) {
+        this.path = url;
+        this.tipo = tipoFuente;
     }
 
     public Fuente(TipoFuente tipo) {}

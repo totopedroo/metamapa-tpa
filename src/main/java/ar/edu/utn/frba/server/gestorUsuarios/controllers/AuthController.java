@@ -46,7 +46,15 @@ public class AuthController {
             // Si tu JwtUtil tiene refresh token, úsalo, sino comenta esta línea
             // String refreshToken = jwtUtil.generarRefreshToken(usuario.getNombreDeUsuario());
 
-            AuthResponseDTO resp = new AuthResponseDTO("Bearer", accessToken, 3600);
+            var rolesDto = loginService.obtenerRolesYPermisosUsuario(usuario.getNombreDeUsuario());
+
+            AuthResponseDTO resp = AuthResponseDTO.builder()
+                    .accessToken(accessToken)
+                    .tokenType("Bearer")
+                    .expiresIn(3600)
+                    .usuario(rolesDto)
+                    .build();
+
             return ResponseEntity.ok(resp);
 
         } catch (NotFoundException e) {

@@ -6,8 +6,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,6 +48,21 @@ public class FuenteEstaticaController {
             return ResponseEntity.ok(hechos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping(
+            value = "/importar-csv",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> importarDesdeUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            List<Hecho> hechos = fuenteEstaticaService.importarDesdeArchivo(file);
+            return ResponseEntity.ok("Se importaron " + hechos.size() + " hechos.");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al importar CSV: " + e.getMessage());
         }
     }
 

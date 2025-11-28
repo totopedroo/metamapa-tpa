@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class SolicitudInputDto {
     private Long idHecho;
+    private Long idUsuario;
     private String justificacion;
 
 }

@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.server.fuente.proxy.services;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
+import ar.edu.utn.frba.server.fuente.proxy.mappers.DesastresApiMapper;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

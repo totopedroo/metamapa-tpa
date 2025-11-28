@@ -26,16 +26,20 @@ public class SolicitudEliminacion {
     @Column(name = "id_hecho_asociado")
     @JoinColumn
     private long idHechoAsociado;
+    @Column(name = "id_contribuyente")
+    private Long idContribuyente; //
     @Column(name = "es_spam")
     private boolean esSpam = false;
 
-    public SolicitudEliminacion(String justificacion, long idHechoAsociado) {
+    public SolicitudEliminacion(String justificacion, long idHechoAsociado, Long idContribuyente) {
         if (justificacion == null || justificacion.trim().length() < 500) {
             throw new RuntimeException("La justificación no cumple con la cantidad mínima de caracteres");
         }
+
         this.justificacion = justificacion.trim();
         this.estado = EstadoDeSolicitud.PENDIENTE;
         this.idHechoAsociado = idHechoAsociado;
+        this.idContribuyente = idContribuyente;
     }
 
     public void aceptarSolicitud() { this.estado = EstadoDeSolicitud.ACEPTADA; }

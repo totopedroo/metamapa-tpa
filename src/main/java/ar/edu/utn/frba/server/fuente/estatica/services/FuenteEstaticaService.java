@@ -95,24 +95,39 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     }*/
 
     @Override
+    @Transactional
     public List<Hecho> importarDesdeArchivo(MultipartFile archivo) {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(archivo.getInputStream(), StandardCharsets.UTF_8))) {
 
             List<Hecho> hechosImportados = new ArrayList<>();
-            String line = reader.readLine(); // header
+
+            String line = reader.readLine(); // Leer encabezado y descartarlo
 
             while ((line = reader.readLine()) != null) {
-                Hecho hecho = importador.parsearLineaCSV(line);
-                if (hecho != null) {
-                    repositorio.save(hecho);
-                    hechosImportados.add(hecho);
+                Hecho h = importador.parsearLineaCSV(line);
+                if (h == null) continue;
+
+                // --- LIMPIAR IDs como en importarHechos(path) ---
+                h.setIdHecho(null);
+
+                if (h.getContenidoMultimedia() != null) {
+                    try {
+                        var idField = h.getContenidoMultimedia().getClass().getDeclaredField("id");
+                        idField.setAccessible(true);
+                        idField.set(h.getContenidoMultimedia(), null);
+                    } catch (Exception ignored) {}
                 }
+
+                repositorio.save(h);
+                hechosImportados.add(h);
             }
+
+            em.flush();
             return hechosImportados;
+
         } catch (Exception e) {
             throw new RuntimeException("Error al procesar archivo CSV: " + e.getMessage(), e);
         }
     }
-
 }

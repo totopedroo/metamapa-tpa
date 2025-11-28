@@ -3,6 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.domain;
 import ar.edu.utn.frba.server.domain.Visualizador;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.navegacion.ModoNavegacionStrategy;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.AlgoritmoConsenso;
 import jakarta.persistence.*;
 import lombok.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
@@ -39,6 +40,10 @@ public class Coleccion {
     @ManyToOne
     @JoinColumn(name = "administrador_id", nullable = true)
     private Administrador administrador;
+
+    @ManyToOne
+    @JoinColumn(name = "id_algoritmo_consenso")
+    private AlgoritmoConsenso algoritmoConsensoEntidad;
 
     @ManyToMany
     @JoinTable(

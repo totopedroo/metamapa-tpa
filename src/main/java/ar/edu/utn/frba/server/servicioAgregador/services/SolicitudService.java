@@ -46,7 +46,7 @@ public class SolicitudService implements ISolicitudService {
 
         // Auto-rechazo de spam
         if (detectorDeSpam.esSpam(justif) || justificacionSpam) {
-            SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(justif, inputDto.getIdHecho());
+            SolicitudEliminacion solicitudSpam = new SolicitudEliminacion(justif, inputDto.getIdHecho(), inputDto.getIdUsuario());
             solicitudSpam.rechazarPorSpam();
             solicitudRepository.save(solicitudSpam);
 
@@ -58,7 +58,7 @@ public class SolicitudService implements ISolicitudService {
         }
 
         // PENDIENTE por defecto
-        SolicitudEliminacion solicitud = new SolicitudEliminacion(justif, inputDto.getIdHecho());
+        SolicitudEliminacion solicitud = new SolicitudEliminacion(justif, inputDto.getIdHecho(), inputDto.getIdUsuario());
         hecho.agregarSolicitud(solicitud);
 
         solicitudRepository.save(solicitud);
@@ -138,6 +138,34 @@ public class SolicitudService implements ISolicitudService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
 
+    @Override
+    public List<SolicitudFrontDto> obtenerPorUsuario(Long idUsuario) {
+
+        List<SolicitudEliminacion> solicitudes = solicitudRepository.findAll()
+                .stream()
+                .filter(s -> s.getIdContribuyente() != null &&
+                        s.getIdContribuyente().equals(idUsuario))
+                .toList();
+
+        if (solicitudes.isEmpty()) return new ArrayList<>();
+
+        Set<Long> idsHechos = solicitudes.stream()
+                .map(SolicitudEliminacion::getIdHechoAsociado)
+                .collect(Collectors.toSet());
+
+        Map<Long, String> mapaTitulos = hechosRepository.findAllById(idsHechos)
+                .stream()
+                .collect(Collectors.toMap(Hecho::getIdHecho, Hecho::getTitulo));
+
+        return solicitudes.stream().map(s -> {
+            SolicitudFrontDto dto = new SolicitudFrontDto();
+            dto.setId(s.getIdSolicitud());
+            dto.setEstado(s.getEstado());
+            dto.setJustificacion(s.getJustificacion());
+            dto.setTituloHecho(mapaTitulos.get(s.getIdHechoAsociado()));
+            return dto;
+        }).toList();
     }
 }

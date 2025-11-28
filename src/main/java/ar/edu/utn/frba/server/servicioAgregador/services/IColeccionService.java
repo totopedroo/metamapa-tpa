@@ -8,6 +8,7 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public interface IColeccionService {
     public ColeccionOutputBD crear(ColeccionInputBD dto);
     public void eliminar(Long coleccionId);
     public List<HechosOutputDto> obtenerHechosPorTituloColeccion(String tituloColeccion);
+    public void importarDesdeWeb(MultipartFile file);
+    public Coleccion crearColeccionDesdeFuentes2(String titulo, String criterio);
 
     List<ColeccionOutputBD> listarUltimas();
 

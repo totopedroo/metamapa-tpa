@@ -12,6 +12,6 @@ public interface ISolicitudService {
     void aceptarSolicitud(long idSolicitud);
     void rechazarSolicitud(long idSolicitud);
     List<SolicitudFrontDto> obtenerSolicitudesConTitulo();
-
+    List<SolicitudFrontDto> obtenerPorUsuario(Long idUsuario);
 }
 

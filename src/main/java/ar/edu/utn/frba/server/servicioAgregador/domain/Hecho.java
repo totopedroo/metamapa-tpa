@@ -9,18 +9,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -32,53 +22,76 @@ import java.util.Optional;
 public class Hecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_hecho")   // <<-- Debe existir en la tabla HECHO
-
+    @Column(name = "id_hecho")
     private Long idHecho;
+
     @Column(name = "titulo", columnDefinition = "varchar(255)")
     private String titulo;
+
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
+
     @Column(name = "categoria", columnDefinition = "varchar(100)")
     private String categoria;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "contenido_multimedia_id", referencedColumnName = "id", nullable = true)
     private ContenidoMultimedia contenidoMultimedia;
+
     @Column(name = "latitud")
     private Double latitud;
+
     @Column(name = "longitud")
     private Double longitud;
+
     @Column(name = "fecha_acontecimiento")
     private LocalDate fechaAcontecimiento;
+
     @Column(name = "fecha_carga")
     private LocalDate fechaCarga;
+
     @Column(name = "provincia", columnDefinition = "varchar(100)")
     private String provincia;
+
     @Column(name = "hora_acontecimiento")
     private LocalTime horaAcontecimiento;
+
     @ManyToMany
     @JoinTable(name = "hecho_etiquetado", joinColumns = @JoinColumn(name = "hecho_id"), inverseJoinColumns = @JoinColumn(name = "etiqueta_id"))
     private List<Etiqueta> etiquetas = new ArrayList<>();
+
     @OneToMany(mappedBy = "idHechoAsociado")
     private List<SolicitudEliminacion> solicitudes = new ArrayList<>();
-    @Transient
+
+    @OneToMany(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SolicitudModificacion> solicitudesModificacion = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contribuyente_id")
     private Contribuyente contribuyente;
+
     @Column(name = "eliminado")
     private boolean eliminado = false;
+
     @Column(name = "consensuado", nullable = true)
     private Boolean consensuado = false;
-    @ManyToMany
-    @JoinTable(name = "hecho_fuente", joinColumns = @JoinColumn(name = "hechos"), inverseJoinColumns = @JoinColumn(name = "id"))
-    private List<Fuente> fuente = new ArrayList<>();
+
+    // --- CORRECCIÓN 1: Agregamos CascadeType.ALL para que guarde la fuente automáticamente ---
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "hecho_fuente",
+            joinColumns = @JoinColumn(name = "hechos"),
+            inverseJoinColumns = @JoinColumn(name = "id"))
+    private List<Fuente> fuente = new ArrayList<>(); // Nota: Sería mejor llamarlo "fuentes" (plural), pero lo dejo así para no romper tu código.
+
     @ManyToMany(mappedBy = "hechos")
     private List<Coleccion> colecciones;
-    // NUEVO: estado del consenso para navegación curada
+
     @Builder.Default
     private EstadoConsenso estadoConsenso = EstadoConsenso.CONSENSUADO;
 
+    // Constructor auxiliar que tenías
     public Hecho(String titulo, String descripcion, String categoria, Object o, Double latitud, Double longitud, OffsetDateTime fechaHecho, LocalDate now, Long id) {
     }
-
 
     // === utilidades ===
     public Optional<ContenidoMultimedia> getContenidoMultimediaOpt() {
@@ -91,8 +104,6 @@ public class Hecho {
 
     public void agregarSolicitud(SolicitudEliminacion solicitud) { solicitudes.add(solicitud); }
 
-
-    // Enum-based (sin strings mágicos)
     public void verificarEliminacion() {
         boolean tieneAceptada = solicitudes.stream()
                 .anyMatch(s -> s.getEstado() == EstadoDeSolicitud.ACEPTADA);
@@ -103,16 +114,12 @@ public class Hecho {
 
     public boolean estaEliminado() { return eliminado; }
 
-
-    // Navegación curada
     public boolean isConsensuado() { return estadoConsenso == EstadoConsenso.CONSENSUADO; }
 
     public void setEstadoConsenso(EstadoConsenso e) {
         this.estadoConsenso = (e == null ? EstadoConsenso.CONSENSUADO : e);
     }
 
-
-    // Igualdad de consenso (null-safe + tolerancia espacial)
     public boolean esIgualA(Hecho otro) {
         if (otro == null) return false;
         boolean tit = Objects.equals(normalizar(this.titulo), normalizar(otro.titulo));
@@ -139,14 +146,30 @@ public class Hecho {
     private static boolean cmp(Double a, Double b) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
-        return Math.abs(a - b) <= 0.001; // ~111m
+        return Math.abs(a - b) <= 0.001;
     }
 
-    public void setFuente(Fuente fuente) {
-        this.fuente = (List<Fuente>) fuente;
+    // --- CORRECCIÓN 2: El Setter arreglado ---
+    // Como 'fuente' es una LISTA, no puedes castear un objeto solo.
+    // Lo que hacemos es limpiar la lista y agregar el nuevo elemento.
+    public void setFuente(Fuente fuenteUnica) {
+        if (this.fuente == null) {
+            this.fuente = new ArrayList<>();
+        } else {
+            this.fuente.clear(); // Reemplazamos las fuentes anteriores
+        }
+
+        if (fuenteUnica != null) {
+            this.fuente.add(fuenteUnica);
+        }
     }
 
-    // identidad por id
+    // Método opcional si quieres agregar sin borrar las anteriores
+    public void agregarFuente(Fuente f) {
+        if (this.fuente == null) this.fuente = new ArrayList<>();
+        this.fuente.add(f);
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Hecho h)) return false;
@@ -154,4 +177,15 @@ public class Hecho {
     }
 
     @Override public int hashCode() { return Objects.hash(idHecho); }
+
+    public void agregarSolicitudModificacion(SolicitudModificacion solicitud) {
+        solicitudesModificacion.add(solicitud);
+        solicitud.setHecho(this); // Vinculación bidireccional
+    }
+
+    // Método para remover
+    public void removerSolicitudModificacion(SolicitudModificacion solicitud) {
+        solicitudesModificacion.remove(solicitud);
+        solicitud.setHecho(this);
+    }
 }

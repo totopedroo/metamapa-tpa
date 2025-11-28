@@ -3,6 +3,7 @@ package ar.edu.utn.frba.server.fuente.dinamica.services;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.SolicitudEliminacion;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.SolicitudInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.SolicitudOutputDto;
+import ar.edu.utn.frba.server.fuente.dinamica.mappers.ApiDinamicaMapper;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.ISolicitudRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

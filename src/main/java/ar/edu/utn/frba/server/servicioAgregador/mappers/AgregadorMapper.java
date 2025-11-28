@@ -1,9 +1,8 @@
-package ar.edu.utn.frba.server.servicioAgregador.services;
+package ar.edu.utn.frba.server.servicioAgregador.mappers;
 
 import ar.edu.utn.frba.server.contratos.dtos.HechoDto;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.fuente.dinamica.domain.Etiqueta;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +10,6 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AgregadorMapper {
