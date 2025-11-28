@@ -1,12 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.mappers;
 
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoFrontDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
-
-import java.util.stream.Collectors;
 
 public class HechoFrontMapper {
 
@@ -85,7 +82,7 @@ public class HechoFrontMapper {
 
         // Contribuyente
         if (h.getContribuyente() != null) {
-            out.setContribuyenteId(h.getContribuyente().getId());
+            out.setIdContribuyente(h.getContribuyente().getId());
         }
 
         // Fuentes

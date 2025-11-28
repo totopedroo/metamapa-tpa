@@ -23,5 +23,5 @@ public class HechoFrontDto {
     private List<String> consensos;
     private Boolean consensuado;
     private List<String> fuentes;
-    private Long contribuyenteId;
+    private Long idContribuyente;
 }
