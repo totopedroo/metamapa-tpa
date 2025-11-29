@@ -18,8 +18,6 @@ public class SolicitudModificacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // CORRECCIÓN 1: Usamos el objeto para mantener la relación bidireccional
-    // y que funcione la lista en la clase Hecho.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_hecho", nullable = false)
     private Hecho hecho;
@@ -31,8 +29,6 @@ public class SolicitudModificacion {
     @Column(name = "valor_nuevo", columnDefinition = "TEXT")
     private String valorNuevo;
 
-    // Aquí sí puedes dejar el ID suelto si no te interesa navegar al usuario
-    // Pero cambiamos @JoinColumn por @Column
     @Column(name = "id_usuario")
     private Long idContribuyente;
 

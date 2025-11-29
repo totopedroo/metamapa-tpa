@@ -4,7 +4,9 @@ import ar.edu.utn.frba.server.contratos.enums.CampoHecho;
 import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.domain.SolicitudModificacion;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudModificacionInputDto;
+import ar.edu.utn.frba.server.servicioAgregador.dtos.SolicitudModificacionOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.ISolicitudModificacionRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -24,9 +27,10 @@ public class SolicitudModificacionService implements IsolicitudModificacionServi
     @Autowired
     private IHechosRepository hechosRepository;
 
+
     // 1. Crear la solicitud (Cualquier usuario)
     @Transactional
-    public void crearSolicitud(SolicitudModificacionInputDto dto, Long idUsuario) {
+    public void crearSolicitud(SolicitudModificacionInputDto dto) {
         Hecho hechoObtenido = hechosRepository.findById(dto.getIdHecho())
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado"));
 
@@ -79,7 +83,11 @@ public class SolicitudModificacionService implements IsolicitudModificacionServi
         solicitudRepo.save(solicitud);
     }
 
-    // --- MÉTODO PRIVADO: EL SWITCH DE CONVERSIÓN ---
+    public List<SolicitudModificacionOutputDto> findAllPendientes(){
+        List<SolicitudModificacion> solicitudes = solicitudRepo.findByEstado(EstadoDeSolicitud.PENDIENTE);
+        return solicitudes.stream().map(SolicitudModificacionOutputDto::fromModel).toList();
+    }
+
     public void aplicarCambio(Hecho hecho, CampoHecho campo, String valorStr) {
         try {
             switch (campo) {
@@ -88,15 +96,15 @@ public class SolicitudModificacionService implements IsolicitudModificacionServi
                 case CATEGORIA -> hecho.setCategoria(valorStr);
                 case PROVINCIA -> hecho.setProvincia(valorStr);
 
-                // Conversiones Numéricas
+
                 case LATITUD -> hecho.setLatitud(Double.parseDouble(valorStr));
                 case LONGITUD -> hecho.setLongitud(Double.parseDouble(valorStr));
 
-                // Conversiones de Fecha
+
                 case FECHA_ACONTECIMIENTO -> hecho.setFechaAcontecimiento(LocalDate.parse(valorStr));
                 case HORA_ACONTECIMIENTO -> hecho.setHoraAcontecimiento(LocalTime.parse(valorStr));
 
-                // Casos especiales (Multimedia, etc) se pueden manejar aparte o ignorar
+
                 default -> throw new IllegalArgumentException("Campo no editable automáticamente: " + campo);
             }
         } catch (Exception e) {

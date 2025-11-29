@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/solicitudes-modificacion") // Recomiendo usar prefijos claros
-@CrossOrigin(origins = "http://localhost:8082") // O el puerto de tu front
+@CrossOrigin(origins = "http://localhost:8080") // O el puerto de tu front
 @RequiredArgsConstructor
 public class SolicitudModificacionController {
 
@@ -26,8 +26,7 @@ public class SolicitudModificacionController {
     @PostMapping
     public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudModificacionInputDto dto) {
         try {
-            Long idUsuarioMock = 1L;
-            solicitudService.crearSolicitud(dto, idUsuarioMock);
+            solicitudService.crearSolicitud(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud de modificación creada.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Datos inválidos: " + e.getMessage());
@@ -57,6 +56,16 @@ public class SolicitudModificacionController {
             return ResponseEntity.ok("Solicitud rechazada.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al rechazar: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<?> findAllPendientes(){
+        try{
+            return ResponseEntity.ok(solicitudService.findAllPendientes());
+        } catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obterner todas las solicitudes de modificacion: " + e.getMessage());
         }
     }
 }

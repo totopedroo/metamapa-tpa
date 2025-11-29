@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/hechos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8082")
+@CrossOrigin(origins = "http://localhost:8080")
 public class HechosController {
 
     private final IHechosService hechosService;
