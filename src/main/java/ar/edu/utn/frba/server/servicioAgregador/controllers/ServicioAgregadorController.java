@@ -14,9 +14,6 @@ import java.util.List;
 public class ServicioAgregadorController {
 
     @Autowired
-    private FuenteDinamicaService fuenteDinamicaService;
-
-    @Autowired
     private ServicioAgregador servicioAgregador;
 
     @GetMapping("/hechos")

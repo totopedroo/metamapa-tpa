@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface IHechosService
 {
@@ -24,5 +25,6 @@ public interface IHechosService
     List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario);
     List<HechoDTO> obtenerHechosLanding(String modo, int limit);
     boolean eliminarHecho(Long id);
+    Optional<Hecho> buscarPorId(Long id);
 }
 
