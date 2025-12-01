@@ -4,7 +4,6 @@ package ar.edu.utn.frba.server.contratos.enums;
 import lombok.Data;
 import lombok.Getter;
 
-@Data
 public enum CampoHecho {
     TITULO("titulo", "Título"),
     DESCRIPCION("descripcion", "Descripción"),
