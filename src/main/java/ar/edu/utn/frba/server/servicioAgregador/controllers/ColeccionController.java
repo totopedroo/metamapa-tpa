@@ -6,6 +6,7 @@ import ar.edu.utn.frba.server.servicioAgregador.mappers.ColeccionFrontMapper;
 import ar.edu.utn.frba.server.servicioAgregador.mappers.HechoFrontMapper;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IAlgoritmoConsensoRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IColeccionRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IFuenteRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ColeccionController {
 
     private final IAlgoritmoConsensoRepository algoritmoRepo;
     private final IColeccionRepository coleccionRepo;
+    private final IFuenteRepository fuenteRepo;
 
     /* =====================================================
        ===============  LANDING PAGE  =======================
@@ -229,4 +231,41 @@ public class ColeccionController {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }
+
+    /* =====================================================
+       =========   CONFIGURACIÓN DE FUENTES   ==============
+       ===================================================== */
+
+    // 1. Listar fuentes disponibles para el select
+    @GetMapping("/fuentes")
+    public ResponseEntity<List<Fuente>> listarFuentesDisponibles() {
+        return ResponseEntity.ok(fuenteRepo.findAll());
+    }
+
+    // 2. Asociar fuente a colección
+    @PutMapping("/{id}/asociar-fuente")
+    public ResponseEntity<?> asociarFuente(
+        @PathVariable Long id,
+        @RequestParam(required = false) Long fuenteId) {
+        try {
+            Coleccion c = coleccionRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
+
+            if (fuenteId != null) {
+                Fuente fuente = fuenteRepo.findById(fuenteId)
+                    .orElseThrow(() -> new NoSuchElementException("Fuente no encontrada"));
+                c.setFuente(fuente);
+            } else {
+                c.setFuente(null);
+            }
+
+            coleccionRepo.save(c);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
+        }
+    }
+
 }

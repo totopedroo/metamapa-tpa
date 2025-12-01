@@ -4,6 +4,7 @@ import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoFrontDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.mappers.HechoFrontMapper;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.services.IHechosService;
 import ar.edu.utn.frba.server.fuente.estatica.services.IFuenteEstaticaService;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hechos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8082")
+@CrossOrigin(origins = "http://localhost:8080")
 public class HechosController {
 
     private final IHechosService hechosService;
@@ -163,5 +166,22 @@ public class HechosController {
 
         // 4. Éxito
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/titulos")
+    public ResponseEntity<Map<Long, String>> obtenerTitulosPorIds(
+            @RequestParam List<Long> ids
+    ) {
+        // No pedimos todos los hechos. Solo buscamos los necesarios.
+        Map<Long, String> titulos = ids.stream()
+                .map(id -> hechosService.buscarPorId(id))  // usando findById en service
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(
+                        h -> h.getIdHecho(),
+                        h -> h.getTitulo()
+                ));
+
+        return ResponseEntity.ok(titulos);
     }
 }

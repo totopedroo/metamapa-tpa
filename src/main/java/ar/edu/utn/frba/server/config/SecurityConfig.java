@@ -56,7 +56,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/fuente-estatica/**").permitAll();
 
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/solicitudes").permitAll();
+                    auth.requestMatchers("/solicitudes/**").permitAll();
 
 
                     // Registro Público

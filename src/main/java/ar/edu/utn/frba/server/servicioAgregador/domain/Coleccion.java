@@ -45,6 +45,10 @@ public class Coleccion {
     @JoinColumn(name = "id_algoritmo_consenso")
     private AlgoritmoConsenso algoritmoConsensoEntidad;
 
+    @ManyToOne
+    @JoinColumn(name = "id_fuente")
+    private Fuente fuente;
+
     @ManyToMany
     @JoinTable(
             name = "criterios_por_coleccion",
