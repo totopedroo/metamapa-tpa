@@ -112,7 +112,7 @@ public class HechosController {
      */
     @GetMapping("/hechos/usuario/{idUsuario}")
     public List<HechoFrontDto> listarHechosPorUsuario(@PathVariable Long idUsuario) {
-        return hechosService.listarHechosPorUsuario(idUsuario).stream()
+        return hechosService.listarHechosPorUsuario2(idUsuario).stream()
                 .map(HechoFrontMapper::toDto)
                 .toList();
     }

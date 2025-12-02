@@ -22,7 +22,8 @@ public interface IHechosService
     List<Hecho> importarDesdeApi() ;
     List<HechosOutputDto> filtrarHechos(String categoria, LocalDate fechaReporteDesde, LocalDate fechaReporteHasta, LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta, Double latitud, Double longitud);
     Page<Hecho> filtrarHechosPaginado(String categoria, LocalDate fechaReporteDesde, LocalDate fechaReporteHasta, LocalDate fechaAcontecimientoDesde, LocalDate fechaAcontecimientoHasta, Double latitud, Double longitud, Pageable pageable);
-    List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario);
+    //List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario);
+    List<Hecho> listarHechosPorUsuario2(Long idUsuario);
     List<HechoDTO> obtenerHechosLanding(String modo, int limit);
     boolean eliminarHecho(Long id);
     Optional<Hecho> buscarPorId(Long id);

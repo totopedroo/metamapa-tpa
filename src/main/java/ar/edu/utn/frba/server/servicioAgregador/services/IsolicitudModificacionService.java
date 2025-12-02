@@ -13,4 +13,5 @@ public interface IsolicitudModificacionService {
      void crearSolicitud(SolicitudModificacionInputDto dto);
      void rechazarSolicitud(Long idSolicitud);
      List<SolicitudModificacionOutputDto> findAllPendientes();
+     List<SolicitudModificacionOutputDto> findAllSolicitudsByUser(Long idUser);
 }

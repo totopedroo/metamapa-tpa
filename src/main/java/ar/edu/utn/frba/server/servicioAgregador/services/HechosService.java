@@ -1,6 +1,9 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
+import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
+import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
+import ar.edu.utn.frba.server.gestorUsuarios.services.UsuariosService;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
@@ -37,11 +40,16 @@ public class HechosService implements IHechosService {
     private IContribuyenteRepository contribuyenteRepository;
 
     @Autowired
+    private UsuariosRepository usuarioRepository;
+
+    @Autowired
     private NormalizadorService normalizadorService;
     private static final String apiUrl = "https://api-ddsi.disilab.ar/docs/API_Desastres_Naturales.postman_collection.json";
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private UsuariosRepository usuariosRepository;
 
     // --- uso la factory centralizada ---
     @Override
@@ -100,7 +108,7 @@ public class HechosService implements IHechosService {
     @Override
     public HechosOutputDto crearHecho(HechosInputDto inputDto) {
 
-        Contribuyente c = contribuyenteRepository.findById(inputDto.getIdContribuyente())
+        Usuario c = usuarioRepository.findById(inputDto.getIdContribuyente())
                 .orElseThrow(() -> new RuntimeException("Contribuyente no encontrado"));
 
         Hecho hecho = new Hecho();
@@ -202,11 +210,13 @@ public class HechosService implements IHechosService {
         }
 
     @Override
-    public List<HechosOutputDto> listarHechosPorUsuario(Long idUsuario) {
-        return hechosRepository.findByContribuyente_Id(idUsuario)
+    public List<Hecho> listarHechosPorUsuario2(Long idUsuario) {
+        return hechosRepository.findByContribuyente_Id(idUsuario);
+                /*
                 .stream()
                 .map(HechosOutputDto::fromModel)
                 .collect(Collectors.toList());
+                 */
     }
 
     @Override
