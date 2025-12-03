@@ -1,0 +1,203 @@
+/* Colores principales */
+:root {
+  --primary: #688549;
+  --secondary: #a95038;
+  --background: #EBE5DD;
+  --text: #333333;
+}
+
+
+/* RESET básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.5;
+  background-color: #f8f8f8;
+}
+
+/* Imagen de fondo */
+body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between;
+    font-family: "Arial", sans-serif;
+    line-height: 1.5;
+    background-color: #f8f8f8;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url("../assets/img/mapa-fondo.png") no-repeat center center fixed;
+    background-size: cover;
+    opacity: 0.6;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* HEADER */
+.main-header {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.9rem 1.5rem;
+}
+
+.main-header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.brand{
+  display:flex; 
+  align-items:center; 
+  gap:.6rem; color:#fff; 
+  text-decoration:none; 
+  font-weight:700
+}
+.brand-logo{
+  font-size:1.3rem
+}
+.brand-text{
+  letter-spacing: 1px;
+  font-size: 30px;
+}
+
+
+/* FOOTER */
+.main-footer {
+  background-color: #688549;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.footer-container a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-container a:hover {
+  text-decoration: underline;
+}
+
+
+/* Contenedor centrado */
+.login-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.login-box label {
+  display: block;
+  text-align: left;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  color: #444;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Botones */
+.btn-login {
+  background-color: #688549;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.btn-login:hover {
+  background-color: #57713a;
+}
+
+.btn-invitado {
+  background-color: #C96345;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.btn-invitado:hover {
+  background-color: #a95038;
+}
+
+/* Texto de registro */
+.register-text {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.register-text a {
+  color: #688549;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .login-box {
+    padding: 1.5rem;
+    width: 100%;
+  }
+}
