@@ -4,10 +4,8 @@ package ar.edu.utn.frba.server.contratos.enums;
 import lombok.Data;
 import lombok.Getter;
 
-<<<<<<< HEAD
-=======
 
->>>>>>> b606b544f770036d24c46abfd2ca798f3e5dd330
+
 public enum CampoHecho {
     TITULO("titulo", "Título"),
     DESCRIPCION("descripcion", "Descripción"),
