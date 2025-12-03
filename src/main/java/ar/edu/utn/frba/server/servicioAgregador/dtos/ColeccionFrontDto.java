@@ -18,5 +18,6 @@ public class ColeccionFrontDto {
     private List<HechoFrontDto> hechos;   // Hechos homogéneos
     private List<CriterioDePertenenciaDto> criterios;
     private String algoritmoDeConsenso;
+    private String fuente;
 }
 
