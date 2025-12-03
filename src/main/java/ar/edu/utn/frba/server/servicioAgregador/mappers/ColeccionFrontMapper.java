@@ -24,7 +24,6 @@ public class ColeccionFrontMapper {
                         : null
         );
 
-        // Hechos completos
         out.setHechos(
                 c.getHechos() == null ? List.of()
                         : c.getHechos().stream()
@@ -32,7 +31,6 @@ public class ColeccionFrontMapper {
                         .toList()
         );
 
-        // Criterios
         out.setCriterios(
                 c.getCriterioDePertenencia() == null ? List.of()
                         : c.getCriterioDePertenencia().stream()
@@ -40,10 +38,14 @@ public class ColeccionFrontMapper {
                         .toList()
         );
 
+        out.setFuente(
+                c.getFuente() != null
+                        ? c.getFuente().getTipo().name()
+                        : null
+        );
+
         return out;
     }
-
-
 
     /* ============================================================
        =============   2) Desde ColeccionOutputDto   ===============
@@ -66,6 +68,8 @@ public class ColeccionFrontMapper {
 
         out.setCriterios(dto.getCriterios());
 
+        out.setFuente(null);
+
         return out;
     }
 
@@ -84,6 +88,7 @@ public class ColeccionFrontMapper {
         out.setHechos(List.of());
         out.setCriterios(List.of());
         out.setAlgoritmoDeConsenso(null);
+        out.setFuente(null);
 
         return out;
     }

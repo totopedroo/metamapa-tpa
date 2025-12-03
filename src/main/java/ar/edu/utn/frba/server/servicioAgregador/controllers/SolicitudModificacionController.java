@@ -68,4 +68,14 @@ public class SolicitudModificacionController {
                     .body("Error al obterner todas las solicitudes de modificacion: " + e.getMessage());
         }
     }
+
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<?> findAllPendientes(@PathVariable Long id){
+        try{
+            return ResponseEntity.ok(solicitudService.findAllSolicitudsByUser(id));
+        } catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obterner todas las solicitudes de modificacion: " + e.getMessage());
+        }
+    }
 }

@@ -11,4 +11,6 @@ import java.util.List;
 public interface ISolicitudModificacionRepository extends JpaRepository<SolicitudModificacion, Long> {
 
     List<SolicitudModificacion> findByEstado(EstadoDeSolicitud estado);
+
+    List<SolicitudModificacion> findByIdContribuyente(Long idContribuyente);
 }

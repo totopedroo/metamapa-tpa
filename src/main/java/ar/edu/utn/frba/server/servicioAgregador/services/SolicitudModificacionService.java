@@ -111,4 +111,9 @@ public class SolicitudModificacionService implements IsolicitudModificacionServi
             throw new RuntimeException("Error al convertir el valor '" + valorStr + "' para el campo " + campo, e);
         }
     }
+
+    public List<SolicitudModificacionOutputDto> findAllSolicitudsByUser(Long idUser) {
+        List<SolicitudModificacion> solicitudes = solicitudRepo.findByIdContribuyente(idUser);
+        return solicitudes.stream().map(SolicitudModificacionOutputDto::fromModel).toList();
+    }
 }

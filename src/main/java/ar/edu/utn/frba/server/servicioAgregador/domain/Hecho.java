@@ -3,6 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.domain;
 import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.contratos.enums.EstadoDeSolicitud;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -68,7 +69,7 @@ public class Hecho {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contribuyente_id")
-    private Contribuyente contribuyente;
+    private Usuario contribuyente;
 
     @Column(name = "eliminado")
     private boolean eliminado = false;
