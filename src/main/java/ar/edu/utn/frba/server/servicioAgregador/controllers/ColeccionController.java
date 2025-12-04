@@ -98,8 +98,15 @@ public class ColeccionController {
     @PostMapping
     public ResponseEntity<ColeccionFrontDto> crear(
             @Valid @RequestBody ColeccionInputBD dto) {
+            System.out.println(">>> LLEGO AL BACKEND");
+            System.out.println("TITULO: " + dto.getTitulo());
+            System.out.println("DESC: " + dto.getDescripcion());
+            System.out.println("ADMIN: " + dto.getAdministradorId()); // <-- acá vas a ver si llega NULL
+            System.out.println("HECHOS: " + dto.getHechosIds());
+            System.out.println("CRITERIOS: " + dto.getCriteriosIds());
 
-        var creada = coleccionService.crear(dto);
+
+            var creada = coleccionService.crear(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ColeccionFrontMapper.toDto(creada));

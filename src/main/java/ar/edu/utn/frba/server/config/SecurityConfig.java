@@ -51,11 +51,7 @@ public class SecurityConfig {
                 // 3. Reglas de acceso
                 .authorizeHttpRequests(auth -> {
                     // Auth y Login
-                    auth.requestMatchers("/hechos/**").permitAll();
-                    auth.requestMatchers("/fuente-dinamica/**").permitAll();
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/solicitudes/**").permitAll();
-
 
                     // Registro Público
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/register").permitAll();
@@ -63,13 +59,16 @@ public class SecurityConfig {
                     // Datos públicos para la Landing Page
                     auth.requestMatchers(HttpMethod.GET, "/api/colecciones/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/hechos/**").permitAll();
-
-                    auth.requestMatchers(HttpMethod.PUT, "/api/colecciones/**").permitAll();
-                    auth.requestMatchers(HttpMethod.PATCH, "/api/colecciones/**").permitAll();
-                    auth.requestMatchers(HttpMethod.DELETE, "/api/colecciones/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/criterios").permitAll();
 
                     // Swagger / H2 Console (Opcional)
                     auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
+
+                    auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/**").authenticated();
+                    auth.requestMatchers(HttpMethod.PUT,  "/api/**").authenticated();
+                    auth.requestMatchers(HttpMethod.PATCH,"/api/**").authenticated();
+                    auth.requestMatchers(HttpMethod.DELETE,"/api/**").authenticated();
 
                     // Todo lo demás requiere Token
                     auth.anyRequest().authenticated();

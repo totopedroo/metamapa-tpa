@@ -37,6 +37,9 @@ public class Coleccion {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
+    @Column(nullable = false)
+    private boolean eliminada = false;
+
     @ManyToOne
     @JoinColumn(name = "administrador_id", nullable = true)
     private Administrador administrador;

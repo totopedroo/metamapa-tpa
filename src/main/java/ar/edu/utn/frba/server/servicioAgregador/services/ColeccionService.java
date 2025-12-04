@@ -123,7 +123,9 @@ public class ColeccionService implements IColeccionService {
         Coleccion saved = coleccionRepository.save(c);
 
         // --- CAMBIO CLAVE 3 (Defensivo): Evitar NPE en la salida por el administradorId ---
-        Long adminId = Long.valueOf(saved.getAdministrador() != null ? saved.getAdministrador().getId() : null);
+        Long adminId = saved.getAdministrador() == null
+                ? null
+                : Long.valueOf(saved.getAdministrador().getId());
 
         return new ColeccionOutputBD(
                 saved.getId(),
@@ -205,7 +207,9 @@ public class ColeccionService implements IColeccionService {
 
         Coleccion saved = coleccionRepository.save(c);
 
-        Long adminId = Long.valueOf(saved.getAdministrador() != null ? saved.getAdministrador().getId() : null);
+        Long adminId = saved.getAdministrador() == null
+                ? null
+                : Long.valueOf(saved.getAdministrador().getId());
 
         return new ColeccionOutputBD(
                 saved.getId(),
