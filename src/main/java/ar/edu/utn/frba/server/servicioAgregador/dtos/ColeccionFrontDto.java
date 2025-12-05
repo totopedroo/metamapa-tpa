@@ -20,4 +20,3 @@ public class ColeccionFrontDto {
     private String algoritmoDeConsenso;
     private String fuente;
 }
-

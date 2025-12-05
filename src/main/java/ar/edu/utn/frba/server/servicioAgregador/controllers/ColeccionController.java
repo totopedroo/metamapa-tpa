@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.controllers;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.*;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.*;
 import ar.edu.utn.frba.server.servicioAgregador.mappers.ColeccionFrontMapper;
@@ -55,6 +56,14 @@ public class ColeccionController {
         return ResponseEntity.ok(algoritmoRepo.findAll());
     }
 
+    @GetMapping("/algoritmos/buscar")
+    public ResponseEntity<Long> buscarAlgoritmoPorNombre(@RequestParam String nombre) {
+        var algo = algoritmoRepo.findByNombre(nombre)
+                .orElse(null);
+
+        return ResponseEntity.ok(algo != null ? algo.getId() : null);
+    }
+
     @PutMapping("/{id}/asociar-algoritmo")
     public ResponseEntity<?> asociarAlgoritmo(
             @PathVariable Long id,
@@ -79,8 +88,6 @@ public class ColeccionController {
                     .body(e.getMessage());
         }
     }
-
-
 
     /* =====================================================
        ================   CRUD PRINCIPAL   ==================
@@ -114,11 +121,16 @@ public class ColeccionController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<ColeccionFrontDto> listarUna(@PathVariable Long id) {
-        var c = coleccionService.listar(id);
-        return ResponseEntity.ok(ColeccionFrontMapper.toDto(c));
+    public ResponseEntity<?> listarUna(@PathVariable Long id) {
+        try {
+            var coleccion = coleccionService.listar(id);
+            var dto = ColeccionFrontMapper.toDto(coleccion);
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            e.printStackTrace(); // <---- IMPRIME LA EXCEPCIÓN EN CONSOLA
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
-
 
     @PatchMapping("/editar/{id}")
     public ResponseEntity<ColeccionFrontDto> editar(
@@ -130,12 +142,11 @@ public class ColeccionController {
     }
 
 
-    @DeleteMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         coleccionService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
 
 
     /* =====================================================
@@ -247,6 +258,21 @@ public class ColeccionController {
     @GetMapping("/fuentes")
     public ResponseEntity<List<Fuente>> listarFuentesDisponibles() {
         return ResponseEntity.ok(fuenteRepo.findAll());
+    }
+
+    @GetMapping("/fuentes/buscar")
+    public ResponseEntity<Long> buscarFuentePorTipo(@RequestParam String tipo) {
+        try {
+            var tipoEnum = TipoFuente.valueOf(tipo); // CSV, API, MANUAL, etc.
+
+            var fuente = fuenteRepo.findByTipo(tipoEnum)
+                    .orElse(null);
+
+            return ResponseEntity.ok(fuente != null ? fuente.getId() : null);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(null); // tipo inválido
+        }
     }
 
     // 2. Asociar fuente a colección

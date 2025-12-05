@@ -18,12 +18,20 @@ public class ColeccionFrontMapper {
         out.setTitulo(c.getTitulo());
         out.setDescripcion(c.getDescripcion());
 
-        out.setAlgoritmoDeConsenso(
-                c.getAlgoritmoDeConsenso() != null
-                        ? c.getAlgoritmoDeConsenso().getClass().getSimpleName()
-                        : null
-        );
+        // ============================
+        //       ALGORITMO
+        // ============================
+        if (c.getAlgoritmoConsensoEntidad() != null) {
+            out.setAlgoritmoDeConsenso(
+                    c.getAlgoritmoConsensoEntidad().getNombre()  // <-- ESTE ES EL CORRECTO
+            );
+        } else {
+            out.setAlgoritmoDeConsenso(null);
+        }
 
+        // ============================
+        //          HECHOS
+        // ============================
         out.setHechos(
                 c.getHechos() == null ? List.of()
                         : c.getHechos().stream()
@@ -31,6 +39,9 @@ public class ColeccionFrontMapper {
                         .toList()
         );
 
+        // ============================
+        //         CRITERIOS
+        // ============================
         out.setCriterios(
                 c.getCriterioDePertenencia() == null ? List.of()
                         : c.getCriterioDePertenencia().stream()
@@ -38,11 +49,14 @@ public class ColeccionFrontMapper {
                         .toList()
         );
 
-        out.setFuente(
-                c.getFuente() != null
-                        ? c.getFuente().getTipo().name()
-                        : null
-        );
+        // ============================
+        //           FUENTE
+        // ============================
+        if (c.getFuente() != null) {
+            out.setFuente(c.getFuente().getTipo().name());
+        } else {
+            out.setFuente(null);
+        }
 
         return out;
     }

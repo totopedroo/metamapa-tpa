@@ -1,7 +1,10 @@
 package ar.edu.utn.frba.server.servicioAgregador.repositories;
 
 import ar.edu.utn.frba.server.servicioAgregador.domain.Coleccion;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.domain.CriterioDePertenencia;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.ColeccionInputDto;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +29,10 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
 
     // Trae las últimas 5 colecciones ordenadas por ID descendente
     List<Coleccion> findTop5ByOrderByIdDesc();
+
+    @Query("SELECT h FROM Coleccion c JOIN c.hechos h WHERE c.id = :id")
+    List<Hecho> fetchHechos(@Param("id") Long id);
+
+    @Query("SELECT cr FROM Coleccion c JOIN c.criterioDePertenencia cr WHERE c.id = :id")
+    List<CriterioDePertenencia> fetchCriterios(@Param("id") Long id);
 }

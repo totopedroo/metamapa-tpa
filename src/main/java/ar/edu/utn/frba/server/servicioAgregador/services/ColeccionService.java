@@ -138,19 +138,20 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Transactional
-    public ColeccionOutputBD listar(Long id) {
-        Coleccion c = coleccionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
+    public Coleccion listar(Long id) {
 
-        return new ColeccionOutputBD(
-                c.getId(),
-                c.getTitulo(),
-                c.getDescripcion(),
-                null,
-                //c.getAdministrador() != null ? c.getAdministrador().getId() : null,
-                c.getHechos().stream().map(Hecho::getIdHecho).toList(),
-                c.getCriterioDePertenencia().stream().map(CriterioDePertenencia::getId_criterio).toList()
-        );
+        Coleccion c = coleccionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Colección no encontrada"));
+
+        // Forzar fetch de relaciones sin MultipleBagFetchException
+        List<Hecho> hechos = coleccionRepository.fetchHechos(id);
+        c.setHechos(hechos);
+
+        List<CriterioDePertenencia> criterios = coleccionRepository.fetchCriterios(id);
+        c.setCriterioDePertenencia(criterios);
+
+        return c;
     }
 
 
@@ -234,6 +235,7 @@ public class ColeccionService implements IColeccionService {
 
         coleccionRepository.delete(c);
     }
+
     @Transactional
     public List<HechosOutputDto> obtenerHechosPorTituloColeccion(String tituloColeccion) {
 
