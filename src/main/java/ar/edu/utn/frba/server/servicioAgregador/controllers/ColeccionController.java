@@ -127,7 +127,7 @@ public class ColeccionController {
             var dto = ColeccionFrontMapper.toDto(coleccion);
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            e.printStackTrace(); // <---- IMPRIME LA EXCEPCIÓN EN CONSOLA
+            e.printStackTrace();
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
