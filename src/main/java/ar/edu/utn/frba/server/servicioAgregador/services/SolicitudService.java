@@ -108,7 +108,7 @@ public class SolicitudService implements ISolicitudService {
     @Override
     public List<SolicitudFrontDto> obtenerSolicitudesConTitulo() {
         // 1. Traemos todas las solicitudes de la DB
-        List<SolicitudEliminacion> solicitudes = solicitudRepository.findAll();
+        List<SolicitudEliminacion> solicitudes = solicitudRepository.findAllOrdenadasPorPrioridad();
 
         // Si no hay nada, devolvemos lista vacía rápido
         if (solicitudes.isEmpty()) return new ArrayList<>();

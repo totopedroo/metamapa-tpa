@@ -25,4 +25,11 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudEliminacion
     // Contar solicitudes por estado
     @Query("SELECT s.estado, COUNT(s) FROM SolicitudEliminacion s GROUP BY s.estado")
     List<Object[]> contarSolicitudesPorEstado();
+
+    @Query("SELECT s FROM SolicitudEliminacion s ORDER BY " +
+            "CASE WHEN s.estado = 'PENDIENTE' THEN 1 " +
+            "WHEN s.estado = 'ACEPTADA' THEN 2 " +
+            "WHEN s.estado = 'RECHAZADA' THEN 3 " +
+            "ELSE 4 END")
+    List<SolicitudEliminacion> findAllOrdenadasPorPrioridad();
 }
