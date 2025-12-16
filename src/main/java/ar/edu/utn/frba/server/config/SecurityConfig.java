@@ -60,7 +60,8 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET, "/api/colecciones/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/hechos/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/criterios").permitAll();
-
+                    auth.requestMatchers(HttpMethod.POST, "/fuente-dinamica/hechos/crear")
+                            .authenticated();
                     // Swagger / H2 Console (Opcional)
                     auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
 
