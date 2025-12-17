@@ -250,8 +250,7 @@ public class HechosService implements IHechosService {
         Hecho hecho = hechosRepository.findById(id).orElse(null);
         if (hecho == null) return false;
 
-        hecho.setEliminado(true);
-        hechosRepository.save(hecho);
+        hechosRepository.softDelete(id);
         return true;
     }
 
