@@ -20,7 +20,7 @@ public class HechosInputDto {
     private String descripcion;
     private String categoria;
     private String provincia;
-    private ContenidoMultimedia contenidoMultimedia;
+    private String contenidoMultimedia;
     private Double latitud;
     private Double longitud;
     private LocalDate fechaAcontecimiento;
@@ -29,7 +29,4 @@ public class HechosInputDto {
     private Long idContribuyente;
     private boolean eliminado = false;
     private TipoFuente fuente;
-
-
-
 }
