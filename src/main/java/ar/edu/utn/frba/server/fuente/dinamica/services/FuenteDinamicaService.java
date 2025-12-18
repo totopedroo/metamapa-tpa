@@ -1,9 +1,11 @@
 package ar.edu.utn.frba.server.fuente.dinamica.services;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.fuente.dinamica.mappers.ApiDinamicaMapper;
 import ar.edu.utn.frba.server.fuente.dinamica.repositories.IHechosDinamicosRepository;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +72,8 @@ public class FuenteDinamicaService implements IFuenteDinamicaService {
                 .fechaAcontecimiento(fechaAcontecimiento)
                 .fechaCarga(LocalDate.now())
                 .build();
-
+      //  Fuente fuentete = new Fuente(TipoFuente.DINAMICA);
+       // hecho.setFuente(fuentete);
         Hecho guardado = hechosRepository.save(hecho);
         return apiMapper.toOutput(guardado);
     }

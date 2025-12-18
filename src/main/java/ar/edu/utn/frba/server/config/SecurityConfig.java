@@ -60,8 +60,7 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET, "/api/colecciones/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/hechos/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/criterios").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/fuente-dinamica/hechos/crear")
-                            .authenticated();
+                    auth.requestMatchers(HttpMethod.POST, "/fuente-dinamica/hechos/crear").permitAll();
                     // Swagger / H2 Console (Opcional)
                     auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/h2-console/**").permitAll();
 
@@ -71,13 +70,12 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.PATCH,"/api/**").authenticated();
                     auth.requestMatchers(HttpMethod.DELETE,"/api/**").authenticated();
 
-                    // Todo lo demás requiere Token
+
                     auth.anyRequest().authenticated();
                 })
-                // 4. Filtro JWT
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // Configuración extra para H2 Console (si la usas)
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();

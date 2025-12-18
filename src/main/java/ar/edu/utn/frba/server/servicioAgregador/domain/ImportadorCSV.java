@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.server.servicioAgregador.domain;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Etiqueta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,6 +118,8 @@ public class ImportadorCSV {
         } catch (IOException e) {
             log.error("[CSV] Error general leyendo CSV: {}", e.toString());
         }
+     //   Fuente fuente = new Fuente(TipoFuente.ESTATICA);
+       // hechos.forEach(h -> h.setFuente(fuente));
         return hechos;
     }
 
