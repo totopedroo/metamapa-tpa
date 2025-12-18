@@ -135,7 +135,7 @@ public class HechosService implements IHechosService {
       // 4. Asignar Contribuyente
       // (Asegúrate de que tu entidad Hecho tenga este método y acepte 'Usuario')
       if (contribuyente != null) {
-        // hecho.setContribuyente(contribuyente);
+        hecho.setContribuyente(contribuyente);
         // Si el setter espera un objeto 'Contribuyente' distinto de 'Usuario',
         // tendrás que adaptar esto. Asumo que Usuario es la entidad que usas.
       }
