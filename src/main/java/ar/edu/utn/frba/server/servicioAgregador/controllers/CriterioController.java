@@ -29,7 +29,10 @@ public class CriterioController {
     }
 
     @GetMapping
-    public List<CriterioDePertenencia> listar() {
-        return criterioRepo.findAll();
+    public List<CriterioDePertenenciaDto> listar() {
+        return criterioRepo.findAll()
+                .stream()
+                .map(CriterioDePertenenciaMapper::toDto)
+                .toList();
     }
 }

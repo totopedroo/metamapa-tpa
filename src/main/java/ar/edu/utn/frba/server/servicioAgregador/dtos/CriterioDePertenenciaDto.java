@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 @Data
 public class CriterioDePertenenciaDto {
+
+    private Long id_criterio;
     private String columna;
     private String tipo;      // "texto" | "fecha"
     private String valor;     // si tipo="texto"
@@ -20,6 +22,7 @@ public class CriterioDePertenenciaDto {
     public static CriterioDePertenenciaDto fromModel(CriterioDePertenencia c) {
         CriterioDePertenenciaDto dto = new CriterioDePertenenciaDto();
         if (c == null) return dto;
+        dto.setId_criterio(c.getId_criterio());
         dto.setColumna(c.columna);
         dto.setTipo(c.tipo);
         dto.setValor(c.valor);

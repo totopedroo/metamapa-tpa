@@ -31,6 +31,20 @@ public final class CriterioDePertenenciaMapper {
         }
     }
 
+    public static CriterioDePertenenciaDto toDto(CriterioDePertenencia c) {
+        if (c == null) return null;
+
+        CriterioDePertenenciaDto dto = new CriterioDePertenenciaDto();
+        dto.setId_criterio(c.getId_criterio());
+        dto.setTipo(c.getTipo());
+        dto.setColumna(c.getColumna());
+        dto.setValor(c.getValor());
+        dto.setDesde(c.getDesde());
+        dto.setHasta(c.getHasta());
+
+        return dto;
+    }
+
     private static String safe(String s) {
         return s == null ? "" : s.trim();
     }
