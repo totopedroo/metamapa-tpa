@@ -47,8 +47,11 @@ public class HechosOutputDto {
         dto.setTitulo(h.getTitulo());
         dto.setDescripcion(h.getDescripcion());
         dto.setCategoria(h.getCategoria());
-        dto.setFuente(null);
-        dto.setLatitud(h.getLatitud());
+        if (h.getFuente() != null && !h.getFuente().isEmpty()) {
+            dto.setFuente(h.getFuente().get(0).getTipo()); // TipoFuente
+        } else {
+            dto.setFuente(null);
+        }        dto.setLatitud(h.getLatitud());
         dto.setLongitud(h.getLongitud());
         dto.setFechaAcontecimiento(h.getFechaAcontecimiento());
         dto.setEtiquetas(h.getEtiquetas());

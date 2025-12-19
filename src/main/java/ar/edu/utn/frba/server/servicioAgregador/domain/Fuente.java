@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Fuente")
+@Table(name="fuente")
 public class Fuente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Fuente {
         this.tipo = tipoFuente;
     }
 
-    public Fuente(TipoFuente tipo) {}
-
-
+    public Fuente(TipoFuente tipo) {
+        this.tipo = tipo;
+    }
 }

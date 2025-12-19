@@ -1,5 +1,7 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.AlgoritmoDeConsensoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.domain.consenso.ConsensoPorDefectoStrategy;
 import ar.edu.utn.frba.server.servicioAgregador.handlers.ConsultarHechosHandler;
@@ -86,5 +88,7 @@ public class ServicioAgregador {
     System.out.println("Algoritmos de consenso finalizados.");
   }
 
+  }
 
-}
+
+

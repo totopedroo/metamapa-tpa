@@ -79,9 +79,11 @@ public class Hecho {
 
     // --- CORRECCIÓN 1: Agregamos CascadeType.ALL para que guarde la fuente automáticamente ---
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "hecho_fuente",
-            joinColumns = @JoinColumn(name = "hechos"),
-            inverseJoinColumns = @JoinColumn(name = "id"))
+    @JoinTable(
+            name = "hecho_fuente",
+            joinColumns = @JoinColumn(name = "hecho_id", referencedColumnName = "id_hecho"),
+            inverseJoinColumns = @JoinColumn(name = "fuente_id", referencedColumnName = "id")
+    )
     private List<Fuente> fuente = new ArrayList<>(); // Nota: Sería mejor llamarlo "fuentes" (plural), pero lo dejo así para no romper tu código.
 
     @ManyToMany(mappedBy = "hechos")

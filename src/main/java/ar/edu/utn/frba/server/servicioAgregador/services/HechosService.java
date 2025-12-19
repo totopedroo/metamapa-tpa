@@ -1,15 +1,18 @@
 package ar.edu.utn.frba.server.servicioAgregador.services;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
 import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoDTO;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosInputDto;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechosOutputDto;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IContribuyenteRepository;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IFuenteRepository;
 import ar.edu.utn.frba.server.servicioAgregador.repositories.IHechosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,8 @@ public class HechosService implements IHechosService {
     @Autowired
     private IHechosRepository hechosRepository;
 
+    @Autowired
+    IFuenteRepository fuenteRepository;
     @Autowired
     private IContribuyenteRepository contribuyenteRepository;
 
@@ -175,7 +180,11 @@ public class HechosService implements IHechosService {
         hecho.setContenidoMultimedia(cm);
       }
 
-      // 6. Guardar
+        // ✅ 1) Persisto la fuente (queda con ID)
+        Fuente fuente = fuenteRepository.save(new Fuente("UI", TipoFuente.DINAMICA));
+
+        // ✅ 2) La asocio al hecho
+        hecho.agregarFuente(fuente);      // 6. Guardar
       Hecho hechoGuardado = hechosRepository.save(hecho);
       return HechosOutputDto.fromModel(hechoGuardado);
     }

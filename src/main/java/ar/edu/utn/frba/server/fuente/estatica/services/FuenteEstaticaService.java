@@ -1,9 +1,12 @@
 package ar.edu.utn.frba.server.fuente.estatica.services;
 
+import ar.edu.utn.frba.server.contratos.enums.TipoFuente;
 import ar.edu.utn.frba.server.fuente.estatica.domain.ImportadorCSV;
 import ar.edu.utn.frba.server.fuente.estatica.repositories.IHechosEstaticosRepository;
 import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
+import ar.edu.utn.frba.server.servicioAgregador.domain.Fuente;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
+import ar.edu.utn.frba.server.servicioAgregador.repositories.IFuenteRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.transaction.Transactional;
@@ -30,14 +33,17 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
 
     private final ImportadorCSV importador;
     private final EntityManager em;
-
     @Autowired
     private final IHechosEstaticosRepository repositorio;
+    @Autowired
+    private final IFuenteRepository fuenteRepository;
 
-    public FuenteEstaticaService(ImportadorCSV importador, EntityManager em, IHechosEstaticosRepository repositorio) {
+
+    public FuenteEstaticaService(ImportadorCSV importador, EntityManager em, IHechosEstaticosRepository repositorio, IFuenteRepository fuenteRepository) {
         this.importador = importador;
         this.em = em;
         this.repositorio = repositorio;
+        this.fuenteRepository = fuenteRepository;
     }
 
     @Transactional()
@@ -58,6 +64,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
                         .fechaCarga(h.getFechaCarga())
                         .consensuado(Boolean.TRUE.equals(h.getConsensuado()))
                         .eliminado(h.isEliminado()).build())
+
                 .toList();
     }
 
@@ -84,6 +91,11 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
                     idField.set(h.getContenidoMultimedia(), null);
                 } catch (Exception ignored) {}
             }
+            // ✅ 1) Persisto la fuente (queda con ID)
+            Fuente fuente = fuenteRepository.save(new Fuente("UI", TipoFuente.ESTATICA));
+
+            // ✅ 2) La asocio al hecho
+            h.agregarFuente(fuente);      // 6. Guardar
         }
 
         // 2. BULK INSERT
@@ -153,6 +165,10 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
 
                     // Id autogenerado
                     h.setIdHecho(null);
+                    Fuente fuente = fuenteRepository.save(new Fuente("UI", TipoFuente.ESTATICA));
+
+                    // ✅ 2) La asocio al hecho
+                    h.agregarFuente(fuente);      // 6. Guardar
 
                     repositorio.save(h);
                     hechos.add(h);
