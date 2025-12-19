@@ -28,7 +28,7 @@ public class HechosOutputDto {
     private List<Etiqueta> etiquetas;
     private List<HechoConsensoDto> consensos;   // múltiples algoritmos
     private HechoConsensoDto consensoActivo;    // opcional: el de navegación curada
-
+    private ContenidoMultimedia contenidoMultimedia;
 
     public HechosOutputDto(Long idHecho, String titulo, String descripcion, String categoria,
                            Optional<ContenidoMultimedia> contenidoMultimedia,

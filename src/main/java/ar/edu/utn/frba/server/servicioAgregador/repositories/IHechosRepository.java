@@ -3,6 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.repositories;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -49,6 +50,10 @@ public interface IHechosRepository extends JpaRepository<Hecho, Long> {
 
     // Consulta para hechos por categoría
     List<Hecho> findByCategoriaAndEliminadoFalse(String categoria);
+
+        @Modifying
+        @Query("UPDATE Hecho h SET h.eliminado = true WHERE h.id = :id")
+        void softDelete(@Param("id") Long id);
 
     // Consulta por contribuyente
     List<Hecho> findByContribuyente_Id(Long idContribuyente);

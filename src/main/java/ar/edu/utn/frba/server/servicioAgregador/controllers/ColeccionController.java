@@ -132,17 +132,18 @@ public class ColeccionController {
         }
     }
 
-    @PatchMapping("/editar/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ColeccionFrontDto> editar(
             @PathVariable Long id,
             @RequestBody ColeccionUpdateBD in) {
 
+        System.out.println(">>> UPDATE IN = " + in);
         var updated = coleccionService.editar(id, in);
         return ResponseEntity.ok(ColeccionFrontMapper.toDto(updated));
     }
 
 
-    @PostMapping("/eliminar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         coleccionService.eliminar(id);
         return ResponseEntity.noContent().build();

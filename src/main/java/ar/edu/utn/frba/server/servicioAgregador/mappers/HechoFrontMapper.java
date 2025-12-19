@@ -47,7 +47,14 @@ public class HechoFrontMapper {
         if (dto.getFuente() != null) {
             out.setFuentes(java.util.List.of(dto.getFuente().name()));
         }
+        if (dto.getContenidoMultimedia() != null) {
+            // si tu HechoFrontDto tiene "contenidoMultimedia" (objeto)
+            // out.setContenidoMultimedia(h.getContenidoMultimedia());
 
+            // si tu HechoFrontDto tiene solo un campo "contenidoMultimedia" como String url:
+            out.setContenidoMultimedia(dto.getContenidoMultimedia().getUrl());
+
+        }
         return out;
     }
 
@@ -70,7 +77,11 @@ public class HechoFrontMapper {
         out.setLatitud(h.getLatitud());
         out.setLongitud(h.getLongitud());
         out.setProvincia(h.getProvincia());
-
+        if (h.getContenidoMultimedia() != null && h.getContenidoMultimedia().getUrl() != null) {
+            out.setContenidoMultimedia(h.getContenidoMultimedia().getUrl());
+        } else {
+            out.setContenidoMultimedia(null);
+        }
         // Etiquetas
         if (h.getEtiquetas() != null) {
             out.setEtiquetas(

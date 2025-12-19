@@ -93,6 +93,7 @@ public class HechosController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public HechoFrontDto crearHecho(@RequestBody HechosInputDto inputDto) {
+
         var creado = hechosService.crearHecho(inputDto);
         return HechoFrontMapper.toDto(creado);
     }
