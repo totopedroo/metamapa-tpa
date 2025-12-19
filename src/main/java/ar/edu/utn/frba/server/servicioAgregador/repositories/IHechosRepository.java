@@ -3,6 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.repositories;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public interface IHechosRepository extends JpaRepository<Hecho, Long> {
+public interface IHechosRepository
+        extends JpaRepository<Hecho, Long>, JpaSpecificationExecutor<Hecho> {
 
     // Consultas para estadísticas
     @Query("SELECT h.provincia, COUNT(h) FROM Hecho h WHERE h.eliminado = false GROUP BY h.provincia ORDER BY COUNT(h) DESC")

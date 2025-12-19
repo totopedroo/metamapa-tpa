@@ -45,29 +45,35 @@ public class HechosController {
             @RequestParam(required = false) Integer limit,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaReporteHasta,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaAcontecimientoHasta,
             @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud) {
+            @RequestParam(required = false) Double longitud,
 
+            // ✅ NUEVO: navegación
+            @RequestParam(required = false, defaultValue = "irrestricta") String nav
+    ) {
         // === LANDING PAGE ===
         if (modo != null) {
             int limite = (limit != null) ? limit : 5;
             var hechosLanding = hechosService.obtenerHechosLanding(modo, limite);
-            // Este endpoint sigue usando HechoDTO simplificado
             return ResponseEntity.ok(Map.of("items", hechosLanding));
         }
 
-        // PAGINACIÓN
+        boolean soloConsensuados = "curada".equalsIgnoreCase(nav) || "curado".equalsIgnoreCase(nav);
+
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Hecho> paged = hechosService.filtrarHechosPaginado(
                 categoria, fechaReporteDesde, fechaReporteHasta,
                 fechaAcontecimientoDesde, fechaAcontecimientoHasta,
-                latitud, longitud, pageable
+                latitud, longitud,
+                soloConsensuados,   // ✅ NUEVO
+                pageable
         );
 
         var salida = paged.getContent().stream()
@@ -82,7 +88,6 @@ public class HechosController {
                 "size", size
         ));
     }
-
     /**
      * POST /api/hechos/crear
      * Devuelve siempre el DTO del FRONT

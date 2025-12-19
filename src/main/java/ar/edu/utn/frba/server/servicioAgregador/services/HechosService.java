@@ -3,9 +3,7 @@ package ar.edu.utn.frba.server.servicioAgregador.services;
 import ar.edu.utn.frba.server.fuente.proxy.dtos.DesastreDto;
 import ar.edu.utn.frba.server.gestorUsuarios.domain.Usuario;
 import ar.edu.utn.frba.server.gestorUsuarios.repository.UsuariosRepository;
-import ar.edu.utn.frba.server.gestorUsuarios.services.UsuariosService;
 import ar.edu.utn.frba.server.servicioAgregador.domain.ContenidoMultimedia;
-import ar.edu.utn.frba.server.servicioAgregador.domain.Contribuyente;
 import ar.edu.utn.frba.server.contratos.enums.EstadoConsenso;
 import ar.edu.utn.frba.server.servicioAgregador.domain.Hecho;
 import ar.edu.utn.frba.server.servicioAgregador.dtos.HechoDTO;
@@ -18,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,6 +73,7 @@ public class HechosService implements IHechosService {
           .collect(Collectors.toList());
     }
 
+
     @Override
     public Page<Hecho> filtrarHechosPaginado(
             String categoria,
@@ -84,18 +83,45 @@ public class HechosService implements IHechosService {
             LocalDate fechaAcontecimientoHasta,
             Double latitud,
             Double longitud,
+            boolean soloConsensuados,
             Pageable pageable
     ) {
-        return hechosRepository.filtrarHechosPaginado(
-                categoria,
-                fechaReporteDesde,
-                fechaReporteHasta,
-                fechaAcontecimientoDesde,
-                fechaAcontecimientoHasta,
-                latitud,
-                longitud,
-                pageable
-        );
+        Specification<Hecho> spec = (root, query, cb) -> cb.isFalse(root.get("eliminado"));
+
+        if (soloConsensuados) {
+            spec = spec.and((root, query, cb) -> cb.isTrue(root.get("consensuado")));
+        }
+
+        if (categoria != null && !categoria.isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("categoria")), "%" + categoria.toLowerCase() + "%"));
+        }
+
+        // fechaCarga (reporte)
+        if (fechaReporteDesde != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("fechaCarga"), fechaReporteDesde));
+        }
+        if (fechaReporteHasta != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("fechaCarga"), fechaReporteHasta));
+        }
+
+        // fechaAcontecimiento
+        if (fechaAcontecimientoDesde != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("fechaAcontecimiento"), fechaAcontecimientoDesde));
+        }
+        if (fechaAcontecimientoHasta != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("fechaAcontecimiento"), fechaAcontecimientoHasta));
+        }
+
+        // lat/long (si tu filtro es exacto; si es “cerca de”, se hace distinto)
+        if (latitud != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("latitud"), latitud));
+        }
+        if (longitud != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("longitud"), longitud));
+        }
+
+        return hechosRepository.findAll(spec, pageable);
     }
 
     @Override
