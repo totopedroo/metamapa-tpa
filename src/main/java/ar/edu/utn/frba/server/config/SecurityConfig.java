@@ -70,7 +70,7 @@ public class SecurityConfig {
 
           // Reglas generales (deben ir después de las específicas)
           auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
-          auth.requestMatchers(HttpMethod.POST, "/api/**").permitAll();
+          auth.requestMatchers(HttpMethod.POST, "/api/**").authenticate;
           auth.requestMatchers(HttpMethod.PUT,  "/api/**").authenticated();
           auth.requestMatchers(HttpMethod.PATCH,"/api/**").authenticated();
           auth.requestMatchers(HttpMethod.DELETE,"/api/**").authenticated();
