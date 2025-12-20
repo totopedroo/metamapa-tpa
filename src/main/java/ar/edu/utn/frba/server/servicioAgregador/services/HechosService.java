@@ -130,8 +130,9 @@ public class HechosService implements IHechosService {
     }
 
     @Override
+    @Transactional
     public HechosOutputDto crearHecho(HechosInputDto inputDto) {
-      // 1. Normalizar datos
+      // 1. Normalizar
       String tituloNormalizado = normalizadorService.normalizarTitulo(inputDto.getTitulo());
       String descripcionNormalizada = normalizadorService.normalizarDescripcion(inputDto.getDescripcion());
       String categoriaNormalizada = normalizadorService.normalizarCategoria(inputDto.getCategoria());
@@ -139,11 +140,11 @@ public class HechosService implements IHechosService {
       Double latitudNormalizada = normalizadorService.normalizarLatitud(inputDto.getLatitud());
       Double longitudNormalizada = normalizadorService.normalizarLongitud(inputDto.getLongitud());
 
-      // 2. Buscar al Contribuyente (Usuario)
+      // 2. Buscar Contribuyente
       Usuario contribuyente = null;
       if (inputDto.getIdContribuyente() != null) {
         contribuyente = usuariosRepository.findById(inputDto.getIdContribuyente())
-            .orElseThrow(() -> new RuntimeException("Contribuyente no encontrado con ID: " + inputDto.getIdContribuyente()));
+            .orElseThrow(() -> new RuntimeException("Contribuyente no encontrado ID: " + inputDto.getIdContribuyente()));
       }
 
       // 3. Instanciar Hecho
@@ -154,37 +155,36 @@ public class HechosService implements IHechosService {
       hecho.setProvincia(provinciaNormalizada);
       hecho.setLatitud(latitudNormalizada);
       hecho.setLongitud(longitudNormalizada);
-
       hecho.setFechaAcontecimiento(inputDto.getFechaAcontecimiento());
       hecho.setHoraAcontecimiento(inputDto.getHoraAcontecimiento());
       hecho.setFechaCarga(LocalDate.now());
-
       hecho.setEliminado(false);
       hecho.setConsensuado(false);
-      hecho.setEstadoConsenso(EstadoConsenso.NO_CONSENSUADO); // Valor inicial por defecto
+      hecho.setEstadoConsenso(EstadoConsenso.NO_CONSENSUADO);
 
       // 4. Asignar Contribuyente
-      // (Asegúrate de que tu entidad Hecho tenga este método y acepte 'Usuario')
       if (contribuyente != null) {
         hecho.setContribuyente(contribuyente);
-        // Si el setter espera un objeto 'Contribuyente' distinto de 'Usuario',
-        // tendrás que adaptar esto. Asumo que Usuario es la entidad que usas.
       }
 
-      // 5. Manejo de Multimedia (String -> Objeto)
+      // 5. Multimedia
       if (inputDto.getContenidoMultimedia() != null && !inputDto.getContenidoMultimedia().isBlank()) {
         ContenidoMultimedia cm = new ContenidoMultimedia();
         cm.setUrl(inputDto.getContenidoMultimedia());
-        // Si no tienes Cascada configurada en la relación, deberías guardar 'cm' primero.
-        // repositorioMultimedia.save(cm);
+        // Si no hay cascade type ALL en la relación OneToOne/ManyToOne, guarda cm primero:
+        // multimediaRepository.save(cm);
         hecho.setContenidoMultimedia(cm);
       }
 
-        // ✅ 1) Persisto la fuente (queda con ID)
-        Fuente fuente = fuenteRepository.save(new Fuente("UI", TipoFuente.DINAMICA));
+      // 6. Asignar Fuente
+      // Buscamos la fuente con ID 2 (DINAMICA) que ya existe en la BD
+      // Si por alguna razón no existe, lanzamos excepción o usamos un fallback seguro sin guardar basura
+      Fuente fuenteUi = fuenteRepository.findById(2L)
+          .orElseThrow(() -> new RuntimeException("Fuente DINAMICA (ID 2) no encontrada en la base de datos."));
 
-        // ✅ 2) La asocio al hecho
-        hecho.agregarFuente(fuente);      // 6. Guardar
+      hecho.setFuente(fuenteUi);
+
+      // 7. Guardar Hecho
       Hecho hechoGuardado = hechosRepository.save(hecho);
       return HechosOutputDto.fromModel(hechoGuardado);
     }
