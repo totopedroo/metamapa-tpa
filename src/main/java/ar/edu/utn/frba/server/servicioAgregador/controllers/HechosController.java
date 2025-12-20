@@ -103,6 +103,12 @@ public class HechosController {
         return HechoFrontMapper.toDto(creado);
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<?> obtenerHecho(@PathVariable Long id) {
+        var hecho = hechosService.findOne(id);
+        return ResponseEntity.ok(HechoFrontMapper.toDto(hecho));
+    }
+
     /**
      * POST /api/hechos/importar-api
      */

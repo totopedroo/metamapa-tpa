@@ -39,5 +39,6 @@ public interface IHechosService
     List<HechoDTO> obtenerHechosLanding(String modo, int limit);
     boolean eliminarHecho(Long id);
     Optional<Hecho> buscarPorId(Long id);
+    Hecho findOne (Long id);
 }
 

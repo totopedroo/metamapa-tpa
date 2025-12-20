@@ -196,6 +196,11 @@ public class HechosService implements IHechosService {
       return HechosOutputDto.fromModel(hecho);
     }
 
+    @Override
+    public Hecho findOne (Long id){
+        return hechosRepository.findById(id).orElse(null);
+    }
+
     @Transactional
     public List<Hecho> importarDesdeApi() {
 
